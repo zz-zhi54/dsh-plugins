@@ -1,0 +1,33 @@
+{
+  "name": "dsh-codex-login-plugin",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/host.mjs",
+    "./client": "./src/client.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": ["src", "cordis.patch.yml", "README.md"],
+  "description": "Codex OAuth login profile bundle for DeepSeek Harness",
+  "main": "./src/host.mjs",
+  "scripts": {
+    "check": "node --check src/host.mjs && node --check src/client.js"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-renderer",
+        "@deepseek-ai/dsh-client-ui-settings-models"
+      ],
+      "platform": "web"
+    }
+  },
+  "dependencies": {
+    "@deepseek-ai/dsh-authorization": "^0.1.3-alpha.2"
+  }
+}
