@@ -1,0 +1,3 @@
+- insert:
+    - id: command-init
+      name: dsh-init-plugin
