@@ -1,0 +1,21 @@
+{
+  "name": "dsh-personal-bundle",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local aggregate bundle for zz-zhi's DeepSeek Harness plugins",
+  "files": ["cordis.patch.yml", "README.md"],
+  "exports": {
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "dependencies": {
+    "@deepseek-ai/dsh-authorization": "^0.1.3-alpha.2",
+    "dsh-init-plugin": "file:../../packages/init",
+    "dsh-codex-login-plugin": "file:../../packages/codex-login"
+  }
+}
