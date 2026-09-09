@@ -40,7 +40,7 @@ dsh --profile web --dump-config
 dsh plugin --profile web remove dsh-personal-bundle
 ```
 
-> `bundles/personal` 当前使用相对 `file:` 依赖，因此是本地 Monorepo 聚合 Bundle，不用于单独发布到 npm。以后如果各插件发布到 npm，再把依赖切换成正式版本号即可。
+> `bundles/personal` 当前使用 `workspace:^` 依赖，因此是本地 Monorepo 聚合 Bundle，不用于单独发布到 npm。以后如果各插件发布到 npm，再把依赖切换成正式版本号即可。
 
 ## 按需单独安装
 

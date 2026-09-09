@@ -28,6 +28,6 @@ dsh --profile web --dump-config
 dsh plugin --profile web remove dsh-personal-bundle
 ```
 
-此 Bundle 使用相对 `file:` 依赖指向同一 Monorepo 中的插件，因此定位为本地工作区聚合 Bundle，不用于单独发布到 npm。若未来将各插件发布到 npm，应把这些依赖改为正式版本号后再发布聚合 Bundle。
+此 Bundle 使用 `workspace:^` 依赖指向同一 Monorepo 中的插件，因此定位为本地工作区聚合 Bundle，不用于单独发布到 npm。若未来将各插件发布到 npm，应把这些依赖改为正式版本号后再发布聚合 Bundle。
 
 不要同时通过 `personal` Bundle 和单独插件方式重复启用同一插件，否则会产生重复配置层。

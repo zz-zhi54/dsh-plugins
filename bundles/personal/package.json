@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@deepseek-ai/dsh-authorization": "^0.1.3-alpha.2",
-    "dsh-init-plugin": "file:../../packages/init",
-    "dsh-codex-login-plugin": "file:../../packages/codex-login"
+    "dsh-init-plugin": "workspace:^",
+    "dsh-codex-login-plugin": "workspace:^"
   }
 }
