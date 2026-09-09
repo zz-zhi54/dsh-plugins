@@ -1,0 +1,28 @@
+{
+  "name": "dsh-init-plugin",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/host.mjs",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": ["src", "cordis.patch.yml", "README.md"],
+  "description": "Codex-style /init command for repository AGENTS.md context",
+  "main": "./src/host.mjs",
+  "scripts": {
+    "check": "node --check src/host.mjs"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "dependencies": {
+    "@deepseek-ai/dsh-llm": "^0.1.5-alpha.1"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/dsh-commands": "^0.1.5-alpha.1"
+  }
+}
