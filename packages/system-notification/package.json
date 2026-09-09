@@ -1,5 +1,5 @@
 {
-  "name": "dsh-init-plugin",
+  "name": "dsh-system-notification-plugin",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -9,10 +9,11 @@
     "./package.json": "./package.json"
   },
   "files": ["src", "cordis.patch.yml", "README.md"],
-  "description": "Deprecated Codex-style /init command; use the create-agentsmd skill instead",
+  "description": "Native macOS and Windows notifications for DSH task and approval events",
   "main": "./src/host.mjs",
   "scripts": {
-    "check": "node --check src/host.mjs"
+    "check": "node --check src/host.mjs && node --check src/observer.mjs && node --check src/messages.mjs && node --check src/notifier/index.mjs && node --check src/notifier/macos.mjs && node --check src/notifier/windows.mjs",
+    "test": "node --test"
   },
   "dsh": {
     "bundle": {

@@ -6,8 +6,9 @@
 
 | 目录 | 包名 | 用途 |
 | --- | --- | --- |
-| `packages/init` | `dsh-init-plugin` | Codex 风格 `/init`，用于创建或更新仓库根目录 `AGENTS.md` |
+| `packages/init` | `dsh-init-plugin` | 已废弃、兼容保留：Codex 风格 `/init`，用于创建或更新仓库根目录 `AGENTS.md` |
 | `packages/codex-login` | `dsh-codex-login-plugin` | 为 DSH Web Profile 提供 ChatGPT / Codex OAuth 登录 |
+| `packages/system-notification` | `dsh-system-notification-plugin` | macOS / Windows 原生系统通知 |
 | `bundles/dsh-plugins` | `dsh-plugins` | 一次启用上述插件的本地聚合 Bundle |
 
 ## 推荐用法：一次安装整套插件
@@ -21,10 +22,11 @@ dsh plugin --profile web add ./bundles/dsh-plugins
 `dsh-plugins` 自己负责插入：
 
 - `authorization`
-- `command-init`
+- `command-init`（已废弃，兼容保留）
 - `codex-login`
+- `system-notification`
 
-因此只需要把 `dsh-plugins` 作为一个 Bundle 加入 Profile，不需要再单独添加两个插件。
+因此只需要把 `dsh-plugins` 作为一个 Bundle 加入 Profile，不需要再单独添加其中的插件。`command-init` 仅为已有配置提供兼容性保留；新项目请使用 `create-agentsmd` skill。
 
 检查最终配置：
 
@@ -32,7 +34,7 @@ dsh plugin --profile web add ./bundles/dsh-plugins
 dsh --profile web --dump-config
 ```
 
-确认配置中存在 `authorization`、`command-init`、`codex-login`。
+确认配置中存在 `authorization`、`command-init`、`codex-login`、`system-notification`。
 
 卸载整套插件：
 
@@ -46,16 +48,24 @@ dsh plugin --profile web remove dsh-plugins
 
 如果只需要其中一个能力，不要安装 `dsh-plugins`，直接安装对应插件。
 
-只安装 `/init`：
+如需兼容旧配置，可单独安装已废弃的 `/init`：
 
 ```sh
 dsh plugin --profile web add ./packages/init
 ```
 
+新项目请使用 `create-agentsmd` skill，不再建议启用该插件。
+
 只安装 Codex 登录：
 
 ```sh
 dsh plugin --profile web add ./packages/codex-login
+```
+
+只安装系统通知：
+
+```sh
+dsh plugin --profile web add ./packages/system-notification
 ```
 
 卸载：
@@ -64,6 +74,8 @@ dsh plugin --profile web add ./packages/codex-login
 dsh plugin --profile web remove dsh-init-plugin
 # 或
 dsh plugin --profile web remove dsh-codex-login-plugin
+# 或
+dsh plugin --profile web remove dsh-system-notification-plugin
 ```
 
 不要同时安装 `dsh-plugins` 和它所包含的单独插件，否则同一插件可能被多个 Bundle 层重复插入。
@@ -82,6 +94,7 @@ pnpm check
 ```text
 packages/init
 packages/codex-login
+packages/system-notification
 ```
 
 `bundles/dsh-plugins` 只负责组合，不承载业务实现。

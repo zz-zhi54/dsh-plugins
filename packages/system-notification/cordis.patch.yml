@@ -1,0 +1,3 @@
+- insert:
+    - id: system-notification
+      name: dsh-system-notification-plugin

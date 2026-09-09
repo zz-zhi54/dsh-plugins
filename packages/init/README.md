@@ -1,5 +1,7 @@
 # dsh-init-plugin
 
+> **已废弃，兼容保留。** 当前推荐使用 `create-agentsmd` skill 代替本插件；本 package 暂时保留，不再新增功能。
+
 为 DeepSeek Harness 提供 Codex 风格的 `/init` 斜杠命令，让当前 Agent 分析仓库并创建或更新项目根目录的 `AGENTS.md`。
 
 ## 安装

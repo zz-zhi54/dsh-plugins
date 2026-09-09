@@ -7,3 +7,6 @@
 
     - id: codex-login
       name: dsh-codex-login-plugin
+
+    - id: system-notification
+      name: dsh-system-notification-plugin
