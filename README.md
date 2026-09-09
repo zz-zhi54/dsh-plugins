@@ -8,23 +8,23 @@
 | --- | --- | --- |
 | `packages/init` | `dsh-init-plugin` | Codex 风格 `/init`，用于创建或更新仓库根目录 `AGENTS.md` |
 | `packages/codex-login` | `dsh-codex-login-plugin` | 为 DSH Web Profile 提供 ChatGPT / Codex OAuth 登录 |
-| `bundles/personal` | `dsh-personal-bundle` | 一次启用上述个人插件的本地聚合 Bundle |
+| `bundles/dsh-plugins` | `dsh-plugins` | 一次启用上述插件的本地聚合 Bundle |
 
 ## 推荐用法：一次安装整套插件
 
 克隆仓库后，在仓库根目录执行：
 
 ```sh
-dsh plugin --profile web add ./bundles/personal
+dsh plugin --profile web add ./bundles/dsh-plugins
 ```
 
-`dsh-personal-bundle` 自己负责插入：
+`dsh-plugins` 自己负责插入：
 
 - `authorization`
 - `command-init`
 - `codex-login`
 
-因此只需要把 `personal` 作为一个 Bundle 加入 Profile，不需要再单独添加两个插件。
+因此只需要把 `dsh-plugins` 作为一个 Bundle 加入 Profile，不需要再单独添加两个插件。
 
 检查最终配置：
 
@@ -37,14 +37,14 @@ dsh --profile web --dump-config
 卸载整套插件：
 
 ```sh
-dsh plugin --profile web remove dsh-personal-bundle
+dsh plugin --profile web remove dsh-plugins
 ```
 
-> `bundles/personal` 当前使用 `workspace:^` 依赖，因此是本地 Monorepo 聚合 Bundle，不用于单独发布到 npm。以后如果各插件发布到 npm，再把依赖切换成正式版本号即可。
+> `bundles/dsh-plugins` 当前使用 `workspace:^` 依赖，因此是本地 Monorepo 聚合 Bundle，不用于单独发布到 npm。以后如果各插件发布到 npm，再把依赖切换成正式版本号即可。
 
 ## 按需单独安装
 
-如果只需要其中一个能力，不要安装 `personal`，直接安装对应插件。
+如果只需要其中一个能力，不要安装 `dsh-plugins`，直接安装对应插件。
 
 只安装 `/init`：
 
@@ -66,7 +66,7 @@ dsh plugin --profile web remove dsh-init-plugin
 dsh plugin --profile web remove dsh-codex-login-plugin
 ```
 
-不要同时安装 `dsh-personal-bundle` 和它所包含的单独插件，否则同一插件可能被多个 Bundle 层重复插入。
+不要同时安装 `dsh-plugins` 和它所包含的单独插件，否则同一插件可能被多个 Bundle 层重复插入。
 
 ## 本地开发
 
@@ -84,7 +84,7 @@ packages/init
 packages/codex-login
 ```
 
-`bundles/personal` 只负责组合，不承载业务实现。
+`bundles/dsh-plugins` 只负责组合，不承载业务实现。
 
 修改插件后，可先运行：
 
@@ -102,7 +102,7 @@ dsh --profile web --dump-config
 
 单独插件各自声明自己的 `dsh.bundle.patch`，所以直接执行 `dsh plugin ... add ./packages/...` 时，它会作为独立 Profile layer 激活。
 
-`dsh-personal-bundle` 则是一个更上层的组合 Bundle。它不依赖 DSH 自动递归激活子 Bundle，而是在自己的 `cordis.patch.yml` 中明确插入需要的插件，从而保证“一次安装整套能力”的语义清晰可预测。
+`dsh-plugins` 则是一个更上层的组合 Bundle。它不依赖 DSH 自动递归激活子 Bundle，而是在自己的 `cordis.patch.yml` 中明确插入需要的插件，从而保证“一次安装整套能力”的语义清晰可预测。
 
 ## 历史
 

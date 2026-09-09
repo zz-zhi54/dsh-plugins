@@ -8,7 +8,7 @@ importers:
 
   .: {}
 
-  bundles/personal:
+  bundles/dsh-plugins:
     dependencies:
       '@deepseek-ai/dsh-authorization':
         specifier: ^0.1.3-alpha.2

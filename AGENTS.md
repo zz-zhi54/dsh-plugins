@@ -2,11 +2,11 @@
 
 ## 项目概览
 
-`dsh-plugins` 是一组 DeepSeek Harness（DSH）插件的 pnpm workspace monorepo。代码以原生 ESM 的 JavaScript 为主，使用 Cordis patch YAML 把插件插入 DSH Profile；两个插件 package 标记为私有，`bundles/personal` 通过 workspace 相对依赖定位为本地聚合 Bundle，目前不用于独立发布。
+`dsh-plugins` 是一组 DeepSeek Harness（DSH）插件的 pnpm workspace monorepo。代码以原生 ESM 的 JavaScript 为主，使用 Cordis patch YAML 把插件插入 DSH Profile；两个插件 package 标记为私有，`bundles/dsh-plugins` 通过 workspace 相对依赖定位为本地聚合 Bundle，目前不用于独立发布。
 
 - `packages/init`（`dsh-init-plugin`）：注册 Codex 风格的 `/init` 命令，要求 Agent 创建或更新当前仓库根目录的 `AGENTS.md`。
 - `packages/codex-login`（`dsh-codex-login-plugin`）：提供 ChatGPT / Codex OAuth 的 Host 路由和 Web 客户端 UI。
-- `bundles/personal`（`dsh-personal-bundle`）：只负责组合上述插件及 `@deepseek-ai/dsh-authorization`，不承载业务实现。
+- `bundles/dsh-plugins`（`dsh-plugins`）：只负责组合上述插件及 `@deepseek-ai/dsh-authorization`，不承载业务实现。
 
 工作区范围由 `pnpm-workspace.yaml` 定义，根目录的 `pnpm-lock.yaml` 是依赖解析记录。各 package 的 `package.json` 中的 `dsh.bundle.patch` 是插件组合入口；不要假设 DSH 会递归激活依赖 Bundle，组合关系应在 patch 中显式声明。
 
@@ -23,7 +23,7 @@ pnpm check
 
 - `packages/init`：`node --check src/host.mjs`
 - `packages/codex-login`：分别检查 `src/host.mjs` 和 `src/client.js`
-- `bundles/personal`：当前没有源码检查脚本
+- `bundles/dsh-plugins`：当前没有源码检查脚本
 
 只检查单个插件时可运行：
 
@@ -45,14 +45,14 @@ pnpm --filter <package-name> add <dependency>
 需要验证最终 Profile 时，先确保本机已有可用的 `dsh` CLI 和 Web Profile，然后在根目录执行：
 
 ```sh
-dsh plugin --profile web add ./bundles/personal
+dsh plugin --profile web add ./bundles/dsh-plugins
 dsh --profile web --dump-config
 ```
 
 配置中应出现 `authorization`、`command-init`、`codex-login`。卸载整套本地 Bundle：
 
 ```sh
-dsh plugin --profile web remove dsh-personal-bundle
+dsh plugin --profile web remove dsh-plugins
 ```
 
 也可以只安装一个插件：
@@ -62,7 +62,7 @@ dsh plugin --profile web add ./packages/init
 dsh plugin --profile web add ./packages/codex-login
 ```
 
-不要同时安装 `dsh-personal-bundle` 和它包含的独立插件，否则同一 layer 可能被重复插入。安装后可在 Web 中通过 `/` 检查 `/init`，并在模型设置页检查 ChatGPT / Codex 登录入口；OAuth 流程需要真实的外部授权，不能只靠语法检查验证。
+不要同时安装 `dsh-plugins` 和它包含的独立插件，否则同一 layer 可能被重复插入。安装后可在 Web 中通过 `/` 检查 `/init`，并在模型设置页检查 ChatGPT / Codex 登录入口；OAuth 流程需要真实的外部授权，不能只靠语法检查验证。
 
 ## 架构边界与修改规则
 
@@ -70,7 +70,7 @@ dsh plugin --profile web add ./packages/codex-login
 - `packages/init/src/host.mjs` 通过 `commands` 注册 `/init`。命令不接受参数，触发的是普通 user follow-up；其 prompt 明确限制 Agent 只能写当前仓库根目录的 `AGENTS.md`，不创建 Goal，也不使用 `goal-round-driver`。
 - `packages/codex-login/src/host.mjs` 使用 `authorization` 和 `webServer`，提供 `/api/codex-login/start`、`poll`、`answer`、`cancel` 四个接口，并在 effect 清理时注销路由和取消进行中的授权。修改授权状态机、提示投影或路由时，同时考虑重复请求、取消和 effect 卸载。
 - `packages/codex-login/src/client.js` 是已经按 DSH Web 要求写好的 classic-script 模块，不是普通 ESM 源文件。它必须保留 `window.__ModuleLoader__.load({ id, factory })` 形状，并通过 `require('react')` 获取 React；不要把它改成顶层 `import`/`export` 或直接当作浏览器可执行的 ESM。
-- `bundles/personal/cordis.patch.yml` 必须显式插入 `authorization`、`command-init` 和 `codex-login`。Bundle 只做聚合，不要把插件实现复制到 `bundles/personal`。
+- `bundles/dsh-plugins/cordis.patch.yml` 必须显式插入 `authorization`、`command-init` 和 `codex-login`。Bundle 只做聚合，不要把插件实现复制到 `bundles/dsh-plugins`。
 - 保持 package 的 `exports`、`files` 和 `dsh` 元数据与实际入口一致。根工作区是私有本地聚合，不要在没有明确发布需求时添加 npm 发布流程或改成递归 Bundle。
 
 ## 代码风格

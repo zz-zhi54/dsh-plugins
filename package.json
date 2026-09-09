@@ -1,5 +1,5 @@
 {
-  "name": "dsh-plugins",
+  "name": "dsh-plugins-workspace",
   "private": true,
   "type": "module",
   "scripts": {

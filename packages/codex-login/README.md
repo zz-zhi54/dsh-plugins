@@ -10,7 +10,7 @@
 dsh plugin --profile web add ./packages/codex-login
 ```
 
-如果希望同时启用本仓库的全部个人插件，使用根目录文档中的 `bundles/personal`，不要再重复单独安装本插件。
+如果希望同时启用本仓库的全部插件，使用根目录文档中的 `bundles/dsh-plugins`，不要再重复单独安装本插件。
 
 该 Bundle 会插入 `@deepseek-ai/dsh-authorization` 和 `dsh-codex-login-plugin`。
 

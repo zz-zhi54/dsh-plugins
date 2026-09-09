@@ -1,5 +1,5 @@
 {
-  "name": "dsh-personal-bundle",
+  "name": "dsh-plugins",
   "version": "0.1.0",
   "private": true,
   "description": "Local aggregate bundle for zz-zhi's DeepSeek Harness plugins",
