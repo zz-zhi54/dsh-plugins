@@ -1,0 +1,6 @@
+- insert:
+    - id: authorization
+      name: '@deepseek-ai/dsh-authorization'
+
+    - id: codex-login
+      name: dsh-codex-login-plugin
