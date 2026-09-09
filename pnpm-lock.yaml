@@ -16,9 +16,6 @@ importers:
       dsh-codex-login-plugin:
         specifier: workspace:^
         version: link:../../packages/codex-login
-      dsh-init-plugin:
-        specifier: workspace:^
-        version: link:../../packages/init
       dsh-system-notification-plugin:
         specifier: workspace:^
         version: link:../../packages/system-notification

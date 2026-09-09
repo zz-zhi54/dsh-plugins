@@ -53,7 +53,7 @@ dsh plugin --profile web add ./bundles/dsh-plugins
 dsh --profile web --dump-config
 ```
 
-配置中应出现 `authorization`、`command-init`、`codex-login`、`system-notification`；`command-init` 已废弃，仅为兼容已有配置保留。新项目使用 `create-agentsmd` skill。卸载整套本地 Bundle：
+配置中应出现 `authorization`、`codex-login`、`system-notification`，不应再出现已废弃的 `command-init`。新项目使用 `create-agentsmd` skill。卸载整套本地 Bundle：
 
 ```sh
 dsh plugin --profile web remove dsh-plugins
@@ -75,7 +75,7 @@ dsh plugin --profile web add ./packages/system-notification
 - `packages/init/src/host.mjs` 通过 `commands` 注册已废弃的 `/init`。该命令不接受参数，触发的是普通 user follow-up；其 prompt 明确限制 Agent 只能写当前仓库根目录的 `AGENTS.md`，不创建 Goal，也不使用 `goal-round-driver`。新项目使用 `create-agentsmd` skill。
 - `packages/codex-login/src/host.mjs` 使用 `authorization` 和 `webServer`，提供 `/api/codex-login/start`、`poll`、`answer`、`cancel` 四个接口，并在 effect 清理时注销路由和取消进行中的授权。修改授权状态机、提示投影或路由时，同时考虑重复请求、取消和 effect 卸载。
 - `packages/codex-login/src/client.js` 是已经按 DSH Web 要求写好的 classic-script 模块，不是普通 ESM 源文件。它必须保留 `window.__ModuleLoader__.load({ id, factory })` 形状，并通过 `require('react')` 获取 React；不要把它改成顶层 `import`/`export` 或直接当作浏览器可执行的 ESM。
-- `bundles/dsh-plugins/cordis.patch.yml` 必须显式插入 `authorization`、`command-init`、`codex-login` 和 `system-notification`。Bundle 只做聚合，不要把插件实现复制到 `bundles/dsh-plugins`。
+- `bundles/dsh-plugins/cordis.patch.yml` 必须显式插入 `authorization`、`codex-login` 和 `system-notification`；已废弃的 `command-init` 不再由统一 Bundle 插入。Bundle 只做聚合，不要把插件实现复制到 `bundles/dsh-plugins`。
 - 保持 package 的 `exports`、`files` 和 `dsh` 元数据与实际入口一致。根工作区是私有本地聚合，不要在没有明确发布需求时添加 npm 发布流程或改成递归 Bundle。
 
 ## 代码风格

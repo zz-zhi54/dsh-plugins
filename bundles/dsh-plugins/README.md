@@ -4,10 +4,11 @@
 
 当前包含：
 
-- `dsh-init-plugin`（已废弃，兼容保留）
 - `dsh-codex-login-plugin`
 - `dsh-system-notification-plugin`
 - `@deepseek-ai/dsh-authorization`（Codex 登录所需 Service）
+
+已废弃的 `dsh-init-plugin` 不再由此 Bundle 激活，但仍保留为可单独安装的兼容插件。新项目请使用 `create-agentsmd` skill。
 
 在 Monorepo 根目录执行：
 
@@ -21,7 +22,7 @@ dsh plugin --profile web add ./bundles/dsh-plugins
 dsh --profile web --dump-config
 ```
 
-应能看到 `authorization`、`command-init`、`codex-login` 和 `system-notification` 四个条目；其中 `command-init` 已废弃，仅为兼容已有配置保留。新项目请使用 `create-agentsmd` skill。
+应能看到 `authorization`、`codex-login` 和 `system-notification` 三个条目。
 
 卸载：
 

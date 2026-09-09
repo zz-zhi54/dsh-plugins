@@ -22,11 +22,10 @@ dsh plugin --profile web add ./bundles/dsh-plugins
 `dsh-plugins` 自己负责插入：
 
 - `authorization`
-- `command-init`（已废弃，兼容保留）
 - `codex-login`
 - `system-notification`
 
-因此只需要把 `dsh-plugins` 作为一个 Bundle 加入 Profile，不需要再单独添加其中的插件。`command-init` 仅为已有配置提供兼容性保留；新项目请使用 `create-agentsmd` skill。
+因此只需要把 `dsh-plugins` 作为一个 Bundle 加入 Profile，不需要再单独添加其中的插件。已废弃的 `command-init` 不再由统一 Bundle 激活；新项目请使用 `create-agentsmd` skill。
 
 检查最终配置：
 
@@ -34,7 +33,7 @@ dsh plugin --profile web add ./bundles/dsh-plugins
 dsh --profile web --dump-config
 ```
 
-确认配置中存在 `authorization`、`command-init`、`codex-login`、`system-notification`。
+确认配置中存在 `authorization`、`codex-login`、`system-notification`，不再包含已废弃的 `command-init`。
 
 卸载整套插件：
 
