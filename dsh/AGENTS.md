@@ -47,3 +47,4 @@
 * Never rewrite published Git history without explicit user authorization.
 * Never use force push, including `--force` or `--force-with-lease`, unless explicitly authorized.
 * Creating or pushing commits, or creating a pull request, does not authorize history rewriting or merging the pull request.
+* When asked to create a pull request, create it but never merge it automatically; leave merging to a human unless the user gives a separate, explicit instruction after the PR exists.
