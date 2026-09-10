@@ -8,6 +8,12 @@
 - 同一 DSH 版本下继续修复或改进插件时，递增最后的插件修订号。
 - 切换到新的 DSH 版本时，更新 DSH 版本部分，并将插件修订号从 `.1` 重新开始。
 
+## Unreleased — DSH `0.1.5-alpha.2`
+
+- 将 `@deepseek-ai/cordis`、`@deepseek-ai/dsh-agent` 和 `@deepseek-ai/dsh-session` 声明为 system-notification 的 Host `peerDependencies`。
+- 将同一组包加入 `devDependencies`，便于本地 IDE、测试和源码导航；运行时仍由 DSH Host 提供，不会复制安装。
+- 在 system-notification README 中补充 `Context.on` 的 DSH Cordis 源码链接。
+
 ## 0.1.5-alpha.2.1 — 2026-09-10
 
 **对应 DSH 官方标签：** `dsh-v0.1.5-alpha.2`

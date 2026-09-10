@@ -4,6 +4,16 @@
 
 为 DSH Host 提供轻量级 macOS / Windows 系统通知。插件只旁路监听事件，不接管或修改 Agent 或审批流程。
 
+## 运行时依赖
+
+本插件通过 DSH Host 传入的 Cordis `Context` 注册事件监听，不在插件内复制 `Context.on` 实现。为明确运行时契约，`package.json` 声明以下 `peerDependencies`，由 DSH Profile 提供：
+
+- `@deepseek-ai/cordis@4.0.2`：提供 `Context.on` / `ctx.on` 事件 API。
+- `@deepseek-ai/dsh-agent@0.1.5-alpha.2`：提供 `agent/status` 事件契约。
+- `@deepseek-ai/dsh-session@0.1.5-alpha.2`：提供 `session/event` 事件契约。
+
+这些是 Host 侧 peer 依赖，不会被插件重复安装或打包；插件自身没有额外的运行时 npm `dependencies`。`Context.on` 的具体实现位于 DSH 内置 Cordis 的 [`events.ts`](https://github.com/deepseek-ai/deepseek-harness/blob/dsh-v0.1.5-alpha.2/vendor/cordis/src/events.ts#L278-L302)。
+
 ## 安装
 
 ### 单独安装
