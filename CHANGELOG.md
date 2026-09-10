@@ -8,6 +8,21 @@
 - 同一 DSH 版本下继续修复或改进插件时，递增最后的插件修订号。
 - 切换到新的 DSH 版本时，更新 DSH 版本部分，并将插件修订号从 `.1` 重新开始。
 
+## 0.1.5-rc.1.4 — 2026-09-10
+
+**对应 DSH 官方标签：** `dsh-v0.1.5-rc.1`
+
+**对应本仓库标签：** `dsh-plugins-v0.1.5-rc.1.4`
+
+### 新增：Codex 用量插件
+
+- 新增按需插件 `packages/codex-usage`（`dsh-codex-usage-plugin`）：在 Web 输入框下方显示 Codex 的 5 小时与每周额度。收起态即全部信息，没有悬浮面板：
+  `Codex · 5h 剩 93% · 2 小时 41 分后刷新 · 周 剩 66% · 4 天 3 小时后刷新`。
+- 凭据取自 DSH credentials store 的 `llm-pi-ai/openai-codex`，只读且不刷新；不依赖 codex CLI，也不读取 `~/.codex`。凭据按次惰性解析，避免 Cordis 服务就绪竞态。
+- 请求特征（端点 `wham/usage`、请求头、User-Agent、响应字段、脱敏写法）与 DSH pi-ai 及 pi 生态实现对齐；对齐表同时记录在该包 README 与 `src/codex-usage.mjs` 文件头，便于上游更新时同步。
+- 安全边界：access token 只出现在发往上游的请求头里；对外错误文本一律脱敏；上游响应中的 `email` / `user_id` / `account_id` 不离开 Host。21 项单元测试覆盖投影、脱敏、凭据解析与客户端契约。
+- 该插件不属于默认 Bundle，按需安装：`dsh plugin --profile web add ./packages/codex-usage`。
+
 ## 0.1.5-rc.1.3 — 2026-09-10
 
 **对应 DSH 官方标签：** `dsh-v0.1.5-rc.1`
