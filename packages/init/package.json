@@ -2,6 +2,7 @@
   "name": "dsh-init-plugin",
   "version": "0.1.5-rc.1.2",
   "private": true,
+  "license": "Apache-2.0",
   "type": "module",
   "description": "Deprecated Codex-style /init command for initializing repository AGENTS.md files",
   "main": "./src/host.mjs",

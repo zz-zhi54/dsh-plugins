@@ -2,6 +2,7 @@
   "name": "dsh-codex-login-plugin",
   "version": "0.1.5-rc.1.2",
   "private": true,
+  "license": "Apache-2.0",
   "type": "module",
   "description": "Temporary ChatGPT and Codex OAuth login plugin for DeepSeek Harness Web",
   "main": "./src/host.mjs",

@@ -2,6 +2,7 @@
   "name": "dsh-plugins",
   "version": "0.1.5-rc.1.2",
   "private": true,
+  "license": "Apache-2.0",
   "description": "Local aggregate bundle for the DeepSeek Harness plugins in this workspace",
   "files": [
     "cordis.patch.yml",

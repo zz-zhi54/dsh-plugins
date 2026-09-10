@@ -100,6 +100,10 @@ pnpm --filter dsh-system-notification-plugin run test
 
 插件通过自身 `package.json` 的 `dsh.bundle.patch` 指向 patch 文件；patch 只描述组件 ID 和 package 名称，业务实现留在对应项目中。DSH 不会因为 Bundle 依赖而自动递归激活子 Bundle。
 
+## 许可证
+
+本项目代码采用 [Apache License 2.0](LICENSE)。第三方依赖及 DeepSeek Harness 本身仍以各自的许可证和条款为准。
+
 ## 迁移背景
 
 迁移到本 monorepo 前的独立仓库保留原提交历史：
