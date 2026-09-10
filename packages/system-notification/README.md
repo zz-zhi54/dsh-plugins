@@ -44,8 +44,8 @@ dsh plugin --profile web add ./bundles/dsh-plugins
 
 ## 平台实现
 
-- macOS：调用系统自带的 `osascript`，发送 AppleScript `display notification`。
-- Windows：调用系统自带的 `powershell.exe` 和 .NET `System.Windows.Forms.NotifyIcon` 气泡通知，不需要安装第三方 PowerShell 模块或运行时库。
+- macOS：调用系统自带的 `osascript`，发送 AppleScript `display notification`；该接口不支持指定自定义通知图标。
+- Windows：调用系统自带的 `powershell.exe` 和 .NET `System.Windows.Forms.NotifyIcon` 气泡通知，并使用 `assets/dsh.ico` 作为 DSH 图标，不需要安装第三方 PowerShell 模块或运行时库。
 - 其他平台：插件仍可加载，但不发送通知。
 
 ## 验证

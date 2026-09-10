@@ -38,6 +38,18 @@ test('uses built-in PowerShell NotifyIcon for Windows notifications', async () =
   ])
   assert.equal(calls[0][1].at(-1), buildWindowsScript(notification))
   assert.match(calls[0][1].at(-1), /System\.Windows\.Forms\.NotifyIcon/)
+  assert.match(calls[0][1].at(-1), /System\.Drawing\.Icon\]::new\(/)
+  assert.match(calls[0][1].at(-1), /dsh\.ico/)
+  assert.doesNotMatch(calls[0][1].at(-1), /SystemIcons::Information/)
+})
+
+test('escapes a custom Windows icon path for PowerShell', () => {
+  const script = buildWindowsScript({
+    ...notification,
+    iconPath: "C:\\Program Files\\D'SH\\dsh.ico",
+  })
+
+  assert.match(script, /::new\('C:\\Program Files\\D''SH\\dsh\.ico'\)/)
 })
 
 test('does nothing on unsupported platforms', () => {

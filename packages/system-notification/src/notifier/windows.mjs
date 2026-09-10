@@ -1,14 +1,19 @@
+import { fileURLToPath } from 'node:url'
+
+const DSH_ICON_PATH = fileURLToPath(new URL('../../assets/dsh.ico', import.meta.url))
+
 // PowerShell 单引号字符串中，单引号用两个单引号表示。
 function powerShellLiteral(value) {
   return `'${String(value).replaceAll("'", "''")}'`
 }
 
-export function buildNotificationScript({ title, body }) {
+export function buildNotificationScript({ title, body, iconPath = DSH_ICON_PATH }) {
   return [
     'Add-Type -AssemblyName System.Windows.Forms',
     'Add-Type -AssemblyName System.Drawing',
     '$notification = New-Object System.Windows.Forms.NotifyIcon',
-    '$notification.Icon = [System.Drawing.SystemIcons]::Information',
+    `$icon = [System.Drawing.Icon]::new(${powerShellLiteral(iconPath)})`,
+    '$notification.Icon = $icon',
     `$notification.BalloonTipTitle = ${powerShellLiteral(title)}`,
     `$notification.BalloonTipText = ${powerShellLiteral(body)}`,
     '$notification.Visible = $true',
@@ -16,6 +21,7 @@ export function buildNotificationScript({ title, body }) {
     // 子进程必须短暂存活，否则 NotifyIcon 可能立即被系统回收。
     'Start-Sleep -Milliseconds 5500',
     '$notification.Dispose()',
+    '$icon.Dispose()',
   ].join('; ')
 }
 
