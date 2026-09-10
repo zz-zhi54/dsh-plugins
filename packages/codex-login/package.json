@@ -3,15 +3,19 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "description": "ChatGPT and Codex OAuth login plugin for DeepSeek Harness Web",
+  "main": "./src/host.mjs",
   "exports": {
     ".": "./src/host.mjs",
     "./client": "./src/client.js",
     "./cordis.patch.yml": "./cordis.patch.yml",
     "./package.json": "./package.json"
   },
-  "files": ["src", "cordis.patch.yml", "README.md"],
-  "description": "Codex OAuth login profile bundle for DeepSeek Harness",
-  "main": "./src/host.mjs",
+  "files": [
+    "src",
+    "cordis.patch.yml",
+    "README.md"
+  ],
   "scripts": {
     "check": "node --check src/host.mjs && node --check src/client.js"
   },

@@ -1,7 +1,12 @@
+# Dependencies
 node_modules/
-.idea
+.pnpm-store/
 
+# IDE
+.idea/
 
-.pnpm-store
+# Temporary workspace artifacts
 .tmp-pnpm-workspace-test
 
+# pnpm is the only package manager used by this workspace
+package-lock.json

@@ -1,6 +1,8 @@
 packages:
-  - "packages/*"
-  - "bundles/*"
+  - packages/*
+  - bundles/*
+
+# 当前 DSH alpha 包需要绕过最低发布年龄限制；其他依赖仍遵循 pnpm 默认策略。
 minimumReleaseAgeExclude:
   - '@deepseek-ai/dsh-agent@0.1.5-alpha.1'
   - '@deepseek-ai/dsh-attachment@0.1.5-alpha.1'

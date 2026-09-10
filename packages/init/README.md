@@ -1,8 +1,12 @@
 # dsh-init-plugin
 
-> **已废弃，兼容保留。** 当前推荐使用 `create-agentsmd` skill 代替本插件；本 package 暂时保留，不再新增功能。
+> **已废弃，兼容保留。** 新项目请使用 `create-agentsmd` skill；本 package 不再新增功能。
 
-为 DeepSeek Harness 提供 Codex 风格的 `/init` 斜杠命令，让当前 Agent 分析仓库并创建或更新项目根目录的 `AGENTS.md`。
+为 DeepSeek Harness 提供 Codex 风格的 `/init` 斜杠命令，让 Agent 分析当前仓库并创建或更新仓库根目录的 `AGENTS.md`。
+
+## 何时使用
+
+仅在需要兼容旧配置或旧工作流时单独安装。该插件不包含在 `dsh-plugins` 聚合 Bundle 中。
 
 ## 安装
 
@@ -12,23 +16,29 @@
 dsh plugin --profile web add ./packages/init
 ```
 
-如果希望同时启用本仓库的全部插件，使用根目录文档中的 `bundles/dsh-plugins`，不要再重复单独安装本插件。
+如果要启用当前推荐的完整插件组合，请改用根目录文档中的 `./bundles/dsh-plugins`，不要同时安装本插件。
 
 ## 行为
 
-- `/init` 无参数时发送普通用户 prompt，让 Agent 分析仓库。
-- Agent 只能创建或修改仓库根目录的 `AGENTS.md`，其他文件只读。
-- 已有 `AGENTS.md` 会先读取并按准确性、价值与维护成本进行更新。
-- `/init` 带参数时返回 usage 错误。
-- 命令注册由 Cordis effect 管理，插件卸载后自动从命令列表移除。
+- `/init` 不接受参数；带参数时返回 usage 错误。
+- 无参数时发送普通 user follow-up，让 Agent 分析仓库并创建或更新根目录 `AGENTS.md`。
+- Agent 可以读取分析所需的文件，但只能创建或修改仓库根目录的 `AGENTS.md`。
+- 已有 `AGENTS.md` 会保留准确且有价值的内容，并清理过时或重复信息。
 - 不创建 Goal，也不使用 `goal-round-driver`。
+- 命令注册由 Cordis effect 管理；插件卸载后会自动从命令列表移除。
 
 ## 验证
+
+查看 Profile 配置：
 
 ```sh
 dsh --profile web --dump-config
 ```
 
-应能看到 `command-init`。
+单独安装时应看到 `command-init`。启动 Web 后输入 `/`，命令列表中应出现 `/init`。
 
-启动 Web 后输入 `/`，命令列表应出现 `/init`。
+语法检查：
+
+```sh
+pnpm --filter dsh-init-plugin run check
+```

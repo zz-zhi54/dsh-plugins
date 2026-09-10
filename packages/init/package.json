@@ -3,14 +3,18 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "description": "Deprecated Codex-style /init command for initializing repository AGENTS.md files",
+  "main": "./src/host.mjs",
   "exports": {
     ".": "./src/host.mjs",
     "./cordis.patch.yml": "./cordis.patch.yml",
     "./package.json": "./package.json"
   },
-  "files": ["src", "cordis.patch.yml", "README.md"],
-  "description": "Deprecated Codex-style /init command; use the create-agentsmd skill instead",
-  "main": "./src/host.mjs",
+  "files": [
+    "src",
+    "cordis.patch.yml",
+    "README.md"
+  ],
   "scripts": {
     "check": "node --check src/host.mjs"
   },

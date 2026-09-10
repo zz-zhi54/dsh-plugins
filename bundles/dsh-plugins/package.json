@@ -2,8 +2,11 @@
   "name": "dsh-plugins",
   "version": "0.1.0",
   "private": true,
-  "description": "Local aggregate bundle for zz-zhi's DeepSeek Harness plugins",
-  "files": ["cordis.patch.yml", "README.md"],
+  "description": "Local aggregate bundle for the DeepSeek Harness plugins in this workspace",
+  "files": [
+    "cordis.patch.yml",
+    "README.md"
+  ],
   "exports": {
     "./cordis.patch.yml": "./cordis.patch.yml",
     "./package.json": "./package.json"

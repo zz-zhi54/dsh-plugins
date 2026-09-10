@@ -3,14 +3,18 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "description": "Native macOS and Windows notifications for DSH task and approval events",
+  "main": "./src/host.mjs",
   "exports": {
     ".": "./src/host.mjs",
     "./cordis.patch.yml": "./cordis.patch.yml",
     "./package.json": "./package.json"
   },
-  "files": ["src", "cordis.patch.yml", "README.md"],
-  "description": "Native macOS and Windows notifications for DSH task and approval events",
-  "main": "./src/host.mjs",
+  "files": [
+    "src",
+    "cordis.patch.yml",
+    "README.md"
+  ],
   "scripts": {
     "check": "node --check src/host.mjs && node --check src/observer.mjs && node --check src/messages.mjs && node --check src/notifier/index.mjs && node --check src/notifier/macos.mjs && node --check src/notifier/windows.mjs",
     "test": "node --test"

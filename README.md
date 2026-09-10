@@ -1,126 +1,104 @@
 # dsh-plugins
 
-个人维护的 DeepSeek Harness 插件集合。源码使用 pnpm workspace 统一管理，但每个能力仍保持为独立 DSH 插件 / Bundle。
+DeepSeek Harness（DSH）插件的 pnpm workspace monorepo。插件实现分别位于 `packages/*`，`bundles/dsh-plugins` 只负责把常用插件组合成一个可安装的 Bundle。
 
-## 目录
+## 文档分工
 
-| 目录 | 包名 | 用途 |
-| --- | --- | --- |
-| `packages/init` | `dsh-init-plugin` | 已废弃、兼容保留：Codex 风格 `/init`，用于创建或更新仓库根目录 `AGENTS.md` |
-| `packages/codex-login` | `dsh-codex-login-plugin` | 为 DSH Web Profile 提供 ChatGPT / Codex OAuth 登录 |
-| `packages/system-notification` | `dsh-system-notification-plugin` | macOS / Windows 原生系统通知 |
-| `bundles/dsh-plugins` | `dsh-plugins` | 一次启用上述插件的本地聚合 Bundle |
+- 根目录 `README.md`：安装方式、组件总览和开发命令。
+- 各 package 的 `README.md`：该插件的行为和专项验证方式。
+- `AGENTS.md`：面向编码 Agent 的约束，不作为用户使用手册。
+- `dsh/`：DSH 全局目录的源文件，部署到用户全局的 `~/.dsh/`；不属于 pnpm workspace，也不参与插件 Bundle。
 
-## 推荐用法：一次安装整套插件
+## 组件
 
-克隆仓库后，在仓库根目录执行：
+| 类型 | 路径 | 包名 | 插入的 Profile 条目 | 说明 |
+| --- | --- | --- | --- | --- |
+| 插件 | `packages/codex-login` | `dsh-codex-login-plugin` | `authorization`、`codex-login` | 在 Web 模型设置中提供 ChatGPT / Codex OAuth 登录，当前推荐使用 |
+| 插件 | `packages/system-notification` | `dsh-system-notification-plugin` | `system-notification` | 发送 macOS / Windows 原生任务和审批通知，当前推荐使用 |
+| 兼容插件 | `packages/init` | `dsh-init-plugin` | `command-init` | 已废弃的 `/init`，仅为旧配置保留；新项目使用 `create-agentsmd` skill |
+| 聚合 Bundle | `bundles/dsh-plugins` | `dsh-plugins` | `authorization`、`codex-login`、`system-notification` | 一次启用两个推荐插件；不包含 `command-init` |
+
+## 安装
+
+### 一次安装推荐插件
+
+在仓库根目录执行：
 
 ```sh
 dsh plugin --profile web add ./bundles/dsh-plugins
 ```
 
-`dsh-plugins` 自己负责插入：
-
-- `authorization`
-- `codex-login`
-- `system-notification`
-
-因此只需要把 `dsh-plugins` 作为一个 Bundle 加入 Profile，不需要再单独添加其中的插件。已废弃的 `command-init` 不再由统一 Bundle 激活；新项目请使用 `create-agentsmd` skill。
-
-检查最终配置：
+安装后检查最终 Profile：
 
 ```sh
 dsh --profile web --dump-config
 ```
 
-确认配置中存在 `authorization`、`codex-login`、`system-notification`，不再包含已废弃的 `command-init`。
+配置中应出现 `authorization`、`codex-login` 和 `system-notification`，不应出现已废弃的 `command-init`。
 
-卸载整套插件：
+卸载整套 Bundle：
 
 ```sh
 dsh plugin --profile web remove dsh-plugins
 ```
 
-> `bundles/dsh-plugins` 当前使用 `workspace:^` 依赖，因此是本地 Monorepo 聚合 Bundle，不用于单独发布到 npm。以后如果各插件发布到 npm，再把依赖切换成正式版本号即可。
+### 按需单独安装
 
-## 按需单独安装
-
-如果只需要其中一个能力，不要安装 `dsh-plugins`，直接安装对应插件。
-
-如需兼容旧配置，可单独安装已废弃的 `/init`：
+只需要某个能力时，直接安装对应 package：
 
 ```sh
+# ChatGPT / Codex OAuth 登录
+dsh plugin --profile web add ./packages/codex-login
+
+# macOS / Windows 系统通知
+dsh plugin --profile web add ./packages/system-notification
+
+# 旧项目兼容：/init（新项目不建议安装）
 dsh plugin --profile web add ./packages/init
 ```
 
-新项目请使用 `create-agentsmd` skill，不再建议启用该插件。
-
-只安装 Codex 登录：
+单独安装后的卸载名称是 package 名：
 
 ```sh
-dsh plugin --profile web add ./packages/codex-login
-```
-
-只安装系统通知：
-
-```sh
-dsh plugin --profile web add ./packages/system-notification
-```
-
-卸载：
-
-```sh
-dsh plugin --profile web remove dsh-init-plugin
-# 或
 dsh plugin --profile web remove dsh-codex-login-plugin
-# 或
 dsh plugin --profile web remove dsh-system-notification-plugin
+dsh plugin --profile web remove dsh-init-plugin
 ```
 
-不要同时安装 `dsh-plugins` 和它所包含的单独插件，否则同一插件可能被多个 Bundle 层重复插入。
+不要同时安装 `dsh-plugins` 和它包含的独立插件，否则同一组件可能被多个 Profile layer 重复插入。
 
-## 本地开发
+## 开发
 
-安装 workspace 依赖并检查全部 package：
+依赖和检查命令都从仓库根目录执行，并使用 pnpm：
 
 ```sh
 pnpm install
 pnpm check
 ```
 
-插件源码仍然彼此独立：
-
-```text
-packages/init
-packages/codex-login
-packages/system-notification
-```
-
-`bundles/dsh-plugins` 只负责组合，不承载业务实现。
-
-修改插件后，可先运行：
+只检查单个 package：
 
 ```sh
-pnpm check
+pnpm --filter dsh-init-plugin run check
+pnpm --filter dsh-codex-login-plugin run check
+pnpm --filter dsh-system-notification-plugin run check
+pnpm --filter dsh-system-notification-plugin run test
 ```
 
-再通过目标 Profile 的最终配置确认 Bundle 是否正确组合：
+当前没有根级 `build`、`test`、lint 或 format 脚本；依赖解析记录统一维护在根目录 `pnpm-lock.yaml`。不要在子包中使用 npm/yarn 单独安装依赖。
 
-```sh
-dsh --profile web --dump-config
-```
+## 设计约定
 
-## Bundle 与插件的关系
+- 每个插件通过自身 `package.json` 的 `dsh.bundle.patch` 指向 `cordis.patch.yml`。
+- `cordis.patch.yml` 只描述要插入的组件 ID 和 package 名称；业务实现留在对应的 `packages/*/src`。
+- DSH 不会因为 Bundle 依赖而自动递归激活子 Bundle；聚合关系必须在 `bundles/dsh-plugins/cordis.patch.yml` 中显式声明。
+- `bundles/dsh-plugins` 使用 `workspace:^` 依赖，是本地工作区聚合 Bundle，目前不用于单独发布到 npm。
 
-单独插件各自声明自己的 `dsh.bundle.patch`，所以直接执行 `dsh plugin ... add ./packages/...` 时，它会作为独立 Profile layer 激活。
+各插件的具体行为、平台限制和手动冒烟步骤见对应 package 的 README。
 
-`dsh-plugins` 则是一个更上层的组合 Bundle。它不依赖 DSH 自动递归激活子 Bundle，而是在自己的 `cordis.patch.yml` 中明确插入需要的插件，从而保证“一次安装整套能力”的语义清晰可预测。
+## 迁移背景
 
-## 历史
-
-迁移前的独立仓库继续保留原提交历史：
+迁移到本 monorepo 前的独立仓库保留原提交历史：
 
 - `zz-zhi54/dsh-init-plugin`
 - `zz-zhi54/dsh-codex-login-plugin`
-
-Monorepo 从迁移提交开始维护；旧仓库在迁移验证完成前不删除、不归档。
