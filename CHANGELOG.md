@@ -19,6 +19,12 @@
 - `packages/codex-usage` 补充界面截图 `assets/codex-usage-pill.jpg`，并把 `assets` 纳入 `files`，保证截图随包发布。
 - 该包介绍文案改为"剩余额度 + 还有多久刷新"，与收起态实际显示一致。
 
+### 新增：Session 费用插件
+
+- 新增按需插件 `packages/session-cost`（`dsh-session-cost-plugin`）：在 Token 总量右侧显示按 `provider/model` 分组的 USD 费用。
+- 费用从 durable Session events 的 provider usage 重算，成功消息和无 surface message 的 retry attempt 均覆盖；模型价格只使用 `@earendil-works/pi-ai` 内置目录，未知模型不猜价。
+- 点击费用可展开 Token / cache 明细与每个模型的费用；不增加额外持久化。
+
 ## 0.1.5-rc.1.5 — 2026-09-10
 
 **对应 DSH 官方标签：** `dsh-v0.1.5-rc.1`
