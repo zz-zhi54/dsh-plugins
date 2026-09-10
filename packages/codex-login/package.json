@@ -32,7 +32,10 @@
       "platform": "web"
     }
   },
-  "dependencies": {
+  "peerDependencies": {
+    "@deepseek-ai/dsh-authorization": "0.1.5-rc.1"
+  },
+  "devDependencies": {
     "@deepseek-ai/dsh-authorization": "0.1.5-rc.1"
   }
 }
