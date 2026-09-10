@@ -17,8 +17,6 @@
     }
   },
   "dependencies": {
-    "@deepseek-ai/dsh-authorization": "^0.1.3-alpha.2",
-    "dsh-codex-login-plugin": "workspace:^",
     "dsh-system-notification-plugin": "workspace:^"
   }
 }
