@@ -1,18 +1,20 @@
 # dsh-system-notification-plugin
 
-> 非官方社区插件，当前按 DeepSeek Harness `0.1.5-alpha.2` 验证。
+> 项目选择、统一安装入口和仓库结构见[根目录 README](../../README.md)。
+>
+> 非官方社区插件。
 
 为 DSH Host 提供轻量级 macOS / Windows 系统通知。插件只旁路监听事件，不接管或修改 Agent 或审批流程。
 
 ## 运行时依赖
 
-本插件通过 DSH Host 传入的 Cordis `Context` 注册事件监听，不在插件内复制 `Context.on` 实现。为明确运行时契约，`package.json` 声明以下 `peerDependencies`，由 DSH Profile 提供：
+本插件通过 DSH Host 传入的 Cordis `Context` 注册事件监听，不在插件内复制 `Context.on` 实现。为明确运行时契约，`package.json` 声明以下 Host 侧 `peerDependencies`，由 DSH Profile 提供：
 
-- `@deepseek-ai/cordis@4.0.2`：提供 `Context.on` / `ctx.on` 事件 API。
-- `@deepseek-ai/dsh-agent@0.1.5-alpha.2`：提供 `agent/status` 事件契约。
-- `@deepseek-ai/dsh-session@0.1.5-alpha.2`：提供 `session/event` 事件契约。
+- `@deepseek-ai/cordis`：提供 `Context.on` / `ctx.on` 事件 API。
+- `@deepseek-ai/dsh-agent`：提供 `agent/status` 事件契约。
+- `@deepseek-ai/dsh-session`：提供 `session/event` 事件契约。
 
-这些是 Host 侧 peer 依赖，不会被插件重复安装或打包；插件自身没有额外的运行时 npm `dependencies`。`Context.on` 的具体实现位于 DSH 内置 Cordis 的 [`events.ts`](https://github.com/deepseek-ai/deepseek-harness/blob/dsh-v0.1.5-alpha.2/vendor/cordis/src/events.ts#L278-L302)。
+具体兼容约束集中维护在本项目的 [`package.json`](./package.json) 中；这些依赖不会被插件重复安装或打包，插件自身没有额外的运行时 npm `dependencies`。`Context.on` 的具体实现可参考 [DeepSeek Harness 源码仓库](https://github.com/deepseek-ai/deepseek-harness)。
 
 ## 安装
 
@@ -39,7 +41,7 @@ dsh plugin --profile web add ./bundles/dsh-plugins
 - 监听 `agent/status`：只有同一个 Agent 发生 `running -> idle` 时才通知“任务执行完成”，初始 `idle` 不会触发通知。
 - 监听 `session/event`：识别持久化事件 `approval/asked`，通知“等待你的确认”。
 - 监听器注册在 Profile 根上下文，因此 DSH 的 in-process Subagent / Agent Teams 子 Agent 也会被观察；子 Agent 的 `running -> idle` 会额外触发完成通知，当前未做过滤或聚合。
-- `agent/status` 不携带结束原因；失败、中断或 teardown 后回到 `idle` 时，当前也会使用“任务执行完成”文案。这是当前策略限制，不是 alpha2 API 断裂。
+- `agent/status` 不携带结束原因；失败、中断或 teardown 后回到 `idle` 时，当前也会使用“任务执行完成”文案。这是当前策略限制。
 - 以 Session 事件的 `seq` 去重，同一个持久化事件不会重复通知。
 - 不监听旧的 `approval/request`，也不向审批链注册 answerer。
 - 通知失败只记录 warning，不影响 Agent 循环或已提交的 Session 事件。

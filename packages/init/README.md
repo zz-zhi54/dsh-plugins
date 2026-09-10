@@ -1,6 +1,8 @@
 # dsh-init-plugin
 
-> 社区维护的非官方兼容插件，当前按 DeepSeek Harness `0.1.5-alpha.2` 验证。
+> 项目选择、统一安装入口和仓库结构见[根目录 README](../../README.md)。
+>
+> 社区维护的非官方兼容插件。
 >
 > **已废弃，兼容保留。** 新项目请使用 `create-agentsmd` skill；本 package 不再新增功能。
 
@@ -18,7 +20,7 @@
 dsh plugin --profile web add ./packages/init
 ```
 
-如果要启用当前默认的系统通知插件，请改用根目录文档中的 `./bundles/dsh-plugins`，不要同时安装本插件。
+如果要启用默认的系统通知插件，请改用[根目录 README](../../README.md)中的 Bundle 安装方式，不要同时安装本插件。
 
 ## 行为
 

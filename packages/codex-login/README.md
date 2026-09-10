@@ -1,6 +1,8 @@
 # dsh-codex-login-plugin
 
-> 非官方社区插件，当前按 DeepSeek Harness `0.1.5-alpha.2` 验证。
+> 项目选择、统一安装入口和仓库结构见[根目录 README](../../README.md)。
+>
+> 非官方社区插件。
 >
 > **临时按需插件。** 仅用于首次完成 ChatGPT / Codex OAuth 登录；登录成功后即可卸载。等待 DSH 官方提供 Codex 登录入口后，本插件将不再需要。
 
