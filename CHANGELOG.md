@@ -8,6 +8,17 @@
 - 同一 DSH 版本下继续修复或改进插件时，递增最后的插件修订号。
 - 切换到新的 DSH 版本时，更新 DSH 版本部分，并将插件修订号从 `.1` 重新开始。
 
+## 0.1.5-rc.1.5 — 2026-09-10
+
+**对应 DSH 官方标签：** `dsh-v0.1.5-rc.1`
+
+**对应本仓库标签：** `dsh-plugins-v0.1.5-rc.1.5`
+
+### 修复
+
+- 补齐 `pnpm-lock.yaml` 中 `packages/codex-usage` 的 importer 条目。该包没有任何依赖，普通 `pnpm install` 因此不会为空包写入 importer，但 `pnpm install --frozen-lockfile` 要求每个工作区项目都有条目，会报 `ERR_PNPM_PACKAGE_MANAGER_NO_IMPORTER`。补上后 frozen 安装通过，条目也不会再漂移。
+- 除该锁文件条目外，`0.1.5-rc.1.4` 的插件内容不变。
+
 ## 0.1.5-rc.1.4 — 2026-09-10
 
 **对应 DSH 官方标签：** `dsh-v0.1.5-rc.1`
