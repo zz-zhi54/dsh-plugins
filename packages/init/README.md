@@ -1,5 +1,7 @@
 # dsh-init-plugin
 
+> 社区维护的非官方兼容插件，当前按 DeepSeek Harness `0.1.5-alpha.2` 验证。
+>
 > **已废弃，兼容保留。** 新项目请使用 `create-agentsmd` skill；本 package 不再新增功能。
 
 为 DeepSeek Harness 提供 Codex 风格的 `/init` 斜杠命令，让 Agent 分析当前仓库并创建或更新仓库根目录的 `AGENTS.md`。
@@ -16,7 +18,7 @@
 dsh plugin --profile web add ./packages/init
 ```
 
-如果要启用当前推荐的完整插件组合，请改用根目录文档中的 `./bundles/dsh-plugins`，不要同时安装本插件。
+如果要启用当前默认的系统通知插件，请改用根目录文档中的 `./bundles/dsh-plugins`，不要同时安装本插件。
 
 ## 行为
 
