@@ -1,6 +1,6 @@
 {
   "name": "dsh-system-notification-plugin",
-  "version": "0.1.0",
+  "version": "0.1.5-alpha.2.1",
   "private": true,
   "type": "module",
   "description": "Native macOS and Windows notifications for DSH task and approval events",

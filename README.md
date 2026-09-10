@@ -4,7 +4,7 @@ DeepSeek Harness（DSH）插件的 pnpm workspace monorepo。插件实现分别�
 
 > 这是非官方社区项目，不隶属于 DeepSeek AI 或 DeepSeek Harness 官方团队。
 >
-> 当前按 DeepSeek Harness `0.1.5-alpha.2` 验证。插件和 Bundle 仍是私有 workspace 包，尚未发布到 npm；请从源码仓库路径安装。
+> 当前插件版本为 `0.1.5-alpha.2.1`，按 DeepSeek Harness `0.1.5-alpha.2` 验证。插件和 Bundle 仍是私有 workspace 包，尚未发布到 npm；请从源码仓库路径安装。
 
 ## 文档分工
 
@@ -13,6 +13,7 @@ DeepSeek Harness（DSH）插件的 pnpm workspace monorepo。插件实现分别�
 - [`packages/system-notification/README.md`](packages/system-notification/README.md)：系统通知插件的行为、平台和验证方式。
 - [`packages/init/README.md`](packages/init/README.md)：已废弃 `/init` 兼容插件说明。
 - [`bundles/dsh-plugins/README.md`](bundles/dsh-plugins/README.md)：默认 Bundle 说明。
+- [`CHANGELOG.md`](CHANGELOG.md)：按插件版本记录变更，并标注对应的 DSH 官方标签。
 - `AGENTS.md`：面向编码 Agent 的约束，不作为用户使用手册。
 - `dsh/`：DSH 全局目录的源文件，部署到用户全局的 `~/.dsh/`；不属于 pnpm workspace，也不参与插件 Bundle。
 

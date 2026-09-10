@@ -1,6 +1,6 @@
 {
   "name": "dsh-plugins",
-  "version": "0.1.0",
+  "version": "0.1.5-alpha.2.1",
   "private": true,
   "description": "Local aggregate bundle for the DeepSeek Harness plugins in this workspace",
   "files": [
