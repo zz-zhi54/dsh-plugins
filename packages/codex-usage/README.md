@@ -4,7 +4,9 @@
 >
 > 非官方社区插件。
 
-在 DSH Web 输入框下方显示 Codex 的 5 小时与每周额度：已用、剩余，以及各自的重置倒计时。数据来自 DSH 自己的 Codex 凭据，不依赖 codex CLI。
+在 DSH Web 输入框下方显示 Codex 的 5 小时与每周剩余额度，以及各自还有多久刷新。数据来自 DSH 自己的 Codex 凭据，不依赖 codex CLI。
+
+![Codex 用量显示在输入框下方](assets/codex-usage-pill.jpg)
 
 ## 功能
 
