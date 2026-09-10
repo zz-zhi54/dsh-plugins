@@ -30,11 +30,12 @@
 完整清单写在 `src/codex-usage.mjs` 文件头，改动前必读。要点：
 
 - **access token 只出现在发往上游的请求头里**：不写日志、不进错误信息、不进 HTTP 响应、不落盘。
-- 所有对外错误文本先经 `redact()` 脱敏（`Bearer` 值与常见 token 字段名），未脱敏的上游原文不得离开 Host。
+- 所有对外错误文本先经 `redact()` 脱敏。脱敏**不只覆盖 token**：`Bearer` 值、`access_token` / `refresh_token` / `access` / `refresh` 字段，以及 `email` / `user_id` / `account_id`（snake_case 与 camelCase）都要掩掉，并用邮箱形态兜底；同时保留错误码等排障信息。
 - `wham/usage` 原始响应含 `email` / `user_id` / `account_id`；只允许 `projectUsagePayload()` 投影后的标量字段离开 Host，浏览器侧只有百分比、窗口长度、重置时刻、套餐、时间戳。
+- **本插件注册的 `/api/codex-usage` 不在 DSH 的浏览器信任栅栏内**（该栅栏是 `dsh-client-connection` 的私有逻辑，只守它自己的 RPC 通道）。因此这条路由只允许返回投影后的额度标量 —— 不要把凭据或身份信息加进来。
 - **本插件绝不刷新凭据**，连 `refresh` 字段都不读。pi-ai 的刷新发生在 `credentials.modifyRecord()` 内部；`dsh-llm-pi-ai` 的 `credentialStoreFrom()` 注释明确警告，两个进程并发轮换同一个 refresh token 会丢掉先写入的那一份。凭据过期时直接提示重新登录或在 DSH 里用一次 Codex。
 
-`test/codex-usage.test.mjs` 里有对应的回归测试：正常路径的返回值不得包含 token，401 的原因必须已脱敏，凭据过期时不得发出任何请求。
+`test/codex-usage.test.mjs` 里有对应的回归测试：正常路径的返回值不得包含 token，401 的原因必须已脱敏，**失败原因不得出现上游的 email / user_id / account_id**，凭据过期时不得发出任何请求。
 
 ## 请求对齐依据
 

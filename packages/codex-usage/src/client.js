@@ -125,33 +125,40 @@ window.__ModuleLoader__.load({
     function CodexUsage(props) {
       const timer = props.timer
       const [state, setState] = React.useState({ phase: 'loading' })
+      // 跨渲染保持同一引用的容器，用来表达"组件是否还在"与"连续失败了几次"。
+      // 用 useState 的惰性初始化保证只创建一次，避免为此额外引入 useRef。
+      const [tracker] = React.useState(() => ({ alive: true, failures: 0 }))
       const [paused, setPaused] = React.useState(false)
       const [hover, setHover] = React.useState(false)
       const [, setTick] = React.useState(0)
+
+      // 只有真正卸载才把 alive 置假。不能用轮询 effect 的清理来表示卸载 ——
+      // 进入暂停时那个清理同样会跑，那时组件其实还在。
+      React.useEffect(() => {
+        tracker.alive = true
+        return () => {
+          tracker.alive = false
+        }
+      }, [])
 
       // 自动轮询。连续失败达到上限就把 paused 置真，本 effect 随之清理、轮询彻底停下，
       // 之后只由用户点击重试 —— 既不再打上游，也不会在失败态里反复刷新界面。
       React.useEffect(() => {
         if (paused) return undefined
-        let live = true
-        let failures = 0
         const attempt = async () => {
           const next = await readUsage(false)
-          if (!live) return
+          if (!tracker.alive) return
           setState(next)
           if (next.phase !== 'error') {
-            failures = 0
+            tracker.failures = 0
             return
           }
-          failures += 1
-          if (failures >= MAX_FAILURES) setPaused(true)
+          tracker.failures += 1
+          if (tracker.failures >= MAX_FAILURES) setPaused(true)
         }
         void attempt()
         const stop = timer.interval(() => { void attempt() }, REFRESH_MS)
-        return () => {
-          live = false
-          stop()
-        }
+        return stop
       }, [paused])
 
       // 刷新倒计时跟着时间走，每 30s 重渲染一次就够了
@@ -160,8 +167,11 @@ window.__ModuleLoader__.load({
       // 点击：强制查一次并绕过 Host 缓存。成功就恢复自动轮询；仍失败则保持暂停，等下一次点击。
       const retry = () => {
         void readUsage(true).then(next => {
+          if (!tracker.alive) return
           setState(next)
           if (next.phase === 'error') return
+          // 手动成功要把连续失败清零，否则"手动刷新成功 → 下次自动轮询失败"会立刻触发暂停
+          tracker.failures = 0
           setPaused(false)
         })
       }

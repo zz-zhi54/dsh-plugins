@@ -92,8 +92,9 @@ export function buildCodexUsageHeaders(access, accountId, userAgent = codexUserA
 /**
  * 上游响应或异常文本进入错误信息前的脱敏。
  *
- * 对齐 @narumitw/pi-codex-usage src/query.ts:162 的 redactErrorBody()：
- * 抹掉 Bearer 值以及常见的 token 字段名，再截断。
+ * 对齐 @narumitw/pi-codex-usage src/query.ts:162 的 redactErrorBody()，并额外覆盖
+ * **身份字段**：wham/usage 的响应含 email / user_id / account_id，只掩 token 不够，
+ * 这些同样不允许离开 Host（见文件头安全边界第 3 条）。
  *
  * @param text - 任意待脱敏文本。
  * @param limit - 截断长度。
@@ -103,6 +104,13 @@ export function redact(text, limit = MAX_BODY_CHARS) {
   return String(text)
     .replace(/Bearer\s+[A-Za-z0-9._~+/=-]+/gi, 'Bearer <redacted>')
     .replace(/"(access_token|refresh_token|access|refresh)"\s*:\s*"[^"]+"/gi, '"$1":"<redacted>"')
+    // 身份字段：键名同时兼容 snake_case 与 camelCase
+    .replace(
+      /"(email|user_id|userId|account_id|accountId|chatgpt_user_id|chatgpt_account_id)"\s*:\s*"[^"]*"/gi,
+      '"$1":"<redacted>"',
+    )
+    // 兜底：键名不认识时，裸奔的邮箱形态也一并抹掉
+    .replace(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g, '<redacted-email>')
     .trim()
     .slice(0, limit)
 }

@@ -83,7 +83,7 @@
 - `packages/codex-usage` 的 Host 只依赖 `webServer`（必需）和 `credentials`（可选），注册 `GET /api/codex-usage`。它**只读**凭据记录，绝不调用 `modifyRecord`，也绝不实现 OAuth 刷新 —— pi-ai 的刷新发生在 `credentials.modifyRecord()` 内部，两个进程并发轮换同一个 refresh token 会丢掉先写入的一份。
 - `packages/codex-usage` **必须按次惰性调用 `ctx.get('credentials')`，不能在 `apply()` 里取一次并缓存**。Cordis 的 `ctx.get` 默认 strict，只在提供方 fiber 处于 active 状态时返回；`dsh-credentials-local` 的 `[Service.init]()` 要先读凭据文件并启动文件监视，而插件树是并发激活的，所以 apply 时可能拿到 `undefined` 并被永久缓存。同理，失败结果不进结果缓存，保证"稍后就绪"能自愈。
 - `packages/codex-usage` 的请求特征（端点、请求头、User-Agent、响应字段、脱敏写法）刻意与 pi-ai / `@narumitw/pi-codex-usage` 对齐，对齐表同时写在 `src/codex-usage.mjs` 文件头和该包 README；上游更新时按表同步，不要只改一处。
-- `packages/codex-usage/src/client.js` 同样是 classic-script 模块，注册进 `conversation.composer.dock`（`id: codex-usage`、`order: 1`），样式全部内联，不向 `document` 注入全局 CSS。
+- `packages/codex-usage/src/client.js` 同样是 classic-script 模块，注册进 `conversation.composer.dock`（`id: codex-usage`、`order: 1`），样式全部内联，不向 `document` 注入全局 CSS。它每 5 分钟轮询一次，**连续 3 次失败后暂停轮询**，只等用户点击重试（失败态本身是可点击按钮）——不要改成无限重试。
 - `system-notification` 只旁路观察持久化 `session/event`，不接管 Agent 循环、审批流程或 answerer。它监听 `turn/end` 的 `completed` 结果和去重后的 `approval/asked`；通知失败只能记录 warning，不能反向影响主流程。
 - 修改 `packages/system-notification/assets/dsh.ico` 或 Windows 通知脚本时，保留路径转义测试，并确认资源仍包含在 package 的 `files` 中。
 
@@ -97,7 +97,11 @@
 ## 安全、发布与变更卫生
 
 - 不提交凭据、OAuth token、个人配置或真实授权响应。Codex 登录成功后的凭据由 DSH credentials store 管理，插件不应自行持久化敏感信息。
-- `packages/codex-usage` 处理 Codex access token：token 只允许出现在发往上游的请求头里，不写日志、不进错误信息、不进 HTTP 响应、不落盘。上游错误文本必须经 `redact()` 脱敏后才能对外；`wham/usage` 原始响应含 `email` / `user_id`，只允许投影后的额度标量离开 Host。改动该包时先读 `src/codex-usage.mjs` 文件头的安全边界。
+- **凭据与身份信息一律不出 Host（硬性要求）。** access token / refresh token 只允许出现在发往上游的请求头里：不写日志、不进错误信息、不进 HTTP 响应、不落盘、不进前端。
+- **脱敏必须覆盖身份字段，而不只是 token。** 任何上游响应片段在进入错误信息、日志或界面之前都要先过 `redact()`；它要同时掩掉 `Bearer` 值、`access_token` / `refresh_token` / `access` / `refresh` 字段，以及 `email` / `user_id` / `account_id`（snake_case 与 camelCase 都要覆盖），并用邮箱形态做兜底。脱敏后仍要保留可排障的信息（错误码、错误文本），不要一删了之。
+- **上游响应只允许以投影后的标量离开 Host。** 不要图省事把原始响应体整体转发、整体 `JSON.stringify` 或塞进错误信息。新接一个上游接口时，先明确"哪几个字段可以离开 Host"，再写投影函数。
+- **插件自己注册的 `/api/*` 路由不在 DSH 的浏览器信任栅栏内。** 该栅栏是 `dsh-client-connection` 的私有逻辑，只守它自己的 RPC 通道（已实测：伪造 Host 时首页 401、插件路由仍 200）。因此这些路由上不要返回凭据、身份信息或其它敏感数据。
+- **改动涉及凭据的代码前先读该包文件头的安全边界，并同步补/改脱敏回归测试。** `packages/codex-usage` 是现成范例：边界写在 `src/codex-usage.mjs` 文件头，回归测试在 `test/codex-usage.test.mjs`（覆盖 token、身份字段、裸邮箱，以及"失败原因不含 email / user_id / account_id"）。
 - 系统通知调用操作系统原生命令；修改命令参数、AppleScript 或 PowerShell 拼接时要保留输入转义，并保证通知失败被隔离在旁路逻辑内。
 - 根工作区和所有 package 当前均为私有本地代码。没有明确发布需求时，不要添加 npm 发布流程，也不要把插件组合改成递归组合。
 - 发布版本时，在 `dev` 分支同步根目录、插件和组合的版本号，更新相关 README、兼容关系和 `CHANGELOG.md`；然后运行 `pnpm install`、`pnpm check` 及受影响插件测试，提交 `chore(release): version <version>`，创建并推送 `dsh-plugins-v<version>` 标签，再将 `dev` 快进合并到 `main`。发布完成后确认 `dev`、`main` 和标签指向同一提交且工作区干净。禁止改写历史或强制推送。
