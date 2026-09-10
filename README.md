@@ -1,8 +1,8 @@
 # dsh-plugins
 
-DeepSeek Harness（DSH）插件集合，以 pnpm workspace monorepo 组织。可独立安装的插件位于 `packages/*`，用于组合插件的 Bundle 位于 `bundles/*`。
+个人维护的 DeepSeek Harness（DSH）插件集合，以 pnpm workspace monorepo 组织。可独立安装的插件位于 `packages/*`，用于组合插件的 Bundle 位于 `bundles/*`。
 
-> 这是非官方社区项目，不隶属于 DeepSeek AI 或 DeepSeek Harness 官方团队。
+> 这是个人维护的非官方社区项目，不隶属于 DeepSeek AI 或 DeepSeek Harness 官方团队。
 >
 > 本 README 是用户入口，负责项目选择、安装方式和仓库结构；各项目 README 负责记录自身的具体行为和限制。版本号、DSH 兼容关系及发布记录请以 [`CHANGELOG.md`](CHANGELOG.md) 和各项目的 `package.json` 为准，本文不固定具体版本号。
 
@@ -21,6 +21,14 @@ DeepSeek Harness（DSH）插件集合，以 pnpm workspace monorepo 组织。可
 - Codex 登录插件只在首次 OAuth 登录时按需安装；凭据保存到 DSH credentials store 后可以卸载。
 - `dsh-init-plugin` 仅用于旧配置或旧工作流兼容，新项目请使用 `create-agentsmd` skill。
 - `dsh-plugins` 和 `dsh-system-notification-plugin` 二选一，不要同时安装，以免重复插入同一 Profile 条目。
+
+## 设计原则
+
+- **最小依赖、最少代码**：只引入完成目标所需的依赖，优先复用 DSH 已提供的服务和扩展点。
+- **针对性补足**：只实现 DSH 当前缺少且有明确使用场景的功能，不复制或替代 DSH 已有能力。
+- **最小侵入**：插件以独立 Profile layer 接入，不修改 DSH 核心，不接管 Agent 循环、审批流程或其他主流程。
+- **稳定优先**：优先保持现有行为和公开契约；通知等旁路能力失败时，不应影响 DSH 主流程。
+- **上游优先、可撤销**：当 DSH 官方提供等价能力时，对应插件会停止维护、标记废弃并删除，而不是长期保留重复实现。
 
 ## 安装
 

@@ -50,9 +50,9 @@
 
 发布新版本时，按以下顺序执行：
 
-1. 在 `dev` 分支同步根目录、所有插件和 Bundle 的版本号。
+1. 在 `dev` 分支同步根目录、所有插件和 Bundle 的版本号，并同步更新相关描述文件（根目录及各项目 README、`package.json` 元数据、兼容关系和行为说明）。
 2. 在 `CHANGELOG.md` 增加本版本记录，写明对应的 DSH 官方标签和本仓库标签。
-3. 从仓库根目录运行 `pnpm install`、`pnpm check` 及受影响插件的测试，确认工作区干净且校验通过。
+3. 从仓库根目录运行 `pnpm install`、`pnpm check` 及受影响插件的测试，确认校验通过且工作区只包含本次发布相关变更。
 4. 提交发布版本，例如 `chore(release): version <version>`。
 5. 在该发布提交上创建并推送标签 `dsh-plugins-v<version>`，再推送 `dev`。
 6. 将 `dev` 快进合并到 `main` 并推送 `main`；本仓库的 `main` 是正式发布分支。
