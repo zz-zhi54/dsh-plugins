@@ -9,9 +9,10 @@
 ## 功能
 
 - **位置**：注册在 `conversation.composer.dock`，`id: codex-usage`、`order: 1` —— 内置用量 pill（`id: stats`，order 0）下面一行，同一套居中排版。
-- **收起态**：`Codex · 5h 用 7% 剩 93% · 周 用 34% 剩 66%`。已用 ≥75% 转警告色，≥90% 转错误色。
-- **悬浮态**：每个窗口的已用/剩余、重置倒计时与重置时刻，另有套餐与更新时间。
-- **交互**：悬浮展开、移开收起（键盘 focus/blur 同样处理）；点击强制刷新，绕过 Host 的 60s 缓存。
+- **收起态就是全部信息**，没有悬浮面板：
+  `Codex · 5h 剩 93% · 2 小时 41 分后刷新 · 周 剩 66% · 4 天 3 小时后刷新`
+  余量越少越醒目：已用 ≥75% 转警告色，≥90% 转错误色。
+- **交互**：点击强制刷新，绕过 Host 的 60s 缓存；悬浮只做背景反馈。
 - **刷新**：挂载时一次，之后每 5 分钟一次；倒计时每 30s 重绘一次。
 - **降级**：取不到数据时只显示一行灰色 `Codex 额度不可用`，具体原因在 `title` 里，不影响界面其它部分。
 
@@ -85,7 +86,7 @@ dsh --profile web --dump-config
 - **依赖 DSH 侧的 Codex 登录。** 凭据 JWT 约 10 天过期，过期且尚未刷新时不可用；在 DSH 里用一次 Codex 会触发刷新。
 - 只查询自己账号的额度，不做账号切换，也不读取 `additional_rate_limits` 里的其它计费桶。
 - **三端一致**：使用 Node 内置 `fetch`，不依赖 `curl` 或任何外部二进制，macOS / Linux / Windows 行为相同。
-- 未来如果要在悬浮面板里显示"重置券 N 张"，`wham/usage` 响应已经带回 `rate_limit_reset_credits.available_count`，只需在 `projectUsagePayload()` 里多加一个字段。
+- 未来如果要显示"重置券 N 张"或"套餐 / 更新时间"，`wham/usage` 已带回 `rate_limit_reset_credits.available_count`，投影里也保留了 `planType` 与 `fetchedAt`，只需在收起态那一行补一段文案。
 
 ## 实现约束
 

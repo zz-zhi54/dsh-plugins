@@ -10,6 +10,7 @@
 //
 // 数据只来自 Host 路由 `/api/codex-usage`，响应里只有投影后的额度标量；
 // 凭据与原始上游响应不会到达浏览器。样式全部内联，不向 document 注入任何全局 CSS。
+// 收起态即全部信息：剩余额度 + 刷新倒计时，没有悬浮面板。
 window.__ModuleLoader__.load({
   id: 'dsh-codex-usage-plugin',
   factory: require => {
@@ -21,7 +22,7 @@ window.__ModuleLoader__.load({
     const ENDPOINT = '/api/codex-usage'
     /** 轮询间隔：额度只在用 Codex 时变化，5 分钟足够。 */
     const REFRESH_MS = 300000
-    /** 重置倒计时的重渲染间隔。 */
+    /** 刷新倒计时的重渲染间隔。 */
     const TICK_MS = 30000
 
     const ROOT_STYLE = {
@@ -36,8 +37,6 @@ window.__ModuleLoader__.load({
       fontSize: 'var(--dsh-content-font-size-secondary, 13px)',
       lineHeight: '20px',
     }
-
-    const ANCHOR_STYLE = { position: 'relative', display: 'inline-flex', minWidth: 0 }
 
     const PILL_BASE_STYLE = {
       boxSizing: 'border-box',
@@ -54,31 +53,10 @@ window.__ModuleLoader__.load({
       cursor: 'pointer',
     }
 
-    const POPOVER_STYLE = {
-      position: 'absolute',
-      left: '50%',
-      bottom: 'calc(100% + 8px)',
-      transform: 'translateX(-50%)',
-      zIndex: 20,
-      boxSizing: 'border-box',
-      minWidth: 250,
-      padding: '10px 12px',
-      border: '1px solid var(--dsw-alias-border-l2)',
-      borderRadius: 10,
-      background: 'var(--dsw-alias-bg-overlay)',
-      color: 'var(--dsw-alias-label-primary)',
-      boxShadow: '0 8px 24px rgba(0, 0, 0, 0.18)',
-      fontSize: 12,
-      lineHeight: '18px',
-      textAlign: 'left',
-    }
-
-    const ROW_STYLE = { display: 'flex', justifyContent: 'space-between', gap: 16 }
-    const NOTE_STYLE = { marginTop: 2, color: 'var(--dsw-alias-label-secondary)' }
     const DIM_STYLE = { color: 'var(--dsw-alias-label-secondary)', opacity: 0.65, cursor: 'default' }
     const SEP_STYLE = { color: 'var(--dsw-alias-separator-primary, var(--dsw-alias-border-l1))' }
 
-    /** 高用量配色：仅用于已用百分比。 */
+    /** 高用量配色：只给"剩余"这一段上色，余量越少越醒目。 */
     function toneStyle(usedPercent) {
       if (usedPercent >= 90) return { color: 'var(--dsw-alias-state-error-primary)' }
       if (usedPercent >= 75) return { color: 'var(--dsw-alias-state-warn-primary)' }
@@ -105,15 +83,11 @@ window.__ModuleLoader__.load({
       return (minutes % 60) + ' 分'
     }
 
+    /** 距离窗口重置还有多久；取不到或已到期时给一句话。 */
     function resetIn(resetsAt) {
       if (typeof resetsAt !== 'number' || !isFinite(resetsAt)) return null
       const left = resetsAt * 1000 - Date.now()
-      return left <= 0 ? '即将重置' : durationText(left) + '后重置'
-    }
-
-    function resetAt(resetsAt) {
-      if (typeof resetsAt !== 'number' || !isFinite(resetsAt)) return null
-      return new Date(resetsAt * 1000).toLocaleString()
+      return left <= 0 ? '即将刷新' : durationText(left) + '后刷新'
     }
 
     /**
@@ -139,7 +113,7 @@ window.__ModuleLoader__.load({
     function CodexUsage(props) {
       const timer = props.timer
       const [state, setState] = React.useState({ phase: 'loading' })
-      const [open, setOpen] = React.useState(false)
+      const [hover, setHover] = React.useState(false)
       const [, setTick] = React.useState(0)
 
       React.useEffect(() => {
@@ -157,7 +131,7 @@ window.__ModuleLoader__.load({
         }
       }, [])
 
-      // 重置倒计时跟着时间走，每 30s 重渲染一次就够了
+      // 刷新倒计时跟着时间走，每 30s 重渲染一次就够了
       React.useEffect(() => timer.interval(() => setTick(value => value + 1), TICK_MS), [])
 
       const refresh = () => {
@@ -175,64 +149,38 @@ window.__ModuleLoader__.load({
       if (usage === null || typeof usage !== 'object') return null
 
       const buckets = []
-      if (usage.primary !== null && usage.primary !== undefined) buckets.push(['primary', usage.primary])
-      if (usage.secondary !== null && usage.secondary !== undefined) buckets.push(['secondary', usage.secondary])
+      if (usage.primary !== null && usage.primary !== undefined) buckets.push(usage.primary)
+      if (usage.secondary !== null && usage.secondary !== undefined) buckets.push(usage.secondary)
 
       const pill = [React.createElement('span', { key: 'brand' }, 'Codex')]
-      for (const entry of buckets) {
-        const key = entry[0]
-        const bucket = entry[1]
-        pill.push(React.createElement('span', { key: key + '-sep', style: SEP_STYLE }, '·'))
-        pill.push(React.createElement('span', { key: key + '-label' }, windowLabel(bucket)))
-        pill.push(React.createElement('span', { key: key + '-used', style: toneStyle(bucket.usedPercent) },
-          '用 ' + Math.round(bucket.usedPercent) + '%'))
-        pill.push(React.createElement('span', { key: key + '-left' },
+      for (const bucket of buckets) {
+        const label = windowLabel(bucket)
+        const reset = resetIn(bucket.resetsAt)
+        pill.push(React.createElement('span', { key: label + '-sep', style: SEP_STYLE }, '·'))
+        pill.push(React.createElement('span', { key: label + '-label' }, label))
+        pill.push(React.createElement('span', { key: label + '-left', style: toneStyle(bucket.usedPercent) },
           '剩 ' + Math.round(remainingOf(bucket)) + '%'))
-      }
-
-      const body = []
-      for (const entry of buckets) {
-        const key = entry[0]
-        const bucket = entry[1]
-        const note = [resetIn(bucket.resetsAt), resetAt(bucket.resetsAt)].filter(value => value !== null).join(' · ')
-        body.push(React.createElement('div', { key: key, style: key === 'primary' ? null : { marginTop: 8 } },
-          React.createElement('div', { style: ROW_STYLE },
-            React.createElement('span', null, windowLabel(bucket) + '窗口'),
-            React.createElement('span', null,
-              '已用 ' + Math.round(bucket.usedPercent) + '% · 剩余 ' + Math.round(remainingOf(bucket)) + '%')),
-          note.length > 0 ? React.createElement('div', { style: NOTE_STYLE }, note) : null))
-      }
-      if (typeof usage.planType === 'string' && usage.planType.length > 0) {
-        body.push(React.createElement('div', { key: 'plan', style: ROW_STYLE },
-          React.createElement('span', null, '套餐'),
-          React.createElement('span', null, usage.planType)))
-      }
-      if (typeof usage.fetchedAt === 'number') {
-        body.push(React.createElement('div', { key: 'fetched', style: NOTE_STYLE },
-          '更新于 ' + new Date(usage.fetchedAt).toLocaleTimeString()))
+        if (reset !== null) pill.push(React.createElement('span', { key: label + '-reset' }, reset))
       }
 
       const pillStyle = Object.assign({}, PILL_BASE_STYLE, {
-        background: open ? 'var(--dsw-alias-interactive-bg-hover, var(--dsw-alias-bg-layer-2))' : 'transparent',
-        color: open
+        background: hover ? 'var(--dsw-alias-interactive-bg-hover, var(--dsw-alias-bg-layer-2))' : 'transparent',
+        color: hover
           ? 'var(--dsw-alias-label-secondary)'
           : 'var(--dsw-alias-label-tertiary, var(--dsw-alias-label-secondary))',
       })
 
       return React.createElement('div', { style: ROOT_STYLE },
-        React.createElement('span', { style: ANCHOR_STYLE },
-          React.createElement('button', {
-            type: 'button',
-            style: pillStyle,
-            'aria-expanded': open ? 'true' : 'false',
-            title: '点击刷新 Codex 额度',
-            onMouseEnter: () => setOpen(true),
-            onMouseLeave: () => setOpen(false),
-            onFocus: () => setOpen(true),
-            onBlur: () => setOpen(false),
-            onClick: refresh,
-          }, pill),
-          open ? React.createElement('div', { style: POPOVER_STYLE, role: 'tooltip' }, body) : null))
+        React.createElement('button', {
+          type: 'button',
+          style: pillStyle,
+          title: '点击刷新 Codex 额度',
+          onMouseEnter: () => setHover(true),
+          onMouseLeave: () => setHover(false),
+          onFocus: () => setHover(true),
+          onBlur: () => setHover(false),
+          onClick: refresh,
+        }, pill))
     }
 
     // slots：注册进 composer 下方的 dock；timer：轮询与倒计时用的可释放定时器。
