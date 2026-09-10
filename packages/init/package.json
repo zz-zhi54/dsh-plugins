@@ -1,6 +1,6 @@
 {
   "name": "dsh-init-plugin",
-  "version": "0.1.5-alpha.2.2",
+  "version": "0.1.5-rc.1.2",
   "private": true,
   "type": "module",
   "description": "Deprecated Codex-style /init command for initializing repository AGENTS.md files",
@@ -24,9 +24,9 @@
     }
   },
   "dependencies": {
-    "@deepseek-ai/dsh-llm": "0.1.5-alpha.2"
+    "@deepseek-ai/dsh-llm": "0.1.5-rc.1"
   },
   "peerDependencies": {
-    "@deepseek-ai/dsh-commands": "0.1.5-alpha.2"
+    "@deepseek-ai/dsh-commands": "0.1.5-rc.1"
   }
 }

@@ -32,26 +32,20 @@ function isNewApprovalEvent(session, event, seenEvents) {
 }
 
 export function createNotificationObserver(notifier, onError = ignoreError) {
-  // Agent 没有可用于去重的持久化 seq；对象身份可以区分不同 Agent 生命周期。
-  const statusByAgent = new WeakMap()
   const approvalSequencesBySession = new WeakMap()
 
-  function onAgentStatus({ agent, status }) {
-    const previousStatus = statusByAgent.get(agent)
-    statusByAgent.set(agent, status)
-
-    // 首次收到 idle 时 previousStatus 为空，因此不会把初始状态误认为完成。
-    if (previousStatus === 'running' && status === 'idle') {
-      safelyNotify(notifier, TASK_COMPLETED_NOTIFICATION, onError)
-    }
-  }
-
   function onSessionEvent(session, event) {
+    if (event.type === 'turn/end') {
+      if (event.data?.reason?.kind !== 'completed') return
+      safelyNotify(notifier, TASK_COMPLETED_NOTIFICATION, onError)
+      return
+    }
+
     if (event.type !== 'approval/asked') return
     // 只观察已提交的审批审计事件，不调用审批服务，也不注册 answerer。
     if (!isNewApprovalEvent(session, event, approvalSequencesBySession)) return
     safelyNotify(notifier, APPROVAL_NEEDED_NOTIFICATION, onError)
   }
 
-  return { onAgentStatus, onSessionEvent }
+  return { onSessionEvent }
 }

@@ -8,6 +8,22 @@
 - 同一 DSH 版本下继续修复或改进插件时，递增最后的插件修订号。
 - 切换到新的 DSH 版本时，更新 DSH 版本部分，并将插件修订号从 `.1` 重新开始。
 
+## 0.1.5-rc.1.2 — 2026-09-10
+
+**对应 DSH 官方标签：** `dsh-v0.1.5-rc.1`
+
+**对应本仓库标签：** `dsh-plugins-v0.1.5-rc.1.2`
+
+### 兼容性
+
+- 将插件直接使用的 DSH 依赖、Host peerDependencies 和最低发布年龄放行条目同步到 `0.1.5-rc.1`，并重新生成锁文件。
+- 对比官方 `0.1.5-alpha.2` 到 `0.1.5-rc.1` 的相关源码，三个 Host 插件使用的 Service、Event、命令、Web 路由以及 Codex Web classic-script/Slot 契约均未变化，因此无需源码适配。
+- RC 的默认模型 ID 从 `deepseek-v4-flash` 切换为 `deepseek-flash`，本仓库未硬编码该模型 ID，无需调整。
+
+### 系统通知
+
+- 完成通知简化为监听 `turn/end` 的 `completed` 结果；审批通知继续监听 `approval/asked`。
+
 ## 0.1.5-alpha.2.2 — 2026-09-10
 
 **对应 DSH 官方标签：** `dsh-v0.1.5-alpha.2`

@@ -16,28 +16,45 @@ function recorder() {
   }
 }
 
-test('does not treat an initial idle status as completion', () => {
+test('notifies when a turn ends normally', () => {
   const target = recorder()
   const observer = createNotificationObserver(target)
 
-  observer.onAgentStatus({ agent: {}, status: 'idle' })
+  observer.onSessionEvent({}, {
+    type: 'turn/end',
+    data: { turn: 1, reason: { kind: 'completed' } },
+  })
+
+  assert.deepEqual(target.notifications, [TASK_COMPLETED_NOTIFICATION])
+})
+
+test('does not treat an unsuccessful turn end as completion', () => {
+  const target = recorder()
+  const observer = createNotificationObserver(target)
+
+  for (const kind of ['aborted', 'blocked', 'error', 'max-tokens', 'interrupted']) {
+    observer.onSessionEvent({}, {
+      type: 'turn/end',
+      data: { turn: 1, reason: { kind } },
+    })
+  }
 
   assert.deepEqual(target.notifications, [])
 })
 
-test('notifies only on a running to idle transition', () => {
+test('notifies each normally completed turn', () => {
   const target = recorder()
   const observer = createNotificationObserver(target)
-  const agent = {}
+  const session = {}
+  const event = {
+    type: 'turn/end',
+    data: { turn: 1, reason: { kind: 'completed' } },
+  }
 
-  observer.onAgentStatus({ agent, status: 'idle' })
-  observer.onAgentStatus({ agent, status: 'idle' })
-  observer.onAgentStatus({ agent, status: 'running' })
-  observer.onAgentStatus({ agent, status: 'running' })
-  observer.onAgentStatus({ agent, status: 'idle' })
-  observer.onAgentStatus({ agent, status: 'idle' })
+  observer.onSessionEvent(session, event)
+  observer.onSessionEvent(session, { ...event, data: { turn: 2, reason: { kind: 'completed' } } })
 
-  assert.deepEqual(target.notifications, [TASK_COMPLETED_NOTIFICATION])
+  assert.deepEqual(target.notifications, [TASK_COMPLETED_NOTIFICATION, TASK_COMPLETED_NOTIFICATION])
 })
 
 test('notifies approval/asked once per session event', () => {

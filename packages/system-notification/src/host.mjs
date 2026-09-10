@@ -15,6 +15,5 @@ export function apply(ctx) {
   )
 
   // ctx.on() 注册的监听器随插件生命周期自动清理；这里不需要手动接管事件。
-  ctx.on('agent/status', observer.onAgentStatus)
   ctx.on('session/event', observer.onSessionEvent)
 }
