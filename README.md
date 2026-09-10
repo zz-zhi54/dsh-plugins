@@ -12,6 +12,7 @@
 | --- | --- | --- | --- | --- |
 | [`packages/system-notification`](packages/system-notification/) | 插件；默认 Bundle 成员 | `dsh-system-notification-plugin` | 旁路监听任务状态和审批事件，发送 macOS / Windows 原生系统通知 | [`README`](packages/system-notification/README.md) |
 | [`packages/codex-login`](packages/codex-login/) | 按需临时插件 | `dsh-codex-login-plugin` | 提供 ChatGPT / Codex OAuth 登录入口；首次登录完成后即可卸载 | [`README`](packages/codex-login/README.md) |
+| [`packages/codex-usage`](packages/codex-usage/) | 按需插件 | `dsh-codex-usage-plugin` | 在输入框下方显示 Codex 的 5 小时 / 每周额度与重置倒计时，复用 DSH 自己的 Codex 凭据 | [`README`](packages/codex-usage/README.md) |
 | [`packages/init`](packages/init/) | 兼容插件（已废弃） | `dsh-init-plugin` | 提供旧项目使用的 Codex 风格 `/init` 命令；新项目使用 `create-agentsmd` skill | [`README`](packages/init/README.md) |
 | [`bundles/dsh-plugins`](bundles/dsh-plugins/) | 聚合 Bundle | `dsh-plugins` | 默认组合系统通知插件，不承载业务实现 | [`README`](bundles/dsh-plugins/README.md) |
 
@@ -19,6 +20,7 @@
 
 - `dsh-plugins` Bundle 只显式启用 `system-notification`，不包含 Codex 登录和已废弃的 `/init`。
 - Codex 登录插件只在首次 OAuth 登录时按需安装；凭据保存到 DSH credentials store 后可以卸载。
+- Codex 用量插件按需安装，读取同一份 `llm-pi-ai/openai-codex` 凭据；它只读凭据、不写凭据，也不自己刷新 token。
 - `dsh-init-plugin` 仅用于旧配置或旧工作流兼容，新项目请使用 `create-agentsmd` skill。
 - `dsh-plugins` 和 `dsh-system-notification-plugin` 二选一，不要同时安装，以免重复插入同一 Profile 条目。
 
@@ -76,6 +78,7 @@ dsh plugin --profile web remove dsh-plugins
 需要某项能力时，直接进入对应项目 README，按其中的安装、卸载和验证步骤操作：
 
 - [Codex 登录插件](packages/codex-login/README.md)
+- [Codex 用量插件](packages/codex-usage/README.md)
 - [系统通知插件](packages/system-notification/README.md)
 - [旧项目 `/init` 兼容插件](packages/init/README.md)
 
@@ -93,6 +96,8 @@ pnpm check
 ```sh
 pnpm --filter dsh-init-plugin run check
 pnpm --filter dsh-codex-login-plugin run check
+pnpm --filter dsh-codex-usage-plugin run check
+pnpm --filter dsh-codex-usage-plugin run test
 pnpm --filter dsh-system-notification-plugin run check
 pnpm --filter dsh-system-notification-plugin run test
 ```
