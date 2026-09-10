@@ -12,7 +12,7 @@
 | --- | --- | --- |
 | `system-notification` | [`dsh-system-notification-plugin`](../../packages/system-notification/README.md) | macOS / Windows 原生系统通知 |
 
-已废弃的 `dsh-init-plugin`（`command-init`）和临时的 `dsh-codex-login-plugin`（`authorization`、`codex-login`）都不由此 Bundle 激活。
+临时的 `dsh-codex-login-plugin`（`authorization`、`codex-login`）不由此 Bundle 激活。
 
 Codex 登录只在需要首次登录时单独加载：完成 OAuth 后凭据已保存到 DSH credentials store，可以卸载插件。等待 DSH 官方提供 Codex 登录后，该临时插件即可淘汰。详见 [`dsh-codex-login-plugin` README](../../packages/codex-login/README.md)。
 
@@ -38,7 +38,7 @@ dsh plugin --profile web remove dsh-plugins
 dsh --profile web --dump-config
 ```
 
-在没有另外安装插件的情况下，应看到 `system-notification`，且不应看到 `authorization`、`codex-login` 或 `command-init`。
+在没有另外安装插件的情况下，应看到 `system-notification`，且不应看到 `authorization` 或 `codex-login`。
 
 ## 工作区关系
 

@@ -95,7 +95,6 @@
 
 - 默认 Bundle 只启用 `system-notification`。
 - `codex-login` 不再由默认 Bundle 激活，避免首次登录以外的长期依赖。
-- 已废弃的 `command-init` 仍不包含在默认 Bundle 中。
 
 ### Codex 登录
 
