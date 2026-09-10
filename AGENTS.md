@@ -46,6 +46,18 @@
 - `system-notification` 只旁路观察持久化 `session/event`，不接管 Agent 循环、审批流程或 answerer；通知失败只能记录，不能反向影响主流程。
 - 根工作区和所有 package 当前均为私有本地代码；没有明确发布需求时，不要添加 npm 发布流程或把聚合 Bundle 改成递归 Bundle。
 
+## 发布流程
+
+发布新版本时，按以下顺序执行：
+
+1. 在 `dev` 分支同步根目录、所有插件和 Bundle 的版本号。
+2. 在 `CHANGELOG.md` 增加本版本记录，写明对应的 DSH 官方标签和本仓库标签。
+3. 从仓库根目录运行 `pnpm install`、`pnpm check` 及受影响插件的测试，确认工作区干净且校验通过。
+4. 提交发布版本，例如 `chore(release): version <version>`。
+5. 在该发布提交上创建并推送标签 `dsh-plugins-v<version>`，再推送 `dev`。
+6. 将 `dev` 快进合并到 `main` 并推送 `main`；本仓库的 `main` 是正式发布分支。
+7. 最后复核 `dev`、`main` 与远程标签指向同一发布提交，且工作区无未提交变更。禁止改写历史或强制推送。
+
 ## 验证与变更卫生
 
 1. 修改依赖、工作区配置、入口或 patch 后，从根目录运行 `pnpm install`，再运行 `pnpm check`；仅代码或文档变更可使用 `pnpm install --frozen-lockfile` 做一致性确认。
