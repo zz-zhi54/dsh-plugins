@@ -1,9 +1,9 @@
 {
-  "name": "dsh-plugins",
+  "name": "dsh-default",
   "version": "0.1.5-rc.1.6",
   "private": true,
   "license": "Apache-2.0",
-  "description": "Local aggregate bundle for the DeepSeek Harness plugins in this workspace",
+  "description": "Default plugin combination for DeepSeek Harness in this workspace",
   "files": [
     "cordis.patch.yml",
     "README.md"

@@ -10,7 +10,7 @@
 
 ## 按需安装
 
-Codex 登录插件不属于默认的 `dsh-plugins` Bundle。需要首次登录时，在 Monorepo 根目录执行：
+Codex 登录插件属于 `dsh-codex` 组合，也可以单独安装。需要首次登录时，在 Monorepo 根目录执行：
 
 ```sh
 dsh plugin --profile web add ./packages/codex-login

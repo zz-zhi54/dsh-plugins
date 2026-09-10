@@ -43,7 +43,7 @@
 - 凭据取自 DSH credentials store 的 `llm-pi-ai/openai-codex`，只读且不刷新；不依赖 codex CLI，也不读取 `~/.codex`。凭据按次惰性解析，避免 Cordis 服务就绪竞态。
 - 请求特征（端点 `wham/usage`、请求头、User-Agent、响应字段、脱敏写法）与 DSH pi-ai 及 pi 生态实现对齐；对齐表同时记录在该包 README 与 `src/codex-usage.mjs` 文件头，便于上游更新时同步。
 - 安全边界：access token 只出现在发往上游的请求头里；对外错误文本一律脱敏；上游响应中的 `email` / `user_id` / `account_id` 不离开 Host。21 项单元测试覆盖投影、脱敏、凭据解析与客户端契约。
-- 该插件不属于默认 Bundle，按需安装：`dsh plugin --profile web add ./packages/codex-usage`。
+- 该插件不属于默认组合，按需安装：`dsh plugin --profile web add ./packages/codex-usage`。
 
 ## 0.1.5-rc.1.3 — 2026-09-10
 
@@ -91,10 +91,10 @@
 
 **对应本仓库标签：** `dsh-plugins-v0.1.5-alpha.2.1`
 
-### Bundle
+### 默认组合
 
-- 默认 Bundle 只启用 `system-notification`。
-- `codex-login` 不再由默认 Bundle 激活，避免首次登录以外的长期依赖。
+- 默认组合只启用 `system-notification`。
+- `codex-login` 不再由默认组合激活，避免首次登录以外的长期依赖。
 
 ### Codex 登录
 

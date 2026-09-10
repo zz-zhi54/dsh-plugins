@@ -8,7 +8,16 @@ importers:
 
   .: {}
 
-  packs/dsh-plugins:
+  packs/codex:
+    dependencies:
+      dsh-codex-login-plugin:
+        specifier: workspace:^
+        version: link:../../packages/codex-login
+      dsh-codex-usage-plugin:
+        specifier: workspace:^
+        version: link:../../packages/codex-usage
+
+  packs/default:
     dependencies:
       dsh-system-notification-plugin:
         specifier: workspace:^

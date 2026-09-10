@@ -1,6 +1,6 @@
 # dsh-plugins
 
-个人维护的 DeepSeek Harness（DSH）插件集合，以 pnpm workspace monorepo 组织。可独立安装的插件位于 `packages/*`，用于组合插件的 Bundle 位于 `packs/*`。
+个人维护的 DeepSeek Harness（DSH）插件集合，以 pnpm workspace monorepo 组织。可独立安装的插件位于 `packages/*`，插件组合位于 `packs/*`。
 
 > 这是个人维护的非官方社区项目，不隶属于 DeepSeek AI 或 DeepSeek Harness 官方团队。
 >
@@ -10,17 +10,18 @@
 
 | 项目 | 类型 | 包名 | 用途 | 详细说明 |
 | --- | --- | --- | --- | --- |
-| [`packages/system-notification`](packages/system-notification/) | 插件；默认 Bundle 成员 | `dsh-system-notification-plugin` | 旁路监听任务状态和审批事件，发送 macOS / Windows 原生系统通知 | [`README`](packages/system-notification/README.md) |
+| [`packages/system-notification`](packages/system-notification/) | 插件；默认组合成员 | `dsh-system-notification-plugin` | 旁路监听任务状态和审批事件，发送 macOS / Windows 原生系统通知 | [`README`](packages/system-notification/README.md) |
 | [`packages/codex-login`](packages/codex-login/) | 按需临时插件 | `dsh-codex-login-plugin` | 提供 ChatGPT / Codex OAuth 登录入口；首次登录完成后即可卸载 | [`README`](packages/codex-login/README.md) |
 | [`packages/codex-usage`](packages/codex-usage/) | 按需插件 | `dsh-codex-usage-plugin` | 在输入框下方显示 Codex 的 5 小时 / 每周额度与重置倒计时，复用 DSH 自己的 Codex 凭据 | [`README`](packages/codex-usage/README.md) |
-| [`packs/dsh-plugins`](packs/dsh-plugins/) | 聚合 Bundle | `dsh-plugins` | 默认组合系统通知插件，不承载业务实现 | [`README`](packs/dsh-plugins/README.md) |
+| [`packs/default`](packs/default/) | 默认组合 | `dsh-default` | 默认启用系统通知插件，不承载业务实现 | [`README`](packs/default/README.md) |
+| [`packs/codex`](packs/codex/) | Codex 组合 | `dsh-codex` | 同时启用 Codex 登录和额度显示，不承载业务实现 | [`README`](packs/codex/README.md) |
 
 ### 项目关系
 
-- `dsh-plugins` Bundle 只显式启用 `system-notification`，不包含 Codex 登录。
-- Codex 登录插件只在首次 OAuth 登录时按需安装；凭据保存到 DSH credentials store 后可以卸载。
-- Codex 用量插件按需安装，读取同一份 `llm-pi-ai/openai-codex` 凭据；它只读凭据、不写凭据，也不自己刷新 token。
-- `dsh-plugins` 和 `dsh-system-notification-plugin` 二选一，不要同时安装，以免重复插入同一 Profile 条目。
+- `dsh-default` 只显式启用 `system-notification`。
+- `dsh-codex` 同时启用 Codex 登录和额度显示；登录成功后可以改为单独安装用量插件。
+- Codex 用量插件读取同一份 `llm-pi-ai/openai-codex` 凭据；它只读凭据、不写凭据，也不自己刷新 token。
+- `dsh-default` 和 `dsh-system-notification-plugin` 二选一，不要同时安装，以免重复插入同一 Profile 条目。
 
 ## 设计原则
 
@@ -51,10 +52,10 @@ cd dsh-plugins
 
 ### 默认启用系统通知
 
-安装聚合 Bundle：
+安装默认组合：
 
 ```sh
-dsh plugin --profile web add ./packs/dsh-plugins
+dsh plugin --profile web add ./packs/default
 ```
 
 检查 Profile：
@@ -63,12 +64,28 @@ dsh plugin --profile web add ./packs/dsh-plugins
 dsh --profile web --dump-config
 ```
 
-在没有额外插件的情况下，应出现 `system-notification`，不应出现 `authorization` 或 `codex-login`。
+在没有额外插件的情况下，应出现 `system-notification`，不应出现 `authorization`、`codex-login` 或 `codex-usage`。
 
-卸载 Bundle：
+卸载默认组合：
 
 ```sh
-dsh plugin --profile web remove dsh-plugins
+dsh plugin --profile web remove dsh-default
+```
+
+### 启用 Codex 组合
+
+安装 Codex 组合：
+
+```sh
+dsh plugin --profile web add ./packs/codex
+```
+
+安装后应出现 `authorization`、`codex-login` 和 `codex-usage`。登录成功后，如只需查看额度，可卸载 `dsh-codex` 并按 Codex 用量插件 README 单独安装。
+
+卸载 Codex 组合：
+
+```sh
+dsh plugin --profile web remove dsh-codex
 ```
 
 ### 按需安装单个项目
@@ -104,12 +121,12 @@ pnpm --filter dsh-system-notification-plugin run test
 
 - `packages/*/src`：各插件的运行时代码。
 - `packages/*/cordis.patch.yml`：对应插件要插入的 Profile 条目。
-- `packs/dsh-plugins/cordis.patch.yml`：默认 Bundle 的显式组合关系。
+- `packs/*/cordis.patch.yml`：各插件组合的显式关系。
 - [`CHANGELOG.md`](CHANGELOG.md)：版本、兼容关系和发布记录。
 - `AGENTS.md`：面向编码 Agent 的项目约束，不是用户使用手册。
-- `dsh/`：部署到用户全局 `~/.dsh/` 的 DSH 源文件，不属于 pnpm workspace，也不参与插件 Bundle。
+- `dsh/`：部署到用户全局 `~/.dsh/` 的 DSH 源文件，不属于 pnpm workspace，也不参与插件组合。
 
-插件通过自身 `package.json` 的 `dsh.bundle.patch` 指向 patch 文件；patch 只描述组件 ID 和 package 名称，业务实现留在对应项目中。DSH 不会因为 Bundle 依赖而自动递归激活子 Bundle。
+插件通过自身 `package.json` 的 `dsh.bundle.patch` 指向 patch 文件；patch 只描述组件 ID 和 package 名称，业务实现留在对应项目中。DSH 不会因为组合依赖而自动递归激活子组合。
 
 ## 许可证
 
