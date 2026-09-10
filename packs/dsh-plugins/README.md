@@ -21,7 +21,7 @@ Codex 登录只在需要首次登录时单独加载：完成 OAuth 后凭据已�
 在 Monorepo 根目录执行：
 
 ```sh
-dsh plugin --profile web add ./bundles/dsh-plugins
+dsh plugin --profile web add ./packs/dsh-plugins
 ```
 
 卸载：

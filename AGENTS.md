@@ -7,12 +7,12 @@
 - `packages/system-notification`（`dsh-system-notification-plugin`）：旁路监听任务完成和持久化审批事件，发送 macOS / Windows 原生系统通知。
 - `packages/codex-login`（`dsh-codex-login-plugin`）：临时提供 ChatGPT / Codex OAuth 的 Host 路由和 Web 客户端 UI，仅按需用于首次登录。
 - `packages/codex-usage`（`dsh-codex-usage-plugin`）：在 Web 输入框下方显示 Codex 5 小时 / 每周额度；只读 `llm-pi-ai/openai-codex` 凭据并请求 `wham/usage`，不依赖 codex CLI。
-- `bundles/dsh-plugins`（`dsh-plugins`）：只显式组合 `system-notification`，不承载业务实现。
+- `packs/dsh-plugins`（`dsh-plugins`）：只显式组合 `system-notification`，不承载业务实现。
 - `dsh/`：部署到用户全局 `~/.dsh/` 的 DSH 源文件，不属于 pnpm workspace；在该目录工作时还要遵守 `dsh/AGENTS.md`。
 
 ## 工作区与设置
 
-- 工作区范围由 `pnpm-workspace.yaml` 定义：`packages/*` 和 `bundles/*`。
+- 工作区范围由 `pnpm-workspace.yaml` 定义：`packages/*` 和 `packs/*`。
 - 所有命令从仓库根目录执行，并使用 pnpm；不要在子项目中用 npm/yarn 安装依赖，也不要提交子包的 `package-lock.json`。
 - 安装依赖：
 
@@ -76,7 +76,7 @@
 
 - 运行时代码位于各自 `packages/*/src`；`packages/*/cordis.patch.yml` 只描述需要插入的组件 ID 和 package 名称。
 - 每个插件的 `package.json` 通过 `dsh.bundle.patch` 指向自己的 patch。新增、重命名或移除组件时，要同步核对 `exports`、`files`、`dsh` 元数据、patch 和 README。
-- `bundles/dsh-plugins/cordis.patch.yml` 必须显式插入 `system-notification`，不要重新加入 `authorization` 或 `codex-login`，也不要依赖 DSH 因 Bundle 依赖自动递归激活其他 Bundle。`dsh-plugins` 和 `dsh-system-notification-plugin` 二选一安装，避免重复插入同一 Profile 条目。
+- `packs/dsh-plugins/cordis.patch.yml` 必须显式插入 `system-notification`，不要重新加入 `authorization` 或 `codex-login`，也不要依赖 DSH 因 Bundle 依赖自动递归激活其他 Bundle。`dsh-plugins` 和 `dsh-system-notification-plugin` 二选一安装，避免重复插入同一 Profile 条目。
 - `packages/codex-login/src/host.mjs` 依赖 `authorization` 和 `webServer`，提供 `/api/codex-login/start`、`poll`、`answer`、`cancel` 四个接口；授权成功后凭据由 DSH credentials store 持久化，首次登录完成即可卸载插件。修改授权状态机、提示投影、重复请求、取消或卸载清理时要覆盖相应边界。
 - `packages/codex-login/src/client.js` 是 DSH Web 所需的 classic-script 模块，必须保留 `window.__ModuleLoader__.load({ id, factory })` 形状，并通过 `require('react')` 获取 React；不要改成顶层 ESM。
 - `packages/codex-usage` 的 Host 只依赖 `webServer`（必需）和 `credentials`（可选），注册 `GET /api/codex-usage`。它**只读**凭据记录，绝不调用 `modifyRecord`，也绝不实现 OAuth 刷新 —— pi-ai 的刷新发生在 `credentials.modifyRecord()` 内部，两个进程并发轮换同一个 refresh token 会丢掉先写入的一份。

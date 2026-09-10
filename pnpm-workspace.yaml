@@ -1,6 +1,6 @@
 packages:
   - packages/*
-  - bundles/*
+  - packs/*
 
 # 当前 DSH RC 包需要绕过最低发布年龄限制；其他依赖仍遵循 pnpm 默认策略。
 minimumReleaseAgeExclude:

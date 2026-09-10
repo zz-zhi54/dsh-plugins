@@ -8,7 +8,7 @@ importers:
 
   .: {}
 
-  bundles/dsh-plugins:
+  packs/dsh-plugins:
     dependencies:
       dsh-system-notification-plugin:
         specifier: workspace:^
