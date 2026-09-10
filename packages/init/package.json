@@ -1,6 +1,6 @@
 {
   "name": "dsh-init-plugin",
-  "version": "0.1.5-alpha.2.1",
+  "version": "0.1.5-alpha.2.2",
   "private": true,
   "type": "module",
   "description": "Deprecated Codex-style /init command for initializing repository AGENTS.md files",

@@ -1,6 +1,6 @@
 {
   "name": "dsh-codex-login-plugin",
-  "version": "0.1.5-alpha.2.1",
+  "version": "0.1.5-alpha.2.2",
   "private": true,
   "type": "module",
   "description": "Temporary ChatGPT and Codex OAuth login plugin for DeepSeek Harness Web",
