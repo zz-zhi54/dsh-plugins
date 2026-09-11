@@ -18,6 +18,7 @@
 - **刷新**：挂载时一次，之后每 5 分钟一次；倒计时每 30s 重绘一次。
 - **失败暂停**：连续 3 次失败后**停止自动轮询**，pill 变成 `Codex 额度已暂停 · 点击重试`；点击重试成功即恢复 5 分钟轮询，仍失败则继续暂停。失败时不会一直打上游。
 - **降级**：失败态与暂停态都只占一行灰字（本身就是重试按钮），具体原因在 `title` 里，不影响界面其它部分。
+- **与 Session 费用插件并装**：两者都位于 `conversation.composer.dock`；本插件使用独立的 `codex-usage`（`order: 1`）条目，Session 费用插件替换内置的 `stats`（`order: 0`）条目，按当前 DSH Slot 契约可同时安装。
 
 ## 数据来源
 
@@ -50,7 +51,7 @@
 | 脱敏写法 | `@narumitw/pi-codex-usage` `src/query.ts:162` → `redactErrorBody()` |
 | 凭据来源 | pi 用 pi-coding-agent 的 `readStoredCredential()`；DSH 的对应物是 `ctx.credentials.readRecord()` |
 
-实际发送的头：`authorization`、`chatgpt-account-id`、`originator`、`user-agent`、`accept: application/json`。
+实际发送的头：`authorization`、`originator`、`user-agent`、`accept: application/json`；凭据包含账号 ID 时才额外发送 `chatgpt-account-id`。
 
 pi-ai 另有一组 SSE 专有头（`OpenAI-Beta`、`accept: text/event-stream`、`content-type`、`session-id`、`x-client-request-id`），只用于 POST `/codex/responses` 流式请求；本插件查询用量走 GET，因此不带。
 
@@ -59,6 +60,8 @@ pi-ai 另有一组 SSE 专有头（`OpenAI-Beta`、`accept: text/event-stream`�
 ## 安装
 
 属于 `dsh-codex` 组合，也可以按需单独安装。在 Monorepo 根目录执行：
+
+> `dsh-codex` 已经包含本插件；使用组合时不要再单独安装本插件。若只需额度显示，请先卸载组合，再执行下面的独立安装命令。
 
 ```sh
 dsh plugin --profile web add ./packages/codex-usage
@@ -90,7 +93,7 @@ dsh --profile web --dump-config
 - **依赖 DSH 侧的 Codex 登录。** 凭据 JWT 约 10 天过期，过期且尚未刷新时不可用；在 DSH 里用一次 Codex 会触发刷新。
 - 只查询自己账号的额度，不做账号切换，也不读取 `additional_rate_limits` 里的其它计费桶。
 - **三端一致**：使用 Node 内置 `fetch`，不依赖 `curl` 或任何外部二进制，macOS / Linux / Windows 行为相同。
-- 未来如果要显示"重置券 N 张"或"套餐 / 更新时间"，`wham/usage` 已带回 `rate_limit_reset_credits.available_count`，投影里也保留了 `planType` 与 `fetchedAt`，只需在收起态那一行补一段文案。
+- 未来如果要显示"重置券 N 张"，需要先让 `projectUsagePayload()` 投影并测试 `rate_limit_reset_credits.available_count`；当前投影没有保留该字段。`planType` 与 `fetchedAt` 已保留，如需显示"套餐 / 更新时间"，只需在收起态那一行补文案。
 
 ## 实现约束
 

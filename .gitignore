@@ -5,6 +5,8 @@ node_modules/
 # IDE
 .idea/
 
+.playwright-cli
+
 # Temporary workspace artifacts
 .tmp-pnpm-workspace-test
 

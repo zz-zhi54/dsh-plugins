@@ -4,7 +4,7 @@
 >
 > 非官方社区组合。
 
-Codex 组合，同时启用 Codex OAuth 登录入口和 5 小时 / 每周额度显示。
+Codex 组合，同时启用 Codex OAuth 登录入口和 5 小时 / 每周额度显示；Session 费用插件不属于此组合，需要单独安装。
 
 ## 包含的 Profile 条目
 
@@ -27,6 +27,8 @@ dsh plugin --profile web add ./packs/codex
 ```sh
 dsh plugin --profile web remove dsh-codex
 ```
+
+该组合已经显式插入 `authorization`、`codex-login` 和 `codex-usage`；不要在组合仍保留期间再单独安装这两个 Codex 子插件，否则可能重复插入相同 Profile 条目。
 
 ## 首次登录后的处理
 
