@@ -18,6 +18,7 @@
     }
   },
   "dependencies": {
-    "dsh-system-notification-plugin": "workspace:^"
+    "dsh-system-notification-plugin": "workspace:^",
+    "dsh-session-cost-plugin": "workspace:^"
   }
 }

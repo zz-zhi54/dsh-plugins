@@ -1,3 +1,6 @@
 - insert:
     - id: system-notification
       name: dsh-system-notification-plugin
+
+    - id: session-cost
+      name: dsh-session-cost-plugin

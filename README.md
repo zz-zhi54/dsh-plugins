@@ -13,17 +13,17 @@
 | [`packages/system-notification`](packages/system-notification/) | 插件；默认组合成员 | `dsh-system-notification-plugin` | 旁路监听任务状态和审批事件，发送 macOS / Windows 原生系统通知 | [`README`](packages/system-notification/README.md) |
 | [`packages/codex-login`](packages/codex-login/) | 按需临时插件 | `dsh-codex-login-plugin` | 提供 ChatGPT / Codex OAuth 登录入口；首次登录完成后即可卸载 | [`README`](packages/codex-login/README.md) |
 | [`packages/codex-usage`](packages/codex-usage/) | 按需插件 | `dsh-codex-usage-plugin` | 在输入框下方显示 Codex 的 5 小时 / 每周额度与重置倒计时，复用 DSH 自己的 Codex 凭据 | [`README`](packages/codex-usage/README.md) |
-| [`packages/session-cost`](packages/session-cost/) | 按需插件 | `dsh-session-cost-plugin` | 在 Token 总量右侧显示当前会话的 provider/model 费用与 USD 统计 | [`README`](packages/session-cost/README.md) |
-| [`packs/default`](packs/default/) | 默认组合 | `dsh-default` | 默认启用系统通知插件，不承载业务实现 | [`README`](packs/default/README.md) |
+| [`packages/session-cost`](packages/session-cost/) | 插件；默认组合成员 | `dsh-session-cost-plugin` | 在 Token 总量右侧显示当前会话的 provider/model 费用与 USD 统计 | [`README`](packages/session-cost/README.md) |
+| [`packs/default`](packs/default/) | 默认组合 | `dsh-default` | 默认启用系统通知和 Session 费用插件，不承载业务实现 | [`README`](packs/default/README.md) |
 | [`packs/codex`](packs/codex/) | Codex 组合 | `dsh-codex` | 同时启用 Codex 登录和额度显示，不承载业务实现 | [`README`](packs/codex/README.md) |
 
 ### 项目关系
 
-- `dsh-default` 只显式启用 `system-notification`。
+- `dsh-default` 显式启用 `system-notification` 和 `session-cost`。
 - `dsh-codex` 同时启用 Codex 登录和额度显示；登录成功后可以改为单独安装用量插件。
 - Codex 用量插件读取同一份 `llm-pi-ai/openai-codex` 凭据；它只读凭据、不写凭据，也不自己刷新 token。
-- Session 费用插件独立按需安装，不会被默认组合或 Codex 组合自动启用。
-- `dsh-default` 和 `dsh-system-notification-plugin` 二选一，不要同时安装，以免重复插入同一 Profile 条目。
+- Session 费用插件属于默认组合，也可以独立按需安装；Codex 组合不会自动启用它。
+- `dsh-default` 和 `dsh-system-notification-plugin` / `dsh-session-cost-plugin` 二选一，不要同时安装，以免重复插入同一 Profile 条目。
 
 ## 设计原则
 
@@ -52,7 +52,7 @@ git clone https://github.com/zz-zhi54/dsh-plugins.git
 cd dsh-plugins
 ```
 
-### 默认启用系统通知
+### 默认启用系统通知和 Session 费用
 
 安装默认组合：
 
@@ -66,7 +66,7 @@ dsh plugin --profile web add ./packs/default
 dsh --profile web --dump-config
 ```
 
-在没有额外插件的情况下，应出现 `system-notification`，不应出现 `authorization`、`codex-login` 或 `codex-usage`。
+在没有额外插件的情况下，应出现 `system-notification` 和 `session-cost`，不应出现 `authorization`、`codex-login` 或 `codex-usage`。
 
 卸载默认组合：
 
@@ -82,7 +82,7 @@ dsh plugin --profile web remove dsh-default
 dsh plugin --profile web add ./packs/codex
 ```
 
-安装后应出现 `authorization`、`codex-login` 和 `codex-usage`。登录成功后，如只需查看额度，可卸载 `dsh-codex` 并按 Codex 用量插件 README 单独安装。
+安装后应出现 `authorization`、`codex-login` 和 `codex-usage`，不应因此出现 `session-cost`。登录成功后，如只需查看额度，可卸载 `dsh-codex` 并按 Codex 用量插件 README 单独安装。不要在 `dsh-codex` 保留期间再单独安装 `codex-login` 或 `codex-usage`，否则可能重复插入相同 Profile 条目。
 
 卸载 Codex 组合：
 

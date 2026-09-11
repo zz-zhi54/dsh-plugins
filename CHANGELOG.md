@@ -8,6 +8,28 @@
 - 同一 DSH 版本下继续修复或改进插件时，递增最后的插件修订号。
 - 切换到新的 DSH 版本时，更新 DSH 版本部分，并将插件修订号从 `.1` 重新开始。
 
+## Unreleased
+
+以下变更位于 `dsh-plugins-v0.1.5-rc.1.6` 标签之后，尚未分配新的插件修订号。
+
+### 工作区与组合
+
+- 移除已废弃的 `packages/init` 插件。
+- 将组合目录从 `bundles/` 重命名为 `packs/`。
+- 新增 `dsh-default` 默认组合（显式启用 `system-notification` 和 `session-cost`）和 `dsh-codex` Codex 组合；组合 patch 显式插入组件，不依赖递归激活。
+
+### Codex 用量
+
+- 连续 3 次请求失败后暂停自动轮询，失败态改为可点击的手动重试；手动重试成功后恢复轮询。
+- 脱敏补齐 `email`、`user_id`、`account_id` 等身份字段，并修复手动重试状态清理问题。
+
+### Session 费用
+
+- 新增按需插件 `packages/session-cost`（`dsh-session-cost-plugin`）：在 Token 总量右侧显示按 `provider/model` 分组的 USD 费用。
+- 费用从 durable Session events 的 provider usage 重算，成功消息和无 surface message 的 retry attempt 均覆盖；模型价格只使用 `@earendil-works/pi-ai` 内置目录，未知模型不猜价。
+- 点击费用可展开 Token / cache 明细与每个模型的费用；不增加额外持久化。
+- 补充 Session 费用的收起态和明细截图，并将截图资源随插件包发布。
+
 ## 0.1.5-rc.1.6 — 2026-09-10
 
 **对应 DSH 官方标签：** `dsh-v0.1.5-rc.1`
@@ -18,12 +40,6 @@
 
 - `packages/codex-usage` 补充界面截图 `assets/codex-usage-pill.jpg`，并把 `assets` 纳入 `files`，保证截图随包发布。
 - 该包介绍文案改为"剩余额度 + 还有多久刷新"，与收起态实际显示一致。
-
-### 新增：Session 费用插件
-
-- 新增按需插件 `packages/session-cost`（`dsh-session-cost-plugin`）：在 Token 总量右侧显示按 `provider/model` 分组的 USD 费用。
-- 费用从 durable Session events 的 provider usage 重算，成功消息和无 surface message 的 retry attempt 均覆盖；模型价格只使用 `@earendil-works/pi-ai` 内置目录，未知模型不猜价。
-- 点击费用可展开 Token / cache 明细与每个模型的费用；不增加额外持久化。
 
 ## 0.1.5-rc.1.5 — 2026-09-10
 

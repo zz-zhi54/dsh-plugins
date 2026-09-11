@@ -42,6 +42,9 @@ importers:
 
   packs/default:
     dependencies:
+      dsh-session-cost-plugin:
+        specifier: workspace:^
+        version: link:../../packages/session-cost
       dsh-system-notification-plugin:
         specifier: workspace:^
         version: link:../../packages/system-notification
