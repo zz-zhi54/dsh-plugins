@@ -1,6 +1,6 @@
 ---
 name: dsh-release-version
-description: 为当前 dsh-plugins pnpm monorepo 执行受控的 GitHub 发布准备与发布流程。只要用户提到发版、版本号、release、CHANGELOG、打标签、推送 dev/其他分支、创建到 main 的 PR，或要求检查发布文档，就使用本技能；即使用户没有明确说“release”，但任务涉及同步 package 版本并将变更送入 main，也要使用它。技能会从当前检出的非 main 分支计算下一个插件修订号，同步根目录与实际 workspace package/组合目录，检查 README/兼容关系/CHANGELOG，运行 pnpm 验证，在一次最终确认后 commit、push、打并推送标签、创建 source→main PR；绝不自动合并、改写历史或强制推送。
+description: 为当前 dsh-plugins pnpm monorepo 执行受控的 GitHub 发布准备与发布流程。只要用户提到发版、版本号、release、CHANGELOG、打标签、推送 dev/其他分支、创建到 main 的 PR，或要求检查发布文档，就使用本技能；即使用户没有明确说“release”，但任务涉及同步 package 版本并将变更送入 main，也要使用它。技能会从当前检出的非 main 分支计算下一个插件修订号，同步根目录与实际 workspace package/组合目录，检查 README/兼容关系/CHANGELOG，运行 pnpm 验证；当用户明确要求发版且目标版本、范围和发布路径已确定时，直接 commit、push、打并推送标签、创建 source→main PR，无需重复确认；绝不自动合并、改写历史或强制推送。
 compatibility: 需要 Git、Node.js、pnpm、GitHub CLI（gh）及已配置的 GitHub 认证；只支持 Git 发布，不执行 npm publish。
 ---
 
@@ -61,7 +61,7 @@ node .agents/skills/release-version/scripts/next-version.mjs
 - 计算出的 `dsh-plugins-v<version>` 在本地和远端都不存在；
 - 根 `package.json` 与实际 workspace 中的 package manifest 当前版本一致。当前 `dev` 约定是 `packages/*` 与 `packs/*`；如果当前分支存在 `bundles/*` 或其他 workspace 组合目录，也必须纳入发现结果。缺少 `version` 或版本不一致时不要静默修复，先报告路径和现值。
 
-输出版本计划，包含：旧标签、目标版本、目标标签、source branch、PR base、将要更新的 manifest 路径。版本号建议必须在修改文件前让用户知晓；最终远程动作仍只在一次总确认后进行。
+输出版本计划，包含：旧标签、目标版本、目标标签、source branch、PR base、将要更新的 manifest 路径。目标版本和发布范围若已由用户明确给出，可直接进入本地变更；若仍有歧义，再在修改前请求明确指定。
 
 ### 3. 生成本地发布变更
 
@@ -118,22 +118,24 @@ git diff -- CHANGELOG.md package.json packages/*/package.json packs/*/package.js
 - 没有凭据、token、个人配置或与发布无关的改动；
 - 工作区中的新技能文件如果是本次任务的一部分，应单独列出，不要误并入产品版本发布提交。
 
-### 5. 唯一的最终确认闸门
+### 5. 发布动作边界（明确发版请求时无需重复确认）
 
-在 `commit`、任何 `push`、创建标签或创建 PR 之前，输出一份发布摘要并只询问一次确认。摘要至少包含：
+如果直接人类请求已经明确要求发版/发送版本，并且目标版本、source branch、PR base、文件范围和发布路径均已确定，则该请求本身视为对以下动作的授权：commit、推送 source branch、创建并推送标签、创建 source→main PR。不要再发送一次重复的确认问题。
+
+在执行远程动作前仍要输出发布摘要，至少包含：
 
 - source branch、base branch（固定为 `main`）、origin；
 - old version/tag、new version/tag；
 - 将提交的文件和 CHANGELOG 草稿；
 - `pnpm install`、`pnpm check`、测试、`git diff --check` 的结果；
-- 预计 commit subject、PR 标题和 PR body；
+- commit subject、PR 标题和 PR body；
 - 明确说明：会推送 source branch、创建并推送标签、创建 PR，但**不会合并 PR**。
 
-用户拒绝时不要执行任何远程动作；保留本地修改并等待用户编辑或明确要求撤销。用户确认后不得悄悄扩大文件范围；如果确认后发现文件变更或测试结果改变，回到确认闸门重新确认。
+只有在目标版本、文件范围、远程目标或是否执行远程动作存在实质歧义时，才暂停并请求一次明确选择。用户明确要求只做本地准备或拒绝远程动作时，保留本地修改，不执行远程操作。无论是否需要确认，都不得悄悄扩大已确定的文件范围；如果检查结果或范围发生变化，先重新核对并说明。
 
 ### 6. 提交、推送、打标签和创建 PR
 
-确认后严格按顺序执行：
+发布授权成立且本地检查通过后，严格按顺序执行：
 
 1. 重新确认工作区仍只包含发布相关变更，并提交：
 

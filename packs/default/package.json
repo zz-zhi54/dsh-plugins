@@ -1,6 +1,6 @@
 {
   "name": "dsh-default",
-  "version": "0.1.5-rc.1.7",
+  "version": "0.1.5-rc.2.1",
   "private": true,
   "license": "Apache-2.0",
   "description": "Default plugin combination for DeepSeek Harness in this workspace",

@@ -10,6 +10,17 @@
 
 ## Unreleased
 
+## 0.1.5-rc.2.1 — 2026-09-11
+
+**对应 DSH 官方标签：** `dsh-v0.1.5-rc.2`
+
+**对应本仓库标签：** `dsh-plugins-v0.1.5-rc.2.1`
+
+### 兼容性
+
+- 将插件依赖、Host peerDependencies、最低发布年龄放行条目和锁文件同步到 DSH `0.1.5-rc.2`。
+- 对比 DSH `0.1.5-rc.1` 到 `0.1.5-rc.2` 的相关 Session、Authorization、WebServer 和 Web UI 契约，未发现需要源码适配的变化。
+
 ## 0.1.5-rc.1.7 — 2026-09-11
 
 **对应 DSH 官方标签：** `dsh-v0.1.5-rc.1`
