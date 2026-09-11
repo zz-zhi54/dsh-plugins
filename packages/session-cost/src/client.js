@@ -354,6 +354,7 @@ window.__ModuleLoader__.load({
         name: 'conversation.composer.dock',
         id: 'stats',
         order: 0,
+        priority: -1,
       }, props => React.createElement(SessionStats, props)))
     }
 
