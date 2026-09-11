@@ -23,7 +23,7 @@
     "check": "node --check src/host.mjs && node --check src/cost.mjs && node --check src/client.js",
     "test": "node --test"
   },
-  "dependencies": {
+  "devDependencies": {
     "@earendil-works/pi-ai": "0.85.1"
   },
   "dsh": {
