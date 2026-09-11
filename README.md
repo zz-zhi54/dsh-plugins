@@ -12,7 +12,7 @@
 
 > 这是个人维护的非官方社区项目，不隶属于 DeepSeek AI 或 DeepSeek Harness 官方团队。
 >
-> 本 README 是用户入口，负责项目选择、安装方式和仓库结构；各项目 README 负责记录自身的具体行为和限制。版本号、DSH 兼容关系及发布记录请以 [`CHANGELOG.md`](CHANGELOG.md) 和各项目的 `package.json` 为准，本文不固定具体版本号。
+> 本 README 是用户入口，负责项目选择、安装方式和仓库结构；各项目 README 负责记录自身的具体行为和限制。安装章节会列出当前 workspace 中的插件及版本示例；实际版本、DSH 兼容关系及发布记录请以 [`CHANGELOG.md`](CHANGELOG.md) 和各项目的 `package.json` 为准。
 
 ## 项目总览
 
@@ -53,20 +53,35 @@
 
 ### 安装
 
-从当前默认分支安装插件：
+当前 workspace 中有以下 4 个可独立安装的插件（版本示例取自各自的 `package.json`）：
+
+| 插件目录 | package name | 版本示例 | 用途 |
+| --- | --- | --- | --- |
+| `packages/system-notification` | `dsh-system-notification-plugin` | `0.1.5-rc.2.2` | macOS / Windows 系统通知 |
+| `packages/codex-login` | `dsh-codex-login-plugin` | `0.1.5-rc.2.2` | 首次 ChatGPT / Codex 登录 |
+| `packages/codex-usage` | `dsh-codex-usage-plugin` | `0.1.5-rc.2.2` | Codex 额度显示 |
+| `packages/session-cost` | `dsh-session-cost-plugin` | `0.1.5-rc.2.2` | Session 费用显示 |
+
+从当前默认分支安装某个插件，例如：
 
 ```sh
 dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#path:packages/session-cost'
 ```
 
-常用插件路径：
+将上面命令中的 `path` 替换为以下目录即可安装其它插件：
 
-- `packages/system-notification`：系统通知
-- `packages/session-cost`：Session 费用
-- `packages/codex-login`：首次 Codex 登录
-- `packages/codex-usage`：Codex 额度显示
+- `packages/system-notification`
+- `packages/codex-login`
+- `packages/codex-usage`
+- `packages/session-cost`
 
-固定 release 时，将路径替换为 `#v<version>&path:packages/session-cost`，并按需替换插件目录。
+固定 release 时，在路径前加入版本标签。以版本 `v0.1.5-rc.2.2` 安装 Session 费用插件为例：
+
+```sh
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.5-rc.2.2&path:packages/session-cost'
+```
+
+其它插件只需同时替换版本标签和 `path`。
 
 安装后检查 Profile：
 
