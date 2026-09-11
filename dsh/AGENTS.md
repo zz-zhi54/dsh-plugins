@@ -1,11 +1,11 @@
 ## Engineering
 
 * Correctness first; then clarity and maintainability.
-* Prefer simple, low-cognitive-load designs. Avoid unnecessary abstractions and long `if/else` chains.
+* Prefer simple, low-cognitive-load designs. Avoid unnecessary abstractions. Refactor complex branching only when it meaningfully improves readability or maintainability.
 * Keep responsibilities focused, business rules centralized, and data flow explicit.
 * Understand the relevant code before changing it. Follow existing project conventions and verify important assumptions.
 * Preserve existing behavior unless the task requires otherwise. Keep changes focused and avoid disturbing unrelated work.
-* Fix root causes. Handle exceptions only where they can be meaningfully handled or translated.
+* Fix root causes. Do not wrap methods in try/catch by default. Catch exceptions only when the current layer can recover, translate them into a meaningful domain/API error, add necessary context, or perform required cleanup. Otherwise, let them propagate naturally. Avoid catch-log-rethrow patterns unless the log adds information that will not be logged elsewhere.
 * Prefer existing project, framework, and standard-library APIs over reimplementing them.
 * Comment only non-obvious logic, business rules, constraints, or important decisions.
 * Remove unnecessary code cleanly.

@@ -14,7 +14,8 @@ compatibility: 需要 Git、Node.js、pnpm、GitHub CLI（gh）及已配置的 G
 - 发布源是当前检出的分支；拒绝 detached HEAD 和 `main`。如果当前分支是 `dev`，就按 `dev -> main` 执行；其他非 `main` 分支也可以发布，但必须在报告中明确 source branch。
 - `main` 只能作为 PR base，不能 checkout 后直接提交、push、merge，也不能调用 `gh pr merge`。
 - 绝不使用 `git push --force`、`--force-with-lease`、`git reset --hard` 或任何改写历史的操作。
-- 发现用户已有未提交修改、未跟踪文件或冲突时立即停止；不得 stash、覆盖、删除或替用户判断这些修改。
+- 发现 tracked 文件有未提交修改、index 有暂存内容、存在冲突，或出现无法归类的未跟踪文件时立即停止；不得 stash、覆盖、删除或替用户判断这些修改。
+- 只将明显由操作系统或编辑器自动生成、且不属于项目内容的元数据视为可忽略文件，例如 `.DS_Store`、`._*`、`Thumbs.db` 和 `Desktop.ini`。这类文件不删除、不暂存、不提交，但要在最终报告中列出；不要把业务文件、配置文件、构建产物或测试输出自行归类为可忽略文件。
 - 任何远程动作失败都要保留现场并报告已完成的动作、未完成的动作和安全的恢复命令；不要为了“继续流程”猜测或强行重试。
 - 当前仓库的版本约定是 `DSH 版本.插件修订号`，例如 `0.1.5-rc.1.6`。不要把 CHANGELOG 中的历史版本重新排序或改写。
 
@@ -35,7 +36,7 @@ gh auth status
 
 然后确认：
 
-1. 当前目录是仓库根目录，当前分支存在且不是 `main`，工作区和 index 都干净。
+1. 当前目录是仓库根目录，当前分支存在且不是 `main`；除上一条列出的可忽略系统/编辑器元数据外，工作区和 index 都干净。
 2. `origin` 存在且是 GitHub 仓库；读取 owner/repository，不要从用户输入臆造远端。
 3. `gh auth status` 成功，并且当前账号有创建 PR 的权限。认证失败时在预检阶段停止，不修改版本、文档或 CHANGELOG，也不执行后续检查；先让用户完成认证后重新运行，避免生成无法完成发布的半成品。
 4. 本地已有的发布提交、标签和远端分支状态已记录。允许当前源分支落后或领先远端，但必须在最终报告中说明 ahead/behind 数量。
@@ -188,7 +189,7 @@ git ls-remote origin refs/heads/<source-branch> refs/tags/dsh-plugins-v<version>
 gh pr view <pr-number> --json number,url,state,baseRefName,headRefName
    ```
 
-   成功标准是工作区干净、source branch 和标签指向同一个 release commit、PR 的 head 是 source branch、base 是 `main`。在 PR 合并前不要声称 `main` 已包含 release commit，也不要要求或执行快进合并。
+   成功标准是除已列出的可忽略系统/编辑器元数据外，工作区没有其它未提交或未跟踪内容；source branch 和标签指向同一个 release commit；PR 的 head 是 source branch、base 是 `main`。在 PR 合并前不要声称 `main` 已包含 release commit，也不要要求或执行快进合并。
 
 ## 输出格式
 
@@ -202,13 +203,13 @@ gh pr view <pr-number> --json number,url,state,baseRefName,headRefName
 标签：<tag>（<远端状态>）
 PR：<url 或未创建原因>
 检查：<命令 -> 结果>
-工作区：<clean / 保留本地修改>
+工作区：<clean / 保留可忽略元数据 / 保留其它本地修改>
 下一步：<用户需要手工审核并合并 PR，或具体恢复动作>
 ```
 
 ## 常见停止条件
 
-- 在 `main`、detached HEAD 或有未提交改动：只做说明，不修改、不推送。
+- 在 `main`、detached HEAD、tracked 文件有未提交改动、index 有暂存内容、存在冲突或出现无法归类的未跟踪文件：只做说明，不修改、不推送。
 - 无法识别最新标签或版本不一致：请求明确版本/修复 manifest，不猜版本。
 - CHANGELOG 无法从 diff 证明 DSH 兼容性：请求确认，不捏造兼容关系。
 - `pnpm install`、`pnpm check` 或测试失败：停在本地，报告失败，不 commit/push/tag/PR。
