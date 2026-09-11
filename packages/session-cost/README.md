@@ -15,6 +15,20 @@
 - **未知价格**：模型不在 pi-ai 内置目录时显示 `未知`，不会猜测价格；已知模型的费用仍会显示，并标记未知部分。
 - **与 Codex 用量插件并装**：三者都位于 `conversation.composer.dock`；DSH 内置 `stats` 保持 `order: 0`，本插件使用独立的 `session-cost`（`order: 10`），Codex 用量插件使用 `codex-usage`（`order: 20`），按当前 DSH Slot 契约可同时安装。
 
+## 截图与演示
+
+费用 pill 收起态：
+
+![Session 费用收起态](assets/session-cost-pill.jpg)
+
+点击费用后的对话框收起态：
+
+![Session 费用明细收起态](assets/session-cost-details-collapsed.jpg)
+
+展开 provider/model 后的 Token 费用明细：
+
+![Session 费用明细展开态](assets/session-cost-details.jpg)
+
 ## 安装
 
 默认组合 `dsh-default` 已包含本插件；如果只需要 Session 费用，也可以在 Monorepo 根目录按需单独安装：

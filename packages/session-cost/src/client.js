@@ -22,10 +22,15 @@ window.__ModuleLoader__.load({
       position: 'relative',
     }
 
+    const ANCHOR_STYLE = {
+      minWidth: 0,
+      display: 'inline-flex',
+    }
+
     const PILL_STYLE = {
       boxSizing: 'border-box',
       maxWidth: '100%',
-      color: 'var(--dsw-alias-label-tertiary)',
+      color: 'var(--dsw-alias-label-tertiary, var(--dsw-alias-label-secondary))',
       font: 'inherit',
       fontVariantNumeric: 'tabular-nums',
       lineHeight: 'inherit',
@@ -41,7 +46,7 @@ window.__ModuleLoader__.load({
     }
 
     const PILL_HOVER_STYLE = {
-      background: 'var(--dsw-alias-interactive-bg-hover)',
+      background: 'var(--dsw-alias-interactive-bg-hover, var(--dsw-alias-bg-layer-2))',
       color: 'var(--dsw-alias-label-secondary)',
     }
 
@@ -239,6 +244,7 @@ window.__ModuleLoader__.load({
       const [costState, setCostState] = React.useState({ phase: 'empty' })
       const [open, setOpen] = React.useState(false)
       const [expanded, setExpanded] = React.useState(null)
+      const [hover, setHover] = React.useState(false)
       const hasTokens = hasProjectionTokens(usage)
 
       React.useEffect(() => {
@@ -261,13 +267,18 @@ window.__ModuleLoader__.load({
       const costValue = costState.phase === 'ready' ? costState.value : null
       if (costValue === null || costValue.requests <= 0) return null
 
+      const pillStyle = Object.assign({}, PILL_STYLE, open || hover ? PILL_HOVER_STYLE : null)
       return React.createElement('div', { style: ROW_STYLE },
-        React.createElement('span', null,
+        React.createElement('span', { style: ANCHOR_STYLE },
           React.createElement('button', {
             type: 'button',
-            style: PILL_STYLE,
+            style: pillStyle,
             'aria-haspopup': 'dialog',
             'aria-expanded': open,
+            onMouseEnter: () => setHover(true),
+            onMouseLeave: () => setHover(false),
+            onFocus: () => setHover(true),
+            onBlur: () => setHover(false),
             onClick: () => setOpen(!open),
           }, '费用 ' + costText(costValue.cost, costValue.pricing)),
         ),

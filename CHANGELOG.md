@@ -10,7 +10,11 @@
 
 ## Unreleased
 
-以下变更位于 `dsh-plugins-v0.1.5-rc.1.6` 标签之后，尚未分配新的插件修订号。
+## 0.1.5-rc.1.7 — 2026-09-11
+
+**对应 DSH 官方标签：** `dsh-v0.1.5-rc.1`
+
+**对应本仓库标签：** `dsh-plugins-v0.1.5-rc.1.7`
 
 ### 工作区与组合
 
@@ -25,10 +29,11 @@
 
 ### Session 费用
 
-- 新增按需插件 `packages/session-cost`（`dsh-session-cost-plugin`）：在 Token 总量右侧显示按 `provider/model` 分组的 USD 费用。
+- 新增 `packages/session-cost`（`dsh-session-cost-plugin`）：在 DSH 内置 Token 统计下方独立显示按 `provider/model` 分组的 USD 费用。
 - 费用从 durable Session events 的 provider usage 重算，成功消息和无 surface message 的 retry attempt 均覆盖；模型价格只使用 `@earendil-works/pi-ai` 内置目录，未知模型不猜价。
 - 点击费用可展开 Token / cache 明细与每个模型的费用；不增加额外持久化。
-- 补充 Session 费用的收起态和明细截图，并将截图资源随插件包发布。
+- 使用独立的 `session-cost` composer slot（`order: 10`），保留 DSH 内置 `stats` 及 Codex 用量 slot。
+- 补充 Session 费用 pill、费用对话框收起/展开态截图，并将截图资源随插件包发布。
 
 ## 0.1.5-rc.1.6 — 2026-09-10
 

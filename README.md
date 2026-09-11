@@ -13,7 +13,7 @@
 | [`packages/system-notification`](packages/system-notification/) | 插件；默认组合成员 | `dsh-system-notification-plugin` | 旁路监听任务状态和审批事件，发送 macOS / Windows 原生系统通知 | [`README`](packages/system-notification/README.md) |
 | [`packages/codex-login`](packages/codex-login/) | 按需临时插件 | `dsh-codex-login-plugin` | 提供 ChatGPT / Codex OAuth 登录入口；首次登录完成后即可卸载 | [`README`](packages/codex-login/README.md) |
 | [`packages/codex-usage`](packages/codex-usage/) | 按需插件 | `dsh-codex-usage-plugin` | 在输入框下方显示 Codex 的 5 小时 / 每周额度与重置倒计时，复用 DSH 自己的 Codex 凭据 | [`README`](packages/codex-usage/README.md) |
-| [`packages/session-cost`](packages/session-cost/) | 插件；默认组合成员 | `dsh-session-cost-plugin` | 在 Token 总量右侧显示当前会话的 provider/model 费用与 USD 统计 | [`README`](packages/session-cost/README.md) |
+| [`packages/session-cost`](packages/session-cost/) | 插件；默认组合成员 | `dsh-session-cost-plugin` | 在 Token 统计行下方显示当前会话的 provider/model 费用与 USD 统计 | [`README`](packages/session-cost/README.md) |
 | [`packs/default`](packs/default/) | 默认组合 | `dsh-default` | 默认启用系统通知和 Session 费用插件，不承载业务实现 | [`README`](packs/default/README.md) |
 | [`packs/codex`](packs/codex/) | Codex 组合 | `dsh-codex` | 同时启用 Codex 登录和额度显示，不承载业务实现 | [`README`](packs/codex/README.md) |
 
