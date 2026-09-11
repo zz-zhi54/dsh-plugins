@@ -182,24 +182,6 @@ window.__ModuleLoader__.load({
       )
     }
 
-    function TokenDialog(props) {
-      const tokens = projectionTokens(props.usage)
-      if (tokens === null) return null
-      return React.createElement('div', {
-        role: 'dialog',
-        'aria-label': 'Token 统计',
-        style: DIALOG_STYLE,
-      },
-      React.createElement('div', { style: DIALOG_TITLE_STYLE },
-        React.createElement('span', null, 'Token 统计'),
-        React.createElement('span', { style: MUTED_STYLE }, formatTokens(tokens.totalTokens)),
-      ),
-      React.createElement('div', { style: RULE_STYLE, 'aria-hidden': true }),
-      React.createElement('dl', { style: DETAIL_STYLE },
-        React.createElement(DetailRows, { tokens, requests: '—' }),
-      ))
-    }
-
     function CostDialog(props) {
       const value = props.value
       return React.createElement('div', {
@@ -241,20 +223,6 @@ window.__ModuleLoader__.load({
       ))
     }
 
-    function TimePill(props) {
-      const stats = props.stats
-      if (stats === null || typeof stats !== 'object' || !Number.isSafeInteger(stats.steps) || stats.steps <= 0) return null
-      const label = formatTokens(stats.turns) + ' 轮 · ' + formatTokens(stats.steps) + ' 步'
-      return React.createElement('span', null,
-        React.createElement('button', {
-          type: 'button',
-          style: PILL_STYLE,
-          'aria-label': label,
-          onClick: () => props.onOpen('time'),
-        }, '◷ ' + label),
-      )
-    }
-
     async function readCost(sessionId) {
       try {
         const response = await fetch(ENDPOINT + '?sessionId=' + encodeURIComponent(sessionId))
@@ -266,11 +234,10 @@ window.__ModuleLoader__.load({
       }
     }
 
-    function SessionStats(props) {
+    function SessionCost(props) {
       const usage = props.useProjection('tokenUsage')
-      const stats = props.useProjection('sessionStats')
-      const [costState, setCostState] = React.useState({ phase: 'loading' })
-      const [open, setOpen] = React.useState(null)
+      const [costState, setCostState] = React.useState({ phase: 'empty' })
+      const [open, setOpen] = React.useState(false)
       const [expanded, setExpanded] = React.useState(null)
       const hasTokens = hasProjectionTokens(usage)
 
@@ -291,59 +258,25 @@ window.__ModuleLoader__.load({
         }
       }, [props.sessionId, usage, hasTokens])
 
-      if (!hasTokens && (stats === null || typeof stats !== 'object' || stats.steps <= 0)) return null
-
       const costValue = costState.phase === 'ready' ? costState.value : null
-      const costLabel = costValue === null
-        ? costState.phase === 'loading' ? '费用 …' : '费用不可用'
-        : '费用 ' + costText(costValue.cost, costValue.pricing)
-      const tokens = projectionTokens(usage)
-      const children = []
+      if (costValue === null || costValue.requests <= 0) return null
 
-      if (stats !== null && typeof stats === 'object' && stats.steps > 0) {
-        children.push(React.createElement(TimePill, {
-          key: 'time',
-          stats,
-          onOpen: setOpen,
-        }))
-      }
-
-      if (hasTokens && tokens !== null) {
-        children.push(React.createElement('span', { key: 'tokens' },
+      return React.createElement('div', { style: ROW_STYLE },
+        React.createElement('span', null,
           React.createElement('button', {
             type: 'button',
             style: PILL_STYLE,
             'aria-haspopup': 'dialog',
-            'aria-expanded': open === 'tokens',
-            onClick: () => setOpen(open === 'tokens' ? null : 'tokens'),
-          }, 'Tokens ' + formatTokens(tokens.totalTokens)),
-        ))
-      }
-
-      if (costValue !== null && costValue.requests > 0) {
-        children.push(React.createElement('span', { key: 'cost' },
-          React.createElement('button', {
-            type: 'button',
-            style: PILL_STYLE,
-            'aria-haspopup': 'dialog',
-            'aria-expanded': open === 'cost',
-            onClick: () => setOpen(open === 'cost' ? null : 'cost'),
-          }, costLabel),
-        ))
-      }
-
-      let dialog = null
-      if (open === 'tokens') dialog = React.createElement(TokenDialog, { usage, key: 'tokens-dialog' })
-      if (open === 'cost' && costValue !== null) {
-        dialog = React.createElement(CostDialog, {
-          key: 'cost-dialog',
+            'aria-expanded': open,
+            onClick: () => setOpen(!open),
+          }, '费用 ' + costText(costValue.cost, costValue.pricing)),
+        ),
+        open && React.createElement(CostDialog, {
           value: costValue,
           expanded,
           onExpand: setExpanded,
-        })
-      }
-
-      return React.createElement('div', { style: ROW_STYLE }, children, dialog)
+        }),
+      )
     }
 
     const inject = ['slots']
@@ -352,10 +285,9 @@ window.__ModuleLoader__.load({
       const slots = ctx.slots
       slots.inject('conversation.composer.dock', () => slots.register({
         name: 'conversation.composer.dock',
-        id: 'stats',
-        order: 0,
-        priority: -1,
-      }, props => React.createElement(SessionStats, props)))
+        id: 'session-cost',
+        order: 10,
+      }, props => React.createElement(SessionCost, props)))
     }
 
     exports.inject = inject

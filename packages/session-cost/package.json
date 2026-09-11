@@ -4,7 +4,7 @@
   "private": true,
   "license": "Apache-2.0",
   "type": "module",
-  "description": "Session model cost pill beside the DeepSeek Harness Web token total",
+  "description": "Session model cost pill in the DeepSeek Harness Web composer",
   "main": "./src/host.mjs",
   "exports": {
     ".": "./src/host.mjs",
