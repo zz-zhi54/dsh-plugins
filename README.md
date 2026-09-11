@@ -27,6 +27,7 @@
 | [`packages/codex-login`](packages/codex-login/) | 按需临时插件 | `dsh-codex-login-plugin` | 提供 ChatGPT / Codex OAuth 登录入口；首次登录完成后即可卸载 | [`README`](packages/codex-login/README.md) |
 | [`packages/codex-usage`](packages/codex-usage/) | 按需插件 | `dsh-codex-usage-plugin` | 在输入框下方显示 Codex 的 5 小时 / 每周额度与重置倒计时，复用 DSH 自己的 Codex 凭据 | [`README`](packages/codex-usage/README.md) |
 | [`packages/session-cost`](packages/session-cost/) | 按需插件 | `dsh-session-cost-plugin` | 在 Token 统计行下方显示当前会话的 provider/model 费用与 USD 统计 | [`README`](packages/session-cost/README.md) |
+| [`packages/plugin-manager`](packages/plugin-manager/) | 按需插件 | `dsh-plugin-manager` | 在设置页面管理 Web Profile 插件的安装、更新、删除和结果查看 | [`README`](packages/plugin-manager/README.md) |
 
 ### 项目关系
 
@@ -58,7 +59,7 @@
 
 ### 安装
 
-当前 workspace 中有以下 4 个可独立安装的插件（版本示例取自各自的 `package.json`）：
+当前 workspace 中有以下 5 个可独立安装的插件（版本示例取自各自的 `package.json`）：
 
 | 插件目录 | package name | 版本示例 | 用途 |
 | --- | --- | --- | --- |
@@ -66,6 +67,7 @@
 | `packages/codex-login` | `dsh-codex-login-plugin` | `0.1.5-rc.2.2` | 首次 ChatGPT / Codex 登录 |
 | `packages/codex-usage` | `dsh-codex-usage-plugin` | `0.1.5-rc.2.2` | Codex 额度显示 |
 | `packages/session-cost` | `dsh-session-cost-plugin` | `0.1.5-rc.2.2` | Session 费用显示 |
+| `packages/plugin-manager` | `dsh-plugin-manager` | `0.1.5-rc.2.2` | 设置页面管理 Web Profile 插件 |
 
 从当前默认分支安装单个插件：
 
@@ -81,6 +83,9 @@ dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#path:packages/codex-us
 
 # Session 费用
 dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#path:packages/session-cost'
+
+# 插件管理器
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#path:packages/plugin-manager'
 ```
 
 也可以一次安装全部插件：
@@ -90,7 +95,8 @@ dsh plugin --profile web add \
   'github:zz-zhi54/dsh-plugins#path:packages/system-notification' \
   'github:zz-zhi54/dsh-plugins#path:packages/codex-login' \
   'github:zz-zhi54/dsh-plugins#path:packages/codex-usage' \
-  'github:zz-zhi54/dsh-plugins#path:packages/session-cost'
+  'github:zz-zhi54/dsh-plugins#path:packages/session-cost' \
+  'github:zz-zhi54/dsh-plugins#path:packages/plugin-manager'
 ```
 
 已安装插件需要更新时，重新执行对应的 `add` 命令即可；使用固定 release 时，将命令中的版本标签替换为新版本。
@@ -109,6 +115,9 @@ dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.5-rc.2.2&path:pac
 
 # Session 费用
 dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.5-rc.2.2&path:packages/session-cost'
+
+# 插件管理器
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.5-rc.2.2&path:packages/plugin-manager'
 ```
 
 安装后检查 Profile：
@@ -133,6 +142,9 @@ dsh plugin --profile web remove dsh-codex-usage-plugin
 
 # Session 费用
 dsh plugin --profile web remove dsh-session-cost-plugin
+
+# 插件管理器
+dsh plugin --profile web remove dsh-plugin-manager
 ```
 
 只卸载实际安装过的插件即可。
@@ -161,6 +173,8 @@ pnpm --filter dsh-codex-usage-plugin run check
 pnpm --filter dsh-codex-usage-plugin run test
 pnpm --filter dsh-session-cost-plugin run check
 pnpm --filter dsh-session-cost-plugin run test
+pnpm --filter dsh-plugin-manager run check
+pnpm --filter dsh-plugin-manager run test
 pnpm --filter dsh-system-notification-plugin run check
 pnpm --filter dsh-system-notification-plugin run test
 ```

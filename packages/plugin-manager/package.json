@@ -1,0 +1,57 @@
+{
+  "name": "dsh-plugin-manager",
+  "version": "0.1.5-rc.2.2",
+  "private": true,
+  "license": "Apache-2.0",
+  "type": "module",
+  "description": "Web Profile plugin manager for DeepSeek Harness settings",
+  "main": "./dist/host.js",
+  "exports": {
+    ".": "./dist/host.js",
+    "./client": "./dist/client.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "src",
+    "tsconfig.json",
+    "tsdown.config.mjs",
+    "cordis.patch.yml",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "prepare": "tsdown",
+    "check": "pnpm run build && tsc --noEmit -p tsconfig.json && node --check dist/host.js && node --check dist/client.js",
+    "test": "pnpm run build && node --test"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-renderer",
+        "@deepseek-ai/dsh-client-ui-settings-plugins",
+        "@deepseek-ai/dsh-client-connection"
+      ],
+      "platform": "web"
+    }
+  },
+  "peerDependencies": {
+    "@deepseek-ai/dsh-home-paths": "0.1.5-rc.2"
+  },
+  "devDependencies": {
+    "@deepseek-ai/cordis": "4.0.2",
+    "@deepseek-ai/dsh-client-connection": "0.1.5-rc.2",
+    "@deepseek-ai/dsh-client-ui-renderer": "0.1.5-rc.2",
+    "@deepseek-ai/dsh-client-ui-settings-plugins": "0.1.5-rc.2",
+    "@deepseek-ai/dsh-home-paths": "0.1.5-rc.2",
+    "@types/node": "^22.20.2",
+    "@types/react": "^18.3.1",
+    "react": "^18.3.1",
+    "tsdown": "^0.23.0",
+    "typescript": "^5.9.3"
+  }
+}
