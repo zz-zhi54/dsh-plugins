@@ -12,3 +12,5 @@ node_modules/
 
 # pnpm is the only package manager used by this workspace
 package-lock.json
+
+release-version-workspace
