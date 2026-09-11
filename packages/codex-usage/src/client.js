@@ -236,11 +236,11 @@ window.__ModuleLoader__.load({
     function apply(ctx) {
       const slots = ctx.slots
       const timer = ctx.timer
-      // order 1：内置用量 pill（id "stats"）是 order 0，本条目排在它下面一行。
+      // order 20：内置 stats 是 order 0，费用条目是 order 10，本条目排在费用下面一行。
       slots.inject('conversation.composer.dock', () => slots.register({
         name: 'conversation.composer.dock',
         id: 'codex-usage',
-        order: 1,
+        order: 20,
       }, () => React.createElement(CodexUsage, { timer })))
     }
 

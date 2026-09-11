@@ -153,7 +153,7 @@ test('保持 classic-script 工厂与 Slot 注册契约', () => {
   assert.deepEqual(mounted(createTimer()).options, {
     name: 'conversation.composer.dock',
     id: 'codex-usage',
-    order: 1,
+    order: 20,
   })
 })
 
