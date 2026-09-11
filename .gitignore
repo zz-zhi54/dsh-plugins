@@ -5,8 +5,12 @@ node_modules/
 # IDE
 .idea/
 
+.playwright-cli
+
 # Temporary workspace artifacts
 .tmp-pnpm-workspace-test
 
 # pnpm is the only package manager used by this workspace
 package-lock.json
+
+release-version-workspace

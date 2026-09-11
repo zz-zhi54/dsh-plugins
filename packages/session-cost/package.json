@@ -1,13 +1,14 @@
 {
-  "name": "dsh-codex-usage-plugin",
+  "name": "dsh-session-cost-plugin",
   "version": "0.1.5-rc.1.7",
   "private": true,
   "license": "Apache-2.0",
   "type": "module",
-  "description": "Codex 5-hour and weekly quota pill below the DeepSeek Harness Web composer",
+  "description": "Session model cost pill in the DeepSeek Harness Web composer",
   "main": "./src/host.mjs",
   "exports": {
     ".": "./src/host.mjs",
+    "./cost": "./src/cost.mjs",
     "./client": "./src/client.js",
     "./cordis.patch.yml": "./cordis.patch.yml",
     "./package.json": "./package.json"
@@ -19,8 +20,11 @@
     "README.md"
   ],
   "scripts": {
-    "check": "node --check src/host.mjs && node --check src/codex-usage.mjs && node --check src/client.js",
+    "check": "node --check src/host.mjs && node --check src/cost.mjs && node --check src/client.js",
     "test": "node --test"
+  },
+  "devDependencies": {
+    "@earendil-works/pi-ai": "0.85.1"
   },
   "dsh": {
     "bundle": {

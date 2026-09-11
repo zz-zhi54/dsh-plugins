@@ -1,0 +1,24 @@
+{
+  "name": "dsh-codex",
+  "version": "0.1.5-rc.1.7",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "Codex login and usage plugin combination for DeepSeek Harness Web",
+  "files": [
+    "cordis.patch.yml",
+    "README.md"
+  ],
+  "exports": {
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "dependencies": {
+    "dsh-codex-login-plugin": "workspace:^",
+    "dsh-codex-usage-plugin": "workspace:^"
+  }
+}

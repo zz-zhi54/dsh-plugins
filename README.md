@@ -1,6 +1,6 @@
 # dsh-plugins
 
-个人维护的 DeepSeek Harness（DSH）插件集合，以 pnpm workspace monorepo 组织。可独立安装的插件位于 `packages/*`，用于组合插件的 Bundle 位于 `bundles/*`。
+个人维护的 DeepSeek Harness（DSH）插件集合，以 pnpm workspace monorepo 组织。可独立安装的插件位于 `packages/*`，插件组合位于 `packs/*`。
 
 > 这是个人维护的非官方社区项目，不隶属于 DeepSeek AI 或 DeepSeek Harness 官方团队。
 >
@@ -10,19 +10,20 @@
 
 | 项目 | 类型 | 包名 | 用途 | 详细说明 |
 | --- | --- | --- | --- | --- |
-| [`packages/system-notification`](packages/system-notification/) | 插件；默认 Bundle 成员 | `dsh-system-notification-plugin` | 旁路监听任务状态和审批事件，发送 macOS / Windows 原生系统通知 | [`README`](packages/system-notification/README.md) |
+| [`packages/system-notification`](packages/system-notification/) | 插件；默认组合成员 | `dsh-system-notification-plugin` | 旁路监听任务状态和审批事件，发送 macOS / Windows 原生系统通知 | [`README`](packages/system-notification/README.md) |
 | [`packages/codex-login`](packages/codex-login/) | 按需临时插件 | `dsh-codex-login-plugin` | 提供 ChatGPT / Codex OAuth 登录入口；首次登录完成后即可卸载 | [`README`](packages/codex-login/README.md) |
 | [`packages/codex-usage`](packages/codex-usage/) | 按需插件 | `dsh-codex-usage-plugin` | 在输入框下方显示 Codex 的 5 小时 / 每周额度与重置倒计时，复用 DSH 自己的 Codex 凭据 | [`README`](packages/codex-usage/README.md) |
-| [`packages/init`](packages/init/) | 兼容插件（已废弃） | `dsh-init-plugin` | 提供旧项目使用的 Codex 风格 `/init` 命令；新项目使用 `create-agentsmd` skill | [`README`](packages/init/README.md) |
-| [`bundles/dsh-plugins`](bundles/dsh-plugins/) | 聚合 Bundle | `dsh-plugins` | 默认组合系统通知插件，不承载业务实现 | [`README`](bundles/dsh-plugins/README.md) |
+| [`packages/session-cost`](packages/session-cost/) | 插件；默认组合成员 | `dsh-session-cost-plugin` | 在 Token 统计行下方显示当前会话的 provider/model 费用与 USD 统计 | [`README`](packages/session-cost/README.md) |
+| [`packs/default`](packs/default/) | 默认组合 | `dsh-default` | 默认启用系统通知和 Session 费用插件，不承载业务实现 | [`README`](packs/default/README.md) |
+| [`packs/codex`](packs/codex/) | Codex 组合 | `dsh-codex` | 同时启用 Codex 登录和额度显示，不承载业务实现 | [`README`](packs/codex/README.md) |
 
 ### 项目关系
 
-- `dsh-plugins` Bundle 只显式启用 `system-notification`，不包含 Codex 登录和已废弃的 `/init`。
-- Codex 登录插件只在首次 OAuth 登录时按需安装；凭据保存到 DSH credentials store 后可以卸载。
-- Codex 用量插件按需安装，读取同一份 `llm-pi-ai/openai-codex` 凭据；它只读凭据、不写凭据，也不自己刷新 token。
-- `dsh-init-plugin` 仅用于旧配置或旧工作流兼容，新项目请使用 `create-agentsmd` skill。
-- `dsh-plugins` 和 `dsh-system-notification-plugin` 二选一，不要同时安装，以免重复插入同一 Profile 条目。
+- `dsh-default` 显式启用 `system-notification` 和 `session-cost`。
+- `dsh-codex` 同时启用 Codex 登录和额度显示；登录成功后可以改为单独安装用量插件。
+- Codex 用量插件读取同一份 `llm-pi-ai/openai-codex` 凭据；它只读凭据、不写凭据，也不自己刷新 token。
+- Session 费用插件属于默认组合，也可以独立按需安装；Codex 组合不会自动启用它。
+- `dsh-default` 和 `dsh-system-notification-plugin` / `dsh-session-cost-plugin` 二选一，不要同时安装，以免重复插入同一 Profile 条目。
 
 ## 设计原则
 
@@ -51,12 +52,12 @@ git clone https://github.com/zz-zhi54/dsh-plugins.git
 cd dsh-plugins
 ```
 
-### 默认启用系统通知
+### 默认启用系统通知和 Session 费用
 
-安装聚合 Bundle：
+安装默认组合：
 
 ```sh
-dsh plugin --profile web add ./bundles/dsh-plugins
+dsh plugin --profile web add ./packs/default
 ```
 
 检查 Profile：
@@ -65,12 +66,28 @@ dsh plugin --profile web add ./bundles/dsh-plugins
 dsh --profile web --dump-config
 ```
 
-在没有额外插件的情况下，应出现 `system-notification`，不应出现 `authorization`、`codex-login` 或 `command-init`。
+在没有额外插件的情况下，应出现 `system-notification` 和 `session-cost`，不应出现 `authorization`、`codex-login` 或 `codex-usage`。
 
-卸载 Bundle：
+卸载默认组合：
 
 ```sh
-dsh plugin --profile web remove dsh-plugins
+dsh plugin --profile web remove dsh-default
+```
+
+### 启用 Codex 组合
+
+安装 Codex 组合：
+
+```sh
+dsh plugin --profile web add ./packs/codex
+```
+
+安装后应出现 `authorization`、`codex-login` 和 `codex-usage`，不应因此出现 `session-cost`。登录成功后，如只需查看额度，可卸载 `dsh-codex` 并按 Codex 用量插件 README 单独安装。不要在 `dsh-codex` 保留期间再单独安装 `codex-login` 或 `codex-usage`，否则可能重复插入相同 Profile 条目。
+
+卸载 Codex 组合：
+
+```sh
+dsh plugin --profile web remove dsh-codex
 ```
 
 ### 按需安装单个项目
@@ -79,8 +96,8 @@ dsh plugin --profile web remove dsh-plugins
 
 - [Codex 登录插件](packages/codex-login/README.md)
 - [Codex 用量插件](packages/codex-usage/README.md)
+- [Session 费用插件](packages/session-cost/README.md)
 - [系统通知插件](packages/system-notification/README.md)
-- [旧项目 `/init` 兼容插件](packages/init/README.md)
 
 ## 开发
 
@@ -94,10 +111,11 @@ pnpm check
 只检查单个项目：
 
 ```sh
-pnpm --filter dsh-init-plugin run check
 pnpm --filter dsh-codex-login-plugin run check
 pnpm --filter dsh-codex-usage-plugin run check
 pnpm --filter dsh-codex-usage-plugin run test
+pnpm --filter dsh-session-cost-plugin run check
+pnpm --filter dsh-session-cost-plugin run test
 pnpm --filter dsh-system-notification-plugin run check
 pnpm --filter dsh-system-notification-plugin run test
 ```
@@ -108,12 +126,12 @@ pnpm --filter dsh-system-notification-plugin run test
 
 - `packages/*/src`：各插件的运行时代码。
 - `packages/*/cordis.patch.yml`：对应插件要插入的 Profile 条目。
-- `bundles/dsh-plugins/cordis.patch.yml`：默认 Bundle 的显式组合关系。
+- `packs/*/cordis.patch.yml`：各插件组合的显式关系。
 - [`CHANGELOG.md`](CHANGELOG.md)：版本、兼容关系和发布记录。
 - `AGENTS.md`：面向编码 Agent 的项目约束，不是用户使用手册。
-- `dsh/`：部署到用户全局 `~/.dsh/` 的 DSH 源文件，不属于 pnpm workspace，也不参与插件 Bundle。
+- `dsh/`：部署到用户全局 `~/.dsh/` 的 DSH 源文件，不属于 pnpm workspace，也不参与插件组合。
 
-插件通过自身 `package.json` 的 `dsh.bundle.patch` 指向 patch 文件；patch 只描述组件 ID 和 package 名称，业务实现留在对应项目中。DSH 不会因为 Bundle 依赖而自动递归激活子 Bundle。
+插件通过自身 `package.json` 的 `dsh.bundle.patch` 指向 patch 文件；patch 只描述组件 ID 和 package 名称，业务实现留在对应项目中。DSH 不会因为组合依赖而自动递归激活子组合。
 
 ## 许可证
 
@@ -123,5 +141,4 @@ pnpm --filter dsh-system-notification-plugin run test
 
 迁移到本 monorepo 前的独立仓库保留原提交历史：
 
-- `zz-zhi54/dsh-init-plugin`
 - `zz-zhi54/dsh-codex-login-plugin`

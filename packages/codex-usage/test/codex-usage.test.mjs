@@ -82,6 +82,27 @@ test('redact 抹掉 Bearer 与 JSON 里的 token 字段', () => {
   assert.match(safe, /"access_token":"<redacted>"/)
 })
 
+test('redact 抹掉 wham/usage 身份字段与裸邮箱', () => {
+  const text = JSON.stringify({
+    email: 'someone@example.com',
+    user_id: 'user-abc',
+    account_id: 'acct-1',
+    chatgpt_account_id: 'acct-2',
+    note: 'reach me at other@example.org',
+    error: 'token_expired',
+  })
+  const safe = redact(text)
+
+  assert.equal(safe.includes('someone@example.com'), false)
+  assert.equal(safe.includes('other@example.org'), false)
+  assert.equal(safe.includes('user-abc'), false)
+  assert.equal(safe.includes('acct-1'), false)
+  assert.equal(safe.includes('acct-2'), false)
+  // 诊断信息要保留，否则排障没有线索
+  assert.match(safe, /token_expired/)
+  assert.match(safe, /"email":"<redacted>"/)
+})
+
 test('normalizeWindow 换算分钟、保留秒级 resetsAt、并夹紧百分比', () => {
   assert.deepEqual(normalizeWindow(WHAM_PAYLOAD.rate_limit.primary_window), {
     usedPercent: 7,
@@ -222,4 +243,35 @@ test('queryCodexUsage 捕获异常并脱敏', async () => {
 
   assert.equal(result.ok, false)
   assert.equal(result.reason.includes(ACCESS_TOKEN), false)
+})
+
+// 回归：失败原因会显示在界面上，绝不能把上游的身份字段带出去
+test('失败原因不含上游的 email / user_id / account_id', async () => {
+  const body = JSON.stringify({
+    email: 'someone@example.com',
+    user_id: 'user-9rZqE7nQmip1J3UyRaZZ97ba',
+    account_id: '82c43a50-8646-4b9d-bea2-786feaafa07f',
+    plan_type: 'plus',
+  })
+  const result = await queryCodexUsage({
+    credentials: credentialsStub(),
+    fetchImpl: async () => jsonResponse(body),
+  })
+
+  assert.equal(result.ok, false)
+  for (const secret of ['someone@example.com', 'user-9rZqE7nQmip1J3UyRaZZ97ba', '82c43a50-8646-4b9d-bea2-786feaafa07f']) {
+    assert.equal(result.reason.includes(secret), false, `原因里泄漏了 ${secret}`)
+  }
+})
+
+test('非 2xx 的原因同样不含身份字段，但保留诊断信息', async () => {
+  const result = await queryCodexUsage({
+    credentials: credentialsStub(),
+    fetchImpl: async () => jsonResponse('{"email":"someone@example.com","error":{"code":"token_expired"}}', 401),
+  })
+
+  assert.equal(result.ok, false)
+  assert.match(result.reason, /HTTP 401/)
+  assert.match(result.reason, /token_expired/)
+  assert.equal(result.reason.includes('someone@example.com'), false)
 })

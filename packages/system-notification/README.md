@@ -25,15 +25,15 @@
 dsh plugin --profile web add ./packages/system-notification
 ```
 
-### 使用聚合 Bundle
+### 使用默认组合
 
 如果要启用默认的系统通知插件，安装：
 
 ```sh
-dsh plugin --profile web add ./bundles/dsh-plugins
+dsh plugin --profile web add ./packs/default
 ```
 
-安装聚合 Bundle 后，不要再单独安装本插件。
+安装默认组合后，不要再单独安装本插件。
 
 ## 监听行为
 

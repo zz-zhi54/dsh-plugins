@@ -10,13 +10,15 @@
 
 ## 功能
 
-- **位置**：注册在 `conversation.composer.dock`，`id: codex-usage`、`order: 1` —— 内置用量 pill（`id: stats`，order 0）下面一行，同一套居中排版。
+- **位置**：注册在 `conversation.composer.dock`，`id: codex-usage`、`order: 20` —— 排在内置 `stats`（`order: 0`）和 Session 费用（`order: 10`）下面一行，同一套居中排版。
 - **收起态就是全部信息**，没有悬浮面板：
   `Codex · 5h 剩 93% · 2 小时 41 分后刷新 · 周 剩 66% · 4 天 3 小时后刷新`
   余量越少越醒目：已用 ≥75% 转警告色，≥90% 转错误色。
 - **交互**：点击强制刷新，绕过 Host 的 60s 缓存；悬浮只做背景反馈。
 - **刷新**：挂载时一次，之后每 5 分钟一次；倒计时每 30s 重绘一次。
-- **降级**：取不到数据时只显示一行灰色 `Codex 额度不可用`，具体原因在 `title` 里，不影响界面其它部分。
+- **失败暂停**：连续 3 次失败后**停止自动轮询**，pill 变成 `Codex 额度已暂停 · 点击重试`；点击重试成功即恢复 5 分钟轮询，仍失败则继续暂停。失败时不会一直打上游。
+- **降级**：失败态与暂停态都只占一行灰字（本身就是重试按钮），具体原因在 `title` 里，不影响界面其它部分。
+- **与 Session 费用插件并装**：三者都位于 `conversation.composer.dock`；DSH 内置 `stats` 保持 `order: 0`，Session 费用插件使用独立的 `session-cost`（`order: 10`）条目，本插件使用独立的 `codex-usage`（`order: 20`）条目，按当前 DSH Slot 契约可同时安装。
 
 ## 数据来源
 
@@ -29,11 +31,12 @@
 完整清单写在 `src/codex-usage.mjs` 文件头，改动前必读。要点：
 
 - **access token 只出现在发往上游的请求头里**：不写日志、不进错误信息、不进 HTTP 响应、不落盘。
-- 所有对外错误文本先经 `redact()` 脱敏（`Bearer` 值与常见 token 字段名），未脱敏的上游原文不得离开 Host。
+- 所有对外错误文本先经 `redact()` 脱敏。脱敏**不只覆盖 token**：`Bearer` 值、`access_token` / `refresh_token` / `access` / `refresh` 字段，以及 `email` / `user_id` / `account_id`（snake_case 与 camelCase）都要掩掉，并用邮箱形态兜底；同时保留错误码等排障信息。
 - `wham/usage` 原始响应含 `email` / `user_id` / `account_id`；只允许 `projectUsagePayload()` 投影后的标量字段离开 Host，浏览器侧只有百分比、窗口长度、重置时刻、套餐、时间戳。
+- **本插件注册的 `/api/codex-usage` 不在 DSH 的浏览器信任栅栏内**（该栅栏是 `dsh-client-connection` 的私有逻辑，只守它自己的 RPC 通道）。因此这条路由只允许返回投影后的额度标量 —— 不要把凭据或身份信息加进来。
 - **本插件绝不刷新凭据**，连 `refresh` 字段都不读。pi-ai 的刷新发生在 `credentials.modifyRecord()` 内部；`dsh-llm-pi-ai` 的 `credentialStoreFrom()` 注释明确警告，两个进程并发轮换同一个 refresh token 会丢掉先写入的那一份。凭据过期时直接提示重新登录或在 DSH 里用一次 Codex。
 
-`test/codex-usage.test.mjs` 里有对应的回归测试：正常路径的返回值不得包含 token，401 的原因必须已脱敏，凭据过期时不得发出任何请求。
+`test/codex-usage.test.mjs` 里有对应的回归测试：正常路径的返回值不得包含 token，401 的原因必须已脱敏，**失败原因不得出现上游的 email / user_id / account_id**，凭据过期时不得发出任何请求。
 
 ## 请求对齐依据
 
@@ -48,7 +51,7 @@
 | 脱敏写法 | `@narumitw/pi-codex-usage` `src/query.ts:162` → `redactErrorBody()` |
 | 凭据来源 | pi 用 pi-coding-agent 的 `readStoredCredential()`；DSH 的对应物是 `ctx.credentials.readRecord()` |
 
-实际发送的头：`authorization`、`chatgpt-account-id`、`originator`、`user-agent`、`accept: application/json`。
+实际发送的头：`authorization`、`originator`、`user-agent`、`accept: application/json`；凭据包含账号 ID 时才额外发送 `chatgpt-account-id`。
 
 pi-ai 另有一组 SSE 专有头（`OpenAI-Beta`、`accept: text/event-stream`、`content-type`、`session-id`、`x-client-request-id`），只用于 POST `/codex/responses` 流式请求；本插件查询用量走 GET，因此不带。
 
@@ -56,7 +59,9 @@ pi-ai 另有一组 SSE 专有头（`OpenAI-Beta`、`accept: text/event-stream`�
 
 ## 安装
 
-不属于默认的 `dsh-plugins` Bundle，按需安装。在 Monorepo 根目录执行：
+属于 `dsh-codex` 组合，也可以按需单独安装。在 Monorepo 根目录执行：
+
+> `dsh-codex` 已经包含本插件；使用组合时不要再单独安装本插件。若只需额度显示，请先卸载组合，再执行下面的独立安装命令。
 
 ```sh
 dsh plugin --profile web add ./packages/codex-usage
@@ -88,7 +93,7 @@ dsh --profile web --dump-config
 - **依赖 DSH 侧的 Codex 登录。** 凭据 JWT 约 10 天过期，过期且尚未刷新时不可用；在 DSH 里用一次 Codex 会触发刷新。
 - 只查询自己账号的额度，不做账号切换，也不读取 `additional_rate_limits` 里的其它计费桶。
 - **三端一致**：使用 Node 内置 `fetch`，不依赖 `curl` 或任何外部二进制，macOS / Linux / Windows 行为相同。
-- 未来如果要显示"重置券 N 张"或"套餐 / 更新时间"，`wham/usage` 已带回 `rate_limit_reset_credits.available_count`，投影里也保留了 `planType` 与 `fetchedAt`，只需在收起态那一行补一段文案。
+- 未来如果要显示"重置券 N 张"，需要先让 `projectUsagePayload()` 投影并测试 `rate_limit_reset_credits.available_count`；当前投影没有保留该字段。`planType` 与 `fetchedAt` 已保留，如需显示"套餐 / 更新时间"，只需在收起态那一行补文案。
 
 ## 实现约束
 

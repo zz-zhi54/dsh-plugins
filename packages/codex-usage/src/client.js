@@ -24,6 +24,8 @@ window.__ModuleLoader__.load({
     const REFRESH_MS = 300000
     /** 刷新倒计时的重渲染间隔。 */
     const TICK_MS = 30000
+    /** 连续失败达到这个次数就停止自动轮询，改为等用户点击重试。 */
+    const MAX_FAILURES = 3
 
     const ROOT_STYLE = {
       boxSizing: 'border-box',
@@ -53,7 +55,17 @@ window.__ModuleLoader__.load({
       cursor: 'pointer',
     }
 
-    const DIM_STYLE = { color: 'var(--dsw-alias-label-secondary)', opacity: 0.65, cursor: 'default' }
+    /** 失败与暂停态的提示；它本身就是一个可点击的重试按钮，不是纯文本。 */
+    const NOTICE_STYLE = {
+      background: 'transparent',
+      border: 'none',
+      padding: '1px 8px',
+      borderRadius: 24,
+      font: 'inherit',
+      color: 'var(--dsw-alias-label-secondary)',
+      opacity: 0.65,
+      cursor: 'pointer',
+    }
     const SEP_STYLE = { color: 'var(--dsw-alias-separator-primary, var(--dsw-alias-border-l1))' }
 
     /** 高用量配色：只给"剩余"这一段上色，余量越少越醒目。 */
@@ -113,36 +125,71 @@ window.__ModuleLoader__.load({
     function CodexUsage(props) {
       const timer = props.timer
       const [state, setState] = React.useState({ phase: 'loading' })
+      // 跨渲染保持同一引用的容器，用来表达"组件是否还在"与"连续失败了几次"。
+      // 用 useState 的惰性初始化保证只创建一次，避免为此额外引入 useRef。
+      const [tracker] = React.useState(() => ({ alive: true, failures: 0 }))
+      const [paused, setPaused] = React.useState(false)
       const [hover, setHover] = React.useState(false)
       const [, setTick] = React.useState(0)
 
+      // 只有真正卸载才把 alive 置假。不能用轮询 effect 的清理来表示卸载 ——
+      // 进入暂停时那个清理同样会跑，那时组件其实还在。
       React.useEffect(() => {
-        let live = true
-        const run = () => {
-          void readUsage(false).then(next => {
-            if (live) setState(next)
-          })
-        }
-        run()
-        const stop = timer.interval(run, REFRESH_MS)
+        tracker.alive = true
         return () => {
-          live = false
-          stop()
+          tracker.alive = false
         }
       }, [])
+
+      // 自动轮询。连续失败达到上限就把 paused 置真，本 effect 随之清理、轮询彻底停下，
+      // 之后只由用户点击重试 —— 既不再打上游，也不会在失败态里反复刷新界面。
+      React.useEffect(() => {
+        if (paused) return undefined
+        const attempt = async () => {
+          const next = await readUsage(false)
+          if (!tracker.alive) return
+          setState(next)
+          if (next.phase !== 'error') {
+            tracker.failures = 0
+            return
+          }
+          tracker.failures += 1
+          if (tracker.failures >= MAX_FAILURES) setPaused(true)
+        }
+        void attempt()
+        const stop = timer.interval(() => { void attempt() }, REFRESH_MS)
+        return stop
+      }, [paused])
 
       // 刷新倒计时跟着时间走，每 30s 重渲染一次就够了
       React.useEffect(() => timer.interval(() => setTick(value => value + 1), TICK_MS), [])
 
-      const refresh = () => {
-        void readUsage(true).then(setState)
+      // 点击：强制查一次并绕过 Host 缓存。成功就恢复自动轮询；仍失败则保持暂停，等下一次点击。
+      const retry = () => {
+        void readUsage(true).then(next => {
+          if (!tracker.alive) return
+          setState(next)
+          if (next.phase === 'error') return
+          // 手动成功要把连续失败清零，否则"手动刷新成功 → 下次自动轮询失败"会立刻触发暂停
+          tracker.failures = 0
+          setPaused(false)
+        })
       }
 
       if (state.phase === 'loading') return null
 
       if (state.phase === 'error') {
         return React.createElement('div', { style: ROOT_STYLE },
-          React.createElement('span', { style: DIM_STYLE, title: state.reason }, 'Codex 额度不可用'))
+          React.createElement('button', {
+            type: 'button',
+            style: Object.assign({}, NOTICE_STYLE, {
+              background: hover ? 'var(--dsw-alias-interactive-bg-hover, var(--dsw-alias-bg-layer-2))' : 'transparent',
+            }),
+            title: state.reason,
+            onMouseEnter: () => setHover(true),
+            onMouseLeave: () => setHover(false),
+            onClick: retry,
+          }, paused ? 'Codex 额度已暂停 · 点击重试' : 'Codex 额度不可用 · 点击重试'))
       }
 
       const usage = state.usage
@@ -179,7 +226,7 @@ window.__ModuleLoader__.load({
           onMouseLeave: () => setHover(false),
           onFocus: () => setHover(true),
           onBlur: () => setHover(false),
-          onClick: refresh,
+          onClick: retry,
         }, pill))
     }
 
@@ -189,11 +236,11 @@ window.__ModuleLoader__.load({
     function apply(ctx) {
       const slots = ctx.slots
       const timer = ctx.timer
-      // order 1：内置用量 pill（id "stats"）是 order 0，本条目排在它下面一行。
+      // order 20：内置 stats 是 order 0，费用条目是 order 10，本条目排在费用下面一行。
       slots.inject('conversation.composer.dock', () => slots.register({
         name: 'conversation.composer.dock',
         id: 'codex-usage',
-        order: 1,
+        order: 20,
       }, () => React.createElement(CodexUsage, { timer })))
     }
 

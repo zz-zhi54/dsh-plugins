@@ -8,6 +8,33 @@
 - 同一 DSH 版本下继续修复或改进插件时，递增最后的插件修订号。
 - 切换到新的 DSH 版本时，更新 DSH 版本部分，并将插件修订号从 `.1` 重新开始。
 
+## Unreleased
+
+## 0.1.5-rc.1.7 — 2026-09-11
+
+**对应 DSH 官方标签：** `dsh-v0.1.5-rc.1`
+
+**对应本仓库标签：** `dsh-plugins-v0.1.5-rc.1.7`
+
+### 工作区与组合
+
+- 移除已废弃的 `packages/init` 插件。
+- 将组合目录从 `bundles/` 重命名为 `packs/`。
+- 新增 `dsh-default` 默认组合（显式启用 `system-notification` 和 `session-cost`）和 `dsh-codex` Codex 组合；组合 patch 显式插入组件，不依赖递归激活。
+
+### Codex 用量
+
+- 连续 3 次请求失败后暂停自动轮询，失败态改为可点击的手动重试；手动重试成功后恢复轮询。
+- 脱敏补齐 `email`、`user_id`、`account_id` 等身份字段，并修复手动重试状态清理问题。
+
+### Session 费用
+
+- 新增 `packages/session-cost`（`dsh-session-cost-plugin`）：在 DSH 内置 Token 统计下方独立显示按 `provider/model` 分组的 USD 费用。
+- 费用从 durable Session events 的 provider usage 重算，成功消息和无 surface message 的 retry attempt 均覆盖；模型价格只使用 `@earendil-works/pi-ai` 内置目录，未知模型不猜价。
+- 点击费用可展开 Token / cache 明细与每个模型的费用；不增加额外持久化。
+- 使用独立的 `session-cost` composer slot（`order: 10`），保留 DSH 内置 `stats` 及 Codex 用量 slot。
+- 补充 Session 费用 pill、费用对话框收起/展开态截图，并将截图资源随插件包发布。
+
 ## 0.1.5-rc.1.6 — 2026-09-10
 
 **对应 DSH 官方标签：** `dsh-v0.1.5-rc.1`
@@ -43,7 +70,7 @@
 - 凭据取自 DSH credentials store 的 `llm-pi-ai/openai-codex`，只读且不刷新；不依赖 codex CLI，也不读取 `~/.codex`。凭据按次惰性解析，避免 Cordis 服务就绪竞态。
 - 请求特征（端点 `wham/usage`、请求头、User-Agent、响应字段、脱敏写法）与 DSH pi-ai 及 pi 生态实现对齐；对齐表同时记录在该包 README 与 `src/codex-usage.mjs` 文件头，便于上游更新时同步。
 - 安全边界：access token 只出现在发往上游的请求头里；对外错误文本一律脱敏；上游响应中的 `email` / `user_id` / `account_id` 不离开 Host。21 项单元测试覆盖投影、脱敏、凭据解析与客户端契约。
-- 该插件不属于默认 Bundle，按需安装：`dsh plugin --profile web add ./packages/codex-usage`。
+- 该插件不属于默认组合，按需安装：`dsh plugin --profile web add ./packages/codex-usage`。
 
 ## 0.1.5-rc.1.3 — 2026-09-10
 
@@ -91,11 +118,10 @@
 
 **对应本仓库标签：** `dsh-plugins-v0.1.5-alpha.2.1`
 
-### Bundle
+### 默认组合
 
-- 默认 Bundle 只启用 `system-notification`。
-- `codex-login` 不再由默认 Bundle 激活，避免首次登录以外的长期依赖。
-- 已废弃的 `command-init` 仍不包含在默认 Bundle 中。
+- 默认组合只启用 `system-notification`。
+- `codex-login` 不再由默认组合激活，避免首次登录以外的长期依赖。
 
 ### Codex 登录
 
