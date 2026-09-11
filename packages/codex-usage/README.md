@@ -10,7 +10,7 @@
 
 ## 功能
 
-- **位置**：注册在 `conversation.composer.dock`，`id: codex-usage`、`order: 1` —— 内置用量 pill（`id: stats`，order 0）下面一行，同一套居中排版。
+- **位置**：注册在 `conversation.composer.dock`，`id: codex-usage`、`order: 20` —— 排在内置 `stats`（`order: 0`）和 Session 费用（`order: 10`）下面一行，同一套居中排版。
 - **收起态就是全部信息**，没有悬浮面板：
   `Codex · 5h 剩 93% · 2 小时 41 分后刷新 · 周 剩 66% · 4 天 3 小时后刷新`
   余量越少越醒目：已用 ≥75% 转警告色，≥90% 转错误色。
@@ -18,7 +18,7 @@
 - **刷新**：挂载时一次，之后每 5 分钟一次；倒计时每 30s 重绘一次。
 - **失败暂停**：连续 3 次失败后**停止自动轮询**，pill 变成 `Codex 额度已暂停 · 点击重试`；点击重试成功即恢复 5 分钟轮询，仍失败则继续暂停。失败时不会一直打上游。
 - **降级**：失败态与暂停态都只占一行灰字（本身就是重试按钮），具体原因在 `title` 里，不影响界面其它部分。
-- **与 Session 费用插件并装**：两者都位于 `conversation.composer.dock`；本插件使用独立的 `codex-usage`（`order: 1`）条目，Session 费用插件替换内置的 `stats`（`order: 0`）条目，按当前 DSH Slot 契约可同时安装。
+- **与 Session 费用插件并装**：三者都位于 `conversation.composer.dock`；DSH 内置 `stats` 保持 `order: 0`，Session 费用插件使用独立的 `session-cost`（`order: 10`）条目，本插件使用独立的 `codex-usage`（`order: 20`）条目，按当前 DSH Slot 契约可同时安装。
 
 ## 数据来源
 

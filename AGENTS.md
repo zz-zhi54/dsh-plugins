@@ -93,8 +93,9 @@
 - `packages/codex-usage` 的 Host 只依赖 `webServer`（必需）和 `credentials`（可选），注册 `GET /api/codex-usage`。它**只读**凭据记录，绝不调用 `modifyRecord`，也绝不实现 OAuth 刷新 —— pi-ai 的刷新发生在 `credentials.modifyRecord()` 内部，两个进程并发轮换同一个 refresh token 会丢掉先写入的一份。
 - `packages/codex-usage` **必须按次惰性调用 `ctx.get('credentials')`，不能在 `apply()` 里取一次并缓存**。Cordis 的 `ctx.get` 默认 strict，只在提供方 fiber 处于 active 状态时返回；`dsh-credentials-local` 的 `[Service.init]()` 要先读凭据文件并启动文件监视，而插件树是并发激活的，所以 apply 时可能拿到 `undefined` 并被永久缓存。同理，失败结果不进结果缓存，保证"稍后就绪"能自愈。
 - `packages/codex-usage` 的请求特征（端点、请求头、User-Agent、响应字段、脱敏写法）刻意与 pi-ai / `@narumitw/pi-codex-usage` 对齐，对齐表同时写在 `src/codex-usage.mjs` 文件头和该包 README；上游更新时按表同步，不要只改一处。
-- `packages/codex-usage/src/client.js` 同样是 classic-script 模块，注册进 `conversation.composer.dock`（`id: codex-usage`、`order: 1`），样式全部内联，不向 `document` 注入全局 CSS。它每 5 分钟轮询一次，**连续 3 次失败后暂停轮询**，只等用户点击重试（失败态本身是可点击按钮）——不要改成无限重试。
-- `packages/session-cost` 的 Host 依赖 `sessions` 与 `webServer`，注册 `GET /api/session-cost`；费用从当前 Session 的 durable snapshot 重算，并按 Session `seq` 做进程内缓存。其 Client 注册 `conversation.composer.dock` 的 `stats`（`order: 0`）以替换 DSH 内置统计单元；与 `codex-usage` 并装时，后者使用独立的 `codex-usage`（`order: 1`）条目，必须保持这两个 Slot 契约。
+- `packages/codex-usage/src/client.js` 同样是 classic-script 模块，注册进 `conversation.composer.dock`（`id: codex-usage`、`order: 20`），样式全部内联，不向 `document` 注入全局 CSS。它每 5 分钟轮询一次，**连续 3 次失败后暂停轮询**，只等用户点击重试（失败态本身是可点击按钮）——不要改成无限重试。
+- `packages/session-cost` 的 Host 依赖 `sessions` 与 `webServer`，注册 `GET /api/session-cost`；费用从当前 Session 的 durable snapshot 重算，并按 Session `seq` 做进程内缓存。其 Client 只能注册独立的 `conversation.composer.dock` 条目 `session-cost`（`order: 10`），不得占用或替换 DSH 内置的 `stats`（`order: 0`）；与 `codex-usage` 并装时，后者使用 `order: 20`，必须保持这些 Slot 契约。
+- `session-cost` 必须以独立 Slot 追加费用信息，完整保留 DSH 内置 stats 的原有逻辑、页面结构、布局、样式和交互；不得通过占用同一 ID、覆盖注册、复制重写或绕过内置行为改变原页面。若无法在此前提下实现，先停止并确认。与 `codex-usage` 并装时，费用使用 `order: 10`、Codex 刷新使用 `order: 20`，不要交换或复用同一 `id`。
 - `system-notification` 只旁路观察持久化 `session/event`，不接管 Agent 循环、审批流程或 answerer。它监听 `turn/end` 的 `completed` 结果和去重后的 `approval/asked`；通知失败只能记录 warning，不能反向影响主流程。
 - 修改 `packages/system-notification/assets/dsh.ico` 或 Windows 通知脚本时，保留路径转义测试，并确认资源仍包含在 package 的 `files` 中。
 
