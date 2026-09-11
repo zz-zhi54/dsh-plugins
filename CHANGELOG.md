@@ -10,6 +10,17 @@
 
 ## Unreleased
 
+## 0.1.5-rc.2.2 — 2026-09-11
+
+**对应 DSH 官方标签：** `dsh-v0.1.5-rc.2`
+
+**对应本仓库标签：** `dsh-plugins-v0.1.5-rc.2.2`、`v0.1.5-rc.2.2`
+
+### 安装与发布
+
+- 移除组合 pack，改为从 GitHub `packages/*` 子目录按需安装、更新和卸载单个插件。
+- 发布脚本保留 `dsh-plugins-v<version>` 主标签，并为 `github:...#v<version>&path:...` 安装命令创建同一提交的 `v<version>` 标签。
+
 ## 0.1.5-rc.2.1 — 2026-09-11
 
 **对应 DSH 官方标签：** `dsh-v0.1.5-rc.2`

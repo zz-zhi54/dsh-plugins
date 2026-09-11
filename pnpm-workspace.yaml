@@ -1,6 +1,8 @@
 packages:
   - packages/*
-  - packs/*
+
+# 单个插件直接安装；显式保留 pnpm 默认的 peer 自动安装行为。
+autoInstallPeers: true
 
 # 当前 DSH RC 包需要绕过最低发布年龄限制；其他依赖仍遵循 pnpm 默认策略。
 allowBuilds:

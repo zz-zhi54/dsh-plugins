@@ -13,9 +13,8 @@ if (!version || !versionPattern.test(version)) {
 
 function manifestPaths() {
   const paths = [join(root, 'package.json')]
-  for (const group of ['packages', 'packs', 'bundles']) {
-    const directory = join(root, group)
-    if (!existsSync(directory)) continue
+  const directory = join(root, 'packages')
+  if (existsSync(directory)) {
     for (const entry of readdirSync(directory, { withFileTypes: true })) {
       if (entry.isDirectory()) paths.push(join(directory, entry.name, 'package.json'))
     }

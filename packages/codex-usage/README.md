@@ -59,13 +59,13 @@ pi-ai 另有一组 SSE 专有头（`OpenAI-Beta`、`accept: text/event-stream`�
 
 ## 安装
 
-属于 `dsh-codex` 组合，也可以按需单独安装。在 Monorepo 根目录执行：
-
-> `dsh-codex` 已经包含本插件；使用组合时不要再单独安装本插件。若只需额度显示，请先卸载组合，再执行下面的独立安装命令。
+直接从 GitHub 安装当前分支：
 
 ```sh
-dsh plugin --profile web add ./packages/codex-usage
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#path:packages/codex-usage'
 ```
+
+固定 release 时，将路径替换为 `#v<version>&path:packages/codex-usage`。
 
 该 package 自己的 patch 只插入一个 Profile 条目：
 

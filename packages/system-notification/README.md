@@ -17,23 +17,13 @@
 
 ## 安装
 
-### 单独安装
-
-在 Monorepo 根目录执行：
+直接从 GitHub 安装当前分支：
 
 ```sh
-dsh plugin --profile web add ./packages/system-notification
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#path:packages/system-notification'
 ```
 
-### 使用默认组合
-
-如果要启用默认的系统通知插件，安装：
-
-```sh
-dsh plugin --profile web add ./packs/default
-```
-
-安装默认组合后，不要再单独安装本插件。
+固定 release 时，将路径替换为 `#v<version>&path:packages/system-notification`。
 
 ## 监听行为
 

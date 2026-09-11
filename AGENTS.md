@@ -8,13 +8,11 @@
 - `packages/codex-login`（`dsh-codex-login-plugin`）：临时提供 ChatGPT / Codex OAuth 的 Host 路由和 Web 客户端 UI，仅按需用于首次登录。
 - `packages/codex-usage`（`dsh-codex-usage-plugin`）：在 Web 输入框下方显示 Codex 5 小时 / 每周额度；只读 `llm-pi-ai/openai-codex` 凭据并请求 `wham/usage`，不依赖 codex CLI。
 - `packages/session-cost`（`dsh-session-cost-plugin`）：在 Web 输入框下方显示按 `provider/model` 分组的 Session USD 费用；从 durable Session events 重算，不新增持久化。
-- `packs/default`（`dsh-default`）：显式组合 `system-notification` 和 `session-cost`，不承载业务实现。
-- `packs/codex`（`dsh-codex`）：显式组合 `authorization`、`codex-login` 和 `codex-usage`，不承载业务实现。
 - `dsh/`：部署到用户全局 `~/.dsh/` 的 DSH 源文件，不属于 pnpm workspace；在该目录工作时还要遵守 `dsh/AGENTS.md`。
 
 ## 工作区与设置
 
-- 工作区范围由 `pnpm-workspace.yaml` 定义：`packages/*` 和 `packs/*`。
+- 工作区范围由 `pnpm-workspace.yaml` 定义：`packages/*`。
 - 所有命令从仓库根目录执行，并使用 pnpm；不要在子项目中用 npm/yarn 安装依赖，也不要提交子包的 `package-lock.json`。
 - 安装依赖：
 
@@ -38,7 +36,7 @@
   pnpm check
   ```
 
-  该命令递归执行各 package 的 `check` 脚本：`codex-login` 检查 Host 和 classic-script 客户端，`codex-usage` 检查额度 Host、纯逻辑模块和 classic-script 客户端，`session-cost` 检查 Host、费用逻辑和 classic-script 客户端，`system-notification` 检查 Host、观察器和通知器；插件组合当前没有源码检查脚本。
+  该命令递归执行各 package 的 `check` 脚本：`codex-login` 检查 Host 和 classic-script 客户端，`codex-usage` 检查额度 Host、纯逻辑模块和 classic-script 客户端，`session-cost` 检查 Host、费用逻辑和 classic-script 客户端，`system-notification` 检查 Host、观察器和通知器。
 
 - 运行单包检查：
 
@@ -80,14 +78,13 @@
   dsh --profile web --dump-config
   ```
 
-  默认组合应出现 `system-notification` 和 `session-cost`；不应因为安装默认组合出现 `authorization`、`codex-login` 或 `codex-usage`。Codex 组合应出现 `authorization`、`codex-login` 和 `codex-usage`，不自动出现 `session-cost`。这类命令依赖本机 DSH 安装，不能用仓库的静态检查替代运行时验证。
+  单独安装的插件应只出现自身的 Profile 条目。这类命令依赖本机 DSH 安装，不能用仓库的静态检查替代运行时验证。
 - 修改 OAuth Host 或 Web 客户端时，除语法检查外还要手动验证登录入口、授权提示、回答提示和取消流程；OAuth 流程需要真实的外部授权。
 
 ## 架构边界与修改规则
 
 - 运行时代码位于各自 `packages/*/src`；`packages/*/cordis.patch.yml` 只描述需要插入的组件 ID 和 package 名称。
 - 每个插件的 `package.json` 通过 `dsh.bundle.patch` 指向自己的 patch。新增、重命名或移除组件时，要同步核对 `exports`、`files`、`dsh` 元数据、patch 和 README。
-- `packs/default/cordis.patch.yml` 必须显式插入 `system-notification` 和 `session-cost`；`packs/codex/cordis.patch.yml` 必须显式插入 `authorization`、`codex-login` 和 `codex-usage`。不要依赖 DSH 因组合依赖自动递归激活子组合。`dsh-default` 和 `dsh-system-notification-plugin` / `dsh-session-cost-plugin` 二选一安装；`dsh-codex` 与 `codex-login` / `codex-usage` 子包也二选一，避免重复插入同一 Profile 条目。
 - `packages/codex-login/src/host.mjs` 依赖 `authorization` 和 `webServer`，提供 `/api/codex-login/start`、`poll`、`answer`、`cancel` 四个接口；授权成功后凭据由 DSH credentials store 持久化，首次登录完成即可卸载插件。修改授权状态机、提示投影、重复请求、取消或卸载清理时要覆盖相应边界。
 - `packages/codex-login/src/client.js` 是 DSH Web 所需的 classic-script 模块，必须保留 `window.__ModuleLoader__.load({ id, factory })` 形状，并通过 `require('react')` 获取 React；不要改成顶层 ESM。
 - `packages/codex-usage` 的 Host 只依赖 `webServer`（必需）和 `credentials`（可选），注册 `GET /api/codex-usage`。它**只读**凭据记录，绝不调用 `modifyRecord`，也绝不实现 OAuth 刷新 —— pi-ai 的刷新发生在 `credentials.modifyRecord()` 内部，两个进程并发轮换同一个 refresh token 会丢掉先写入的一份。
@@ -115,6 +112,6 @@
 - **插件自己注册的 `/api/*` 路由不在 DSH 的浏览器信任栅栏内。** 该栅栏是 `dsh-client-connection` 的私有逻辑，只守它自己的 RPC 通道（已实测：伪造 Host 时首页 401、插件路由仍 200）。因此这些路由上不要返回凭据、身份信息或其它敏感数据。
 - **改动涉及凭据的代码前先读该包文件头的安全边界，并同步补/改脱敏回归测试。** `packages/codex-usage` 是现成范例：边界写在 `src/codex-usage.mjs` 文件头，回归测试在 `test/codex-usage.test.mjs`（覆盖 token、身份字段、裸邮箱，以及"失败原因不含 email / user_id / account_id"）。
 - 系统通知调用操作系统原生命令；修改命令参数、AppleScript 或 PowerShell 拼接时要保留输入转义，并保证通知失败被隔离在旁路逻辑内。
-- 根工作区和所有 package 当前均为私有本地代码。没有明确发布需求时，不要添加 npm 发布流程，也不要把插件组合改成递归组合。
-- 发布版本时，在 `dev` 分支同步根目录、插件和组合的版本号，更新相关 README、兼容关系和 `CHANGELOG.md`；然后运行 `pnpm install`、`pnpm check` 及受影响插件测试，提交 `chore(release): version <version>`，创建并推送 `dsh-plugins-v<version>` 标签，再将 `dev` 快进合并到 `main`。发布完成后确认 `dev`、`main` 和标签指向同一提交且工作区干净。禁止改写历史或强制推送。
+- 根工作区和所有 package 当前均为私有本地代码。没有明确发布需求时，不要添加 npm 发布流程，也不要把插件改成递归依赖。
+- 发布版本时，在 `dev` 分支同步根目录和插件版本号，更新相关 README、兼容关系和 `CHANGELOG.md`；然后运行 `pnpm install`、`pnpm check` 及受影响插件测试，提交 `chore(release): version <version>`，创建并推送 `dsh-plugins-v<version>` 标签，再将 `dev` 快进合并到 `main`。发布完成后确认 `dev`、`main` 和标签指向同一提交且工作区干净。禁止改写历史或强制推送。
 - 提交前只保留与任务相关的变更，不覆盖已有用户修改。仓库当前没有固定 CI 或 PR 标题格式；提交说明应包含受影响 package、行为变化和验证命令。
