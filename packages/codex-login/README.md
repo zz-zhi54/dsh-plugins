@@ -10,13 +10,13 @@
 
 ## 按需安装
 
-Codex 登录插件属于 `dsh-codex` 组合，也可以单独安装。需要首次登录时，在 Monorepo 根目录执行：
-
-> `dsh-codex` 已经包含本插件及 `authorization`；使用组合时不要再单独安装本插件。
+需要首次登录时，直接从 GitHub 安装当前分支：
 
 ```sh
-dsh plugin --profile web add ./packages/codex-login
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#path:packages/codex-login'
 ```
+
+固定 release 时，将路径替换为 `#v<version>&path:packages/codex-login`。
 
 该 package 自己的 patch 会插入以下两个 Profile 条目：
 

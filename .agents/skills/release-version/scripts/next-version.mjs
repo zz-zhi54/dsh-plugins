@@ -58,5 +58,6 @@ console.log(JSON.stringify({
   currentManifestVersion: versions[0],
   nextVersion,
   nextTag: `${tagPrefix}${nextVersion}`,
+  nextInstallTag: `v${nextVersion}`,
   manifests
 }, null, 2))

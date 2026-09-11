@@ -31,24 +31,6 @@ importers:
         specifier: 0.1.5-rc.2
         version: 0.1.5-rc.2(@deepseek-ai/cordis@4.0.2)(@deepseek-ai/dsh-scope@0.1.5-rc.2(@deepseek-ai/cordis@4.0.2)(@deepseek-ai/dsh-invariants@0.1.5-rc.2(@deepseek-ai/cordis@4.0.2)))
 
-  packs/codex:
-    dependencies:
-      dsh-codex-login-plugin:
-        specifier: workspace:^
-        version: link:../../packages/codex-login
-      dsh-codex-usage-plugin:
-        specifier: workspace:^
-        version: link:../../packages/codex-usage
-
-  packs/default:
-    dependencies:
-      dsh-session-cost-plugin:
-        specifier: workspace:^
-        version: link:../../packages/session-cost
-      dsh-system-notification-plugin:
-        specifier: workspace:^
-        version: link:../../packages/system-notification
-
 packages:
 
   '@anthropic-ai/sdk@0.123.0':

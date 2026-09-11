@@ -31,13 +31,13 @@
 
 ## 安装
 
-默认组合 `dsh-default` 已包含本插件；如果只需要 Session 费用，也可以在 Monorepo 根目录按需单独安装：
+直接从 GitHub 安装当前分支：
 
 ```sh
-dsh plugin --profile web add ./packages/session-cost
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#path:packages/session-cost'
 ```
 
-使用默认组合时不要再单独安装本插件，否则可能重复插入 `session-cost` Profile 条目。
+固定 release 时，将路径替换为 `#v<version>&path:packages/session-cost`。
 
 该 package 的 patch 插入一个 Profile 条目：
 
