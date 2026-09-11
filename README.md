@@ -67,26 +67,49 @@
 | `packages/codex-usage` | `dsh-codex-usage-plugin` | `0.1.5-rc.2.2` | Codex 额度显示 |
 | `packages/session-cost` | `dsh-session-cost-plugin` | `0.1.5-rc.2.2` | Session 费用显示 |
 
-从当前默认分支安装某个插件，例如：
+从当前默认分支安装单个插件：
 
 ```sh
+# 系统通知
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#path:packages/system-notification'
+
+# Codex 登录
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#path:packages/codex-login'
+
+# Codex 额度
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#path:packages/codex-usage'
+
+# Session 费用
 dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#path:packages/session-cost'
 ```
 
-将上面命令中的 `path` 替换为以下目录即可安装其它插件：
-
-- `packages/system-notification`
-- `packages/codex-login`
-- `packages/codex-usage`
-- `packages/session-cost`
-
-固定 release 时，在路径前加入版本标签。以版本 `v0.1.5-rc.2.2` 安装 Session 费用插件为例：
+也可以一次安装全部插件：
 
 ```sh
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.5-rc.2.2&path:packages/session-cost'
+dsh plugin --profile web add \
+  'github:zz-zhi54/dsh-plugins#path:packages/system-notification' \
+  'github:zz-zhi54/dsh-plugins#path:packages/codex-login' \
+  'github:zz-zhi54/dsh-plugins#path:packages/codex-usage' \
+  'github:zz-zhi54/dsh-plugins#path:packages/session-cost'
 ```
 
-其它插件只需同时替换版本标签和 `path`。
+已安装插件需要更新时，重新执行对应的 `add` 命令即可；使用固定 release 时，将命令中的版本标签替换为新版本。
+
+固定 release 时，在路径前加入版本标签。以版本 `v0.1.5-rc.2.2` 为例：
+
+```sh
+# 系统通知
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.5-rc.2.2&path:packages/system-notification'
+
+# Codex 登录
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.5-rc.2.2&path:packages/codex-login'
+
+# Codex 额度
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.5-rc.2.2&path:packages/codex-usage'
+
+# Session 费用
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.5-rc.2.2&path:packages/session-cost'
+```
 
 安装后检查 Profile：
 
@@ -99,24 +122,20 @@ dsh --profile web --dump-config
 按 package name 卸载对应插件：
 
 ```sh
+# 系统通知
+dsh plugin --profile web remove dsh-system-notification-plugin
+
+# Codex 登录
+dsh plugin --profile web remove dsh-codex-login-plugin
+
+# Codex 额度
+dsh plugin --profile web remove dsh-codex-usage-plugin
+
+# Session 费用
 dsh plugin --profile web remove dsh-session-cost-plugin
 ```
 
-其它插件同理替换 package name；只卸载实际安装过的插件即可。
-
-### 更新
-
-当前默认分支安装的插件可以直接更新：
-
-```sh
-dsh plugin --profile web update dsh-session-cost-plugin
-```
-
-固定 release 不会跟随默认分支更新。要切换到新的 release，重新执行 `add` 并替换版本标签：
-
-```sh
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v<new-version>&path:packages/session-cost'
-```
+只卸载实际安装过的插件即可。
 
 需要某项能力时，也可以进入对应项目 README 查看更具体的行为、限制和验证步骤：
 
