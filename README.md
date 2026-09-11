@@ -1,7 +1,12 @@
 <!-- deepseek-harness-meta
 {
   "name": "dsh-plugins",
+  "version": "0.1.5-rc.2.2",
+  "tags": ["deepseek", "deepseek-harness", "dsh", "plugins"],
   "description": "非官方 DeepSeek Harness 插件集合，可从 GitHub 按需安装",
+  "icon": "https://raw.githubusercontent.com/zz-zhi54/dsh-plugins/v0.1.5-rc.2.2/packages/system-notification/assets/dsh.ico",
+  "compatible_versions": ["v0.1.5-rc.2"],
+  "screenshots": "packages",
   "install_method": "dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#path:packages/session-cost'"
 }
 -->
