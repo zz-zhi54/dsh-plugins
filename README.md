@@ -13,6 +13,8 @@
 
 # dsh-plugins
 
+[English](README.en.md)
+
 个人维护的 DeepSeek Harness（DSH）插件集合，以 pnpm workspace monorepo 组织。可独立安装的插件位于 `packages/*`。
 
 > 这是个人维护的非官方社区项目，不隶属于 DeepSeek AI 或 DeepSeek Harness 官方团队。
