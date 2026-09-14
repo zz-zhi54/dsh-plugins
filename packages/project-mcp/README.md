@@ -33,7 +33,7 @@ servers:
 
 支持 `stdio` 和 `streamable-http`。stdio MCP 未指定 `cwd` 时使用项目目录；相对 `cwd` 相对项目目录解析。`serverName` 使用 DSH MCP Client 的命名规则。
 
-项目配置、MCP schema 或 MCP 初次连接出错时，不在本插件层捕获、降级或转换成 warning，而是让错误正常抛出并使当前 Agent 启动失败。项目 MCP 始终强制使用 `failOnStartupError: true`。
+项目配置和 MCP schema 错误会同步抛出；MCP 初次连接错误会拒绝对应的 Cordis Fiber。错误不在本插件层捕获、降级或转换成 warning，项目 MCP 始终强制使用 `failOnStartupError: true`。由于 `agent/created` 是发布后的同步事件，异步 MCP 启动不会回滚已经发布的 Agent；插件会保存每个 Agent 的加载 Promise，并在 `agent/pre-step` 中等待它完成后再继续后续处理。
 
 ## 隔离与全局 MCP
 
@@ -44,7 +44,7 @@ servers:
 - 不同项目可以使用相同的 `serverName`，各自连接和工具互不共享；
 - 全局 MCP 不变，仍按原来的 Profile 配置加载。
 
-项目配置在 Agent 创建时读取一次。修改配置后，新建或重新创建 Agent 即可生效；第一版不提供热更新或跨 Agent 连接复用。
+项目配置在 Agent 创建时读取一次。插件只监听 `agent/created`，不会在加载或 Profile/HMR 重载时扫描并补挂载已经存在的 Agent；修改配置后，新建或重新创建 Agent 即可生效。第一版不提供热更新或跨 Agent 连接复用。
 
 ## 安装
 
