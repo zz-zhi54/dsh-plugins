@@ -33,15 +33,15 @@ function filePathFor(projectCwd) {
  *
  * 返回值是未经单项校验的服务器数组，单项校验留给调用方执行，以便错误
  * 能够指出具体的 `servers[index]`。文件不存在是正常情况，表示该项目没有
- * 项目级 MCP；其他文件系统错误和 YAML 错误不在这里捕获或改写，直接向
- * Agent 启动流程传播。
+ * 项目级 MCP；其他文件系统错误和 YAML 错误由调用方统一记录，不会阻断
+ * Agent 的正常流程。
  */
 export function readProjectMcpEntries(projectCwd, options = {}) {
   const filePath = filePathFor(projectCwd)
   const read = options.readFile ?? readFileSync
   const parseYaml = options.parseYaml ?? parse
-  // 项目没有配置文件是正常情况；文件存在但读取或解析失败时，让错误
-  // 直接抛出，由 Agent 启动流程决定如何处理，不在这里吞掉异常。
+  // 项目没有配置文件是正常情况；文件存在但读取或解析失败时直接抛出，
+  // 由 Host 插件边界记录错误并继续 Agent 的正常流程。
   if (!existsSync(filePath)) return []
   const source = read(filePath, 'utf8')
   // 只解析 YAML 数据，不执行 YAML 中的 JavaScript 标签或表达式。

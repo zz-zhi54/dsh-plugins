@@ -31,13 +31,13 @@ servers:
     url: http://127.0.0.1:3000/mcp
 ```
 
-支持 `stdio` 和 `streamable-http`。stdio MCP 未指定 `cwd` 时使用项目目录；相对 `cwd` 相对项目目录解析。`serverName` 使用 DSH MCP Client 的命名规则。
+支持 `stdio` 和 `streamable-http`。stdio MCP 未指定 `cwd` 时使用项目目录；相对 `cwd` 相对项目目录解析。配置中的 `serverName` 使用 DSH MCP Client 的命名规则；插件会在运行时为每个 Agent 添加短后缀，避免同一项目多个 Agent 的 MCP 实例冲突，模型看到的工具名也会包含该后缀。
 
-项目配置和 MCP schema 错误会同步抛出；MCP 初次连接错误会拒绝对应的 Cordis Fiber。错误不在本插件层捕获、降级或转换成 warning，项目 MCP 始终强制使用 `failOnStartupError: true`。由于 `agent/created` 是发布后的同步事件，异步 MCP 启动不会回滚已经发布的 Agent；插件会保存每个 Agent 的加载 Promise，并在 `agent/pre-step` 中等待它完成后再继续后续处理。
+项目配置、MCP schema 和连接错误都只通过 `console.error` 记录，不会阻断 Agent 的创建、首步或后续正常流程。每个项目 MCP 在 Agent 创建后启动，并由 `agent/pre-step` 等待挂载完成，确保首步能看到已经连接的工具；失败时会记录错误并继续流程，单个配置项失败不会影响同一项目的其他 MCP。项目 MCP 使用 `failOnStartupError: true`，已经建立连接后的断线仍由官方客户端按其重连策略处理。
 
 ## 隔离与全局 MCP
 
-项目 MCP 通过 DSH 的 `agent.ctx` 注册，因此工具注册和连接生命周期都属于单个 Agent：
+项目 MCP 通过 DSH 的 `agent.ctx` 注册，因此工具注册和连接生命周期都属于单个 Agent。插件会防止同一 Agent 被重复通知时重复挂载；同一项目配置中的重复 `serverName` 也会跳过并记录到 `console.error`：
 
 - Agent A 只看到全局工具和 A 项目工具；
 - Agent B 只看到全局工具和 B 项目工具；
