@@ -10,6 +10,18 @@
 
 ## Unreleased
 
+## 0.1.5-rc.2.3 — 2026-09-14
+
+**对应 DSH 官方标签：** `dsh-v0.1.5-rc.2`
+
+**对应本仓库标签：** `dsh-plugins-v0.1.5-rc.2.3`、`v0.1.5-rc.2.3`
+
+### 项目级 MCP
+
+- 新增 `packages/project-mcp`（`dsh-project-mcp-plugin`）：按每个 Agent Session 的项目 `cwd` 读取 `.dsh/mcp.yml`，为该 Agent 加载隔离的项目级 MCP。
+- 支持 `stdio` 和 `streamable-http` 配置；项目级 MCP 的工具注册与连接生命周期不跨 Agent 共享，全局 MCP 保持不变。
+- 项目配置、schema 或首次连接失败时保持启动失败语义，不降级为 warning；stdio 未指定 `cwd` 时使用项目目录。
+
 ## 0.1.5-rc.2.2 — 2026-09-11
 
 **对应 DSH 官方标签：** `dsh-v0.1.5-rc.2`
