@@ -16,8 +16,8 @@
 * Remove unnecessary code cleanly.
 * Verify affected behavior and important edge cases with targeted tests and the project's normal tooling.
 * After completing a task, briefly report the changes and verification results.
-* When IDEA MCP is available, prefer search_symbol for locating code symbols, and use rename_refactoring for renaming
-  program symbols instead of manual text replacements.
+* When IDEA MCP is available, prefer `search_symbol` for locating code symbols, use `read_file` to inspect source code
+  when needed, and use `rename_refactoring` for renaming program symbols instead of manual text replacements.
 
 ## Dependencies and External Systems
 

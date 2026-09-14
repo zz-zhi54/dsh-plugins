@@ -7,10 +7,22 @@ import assert from 'node:assert/strict'
 import { apply } from '../src/host.mjs'
 import { projectMcpFile } from '../src/config.mjs'
 
-function makeHarness() {
+function makeHarness({ load = () => Promise.resolve() } = {}) {
   const calls = []
   const warnings = []
   let onCreated
+  let onPreStep
+
+  const makeAgent = (cwd) => ({
+    session: { header: { cwd } },
+    ctx: {
+      plugin(plugin, config) {
+        calls.push({ plugin, config, cwd })
+        return load(config)
+      },
+    },
+  })
+
   const ctx = {
     logger: {
       warn(message) {
@@ -18,8 +30,9 @@ function makeHarness() {
       },
     },
     on(name, listener) {
-      assert.equal(name, 'agent/created')
-      onCreated = listener
+      if (name === 'agent/created') onCreated = listener
+      else if (name === 'agent/pre-step') onPreStep = listener
+      else assert.fail(`unexpected event: ${name}`)
     },
   }
   apply(ctx)
@@ -27,17 +40,12 @@ function makeHarness() {
     calls,
     warnings,
     createAgent(cwd) {
-      const agent = {
-        session: { header: { cwd } },
-        ctx: {
-          plugin(plugin, config) {
-            calls.push({ plugin, config, cwd })
-            return Promise.resolve()
-          },
-        },
-      }
+      const agent = makeAgent(cwd)
       onCreated({ agent })
       return agent
+    },
+    preStep(agent, next = () => Promise.resolve()) {
+      return onPreStep({ agent }, next)
     },
   }
 }
@@ -71,8 +79,10 @@ test('loads each Agent project from its Session cwd and allows same names', asyn
 
   try {
     const harness = makeHarness()
-    harness.createAgent(projectA)
-    harness.createAgent(projectB)
+    const agentA = harness.createAgent(projectA)
+    await harness.preStep(agentA)
+    const agentB = harness.createAgent(projectB)
+    await harness.preStep(agentB)
 
     assert.deepEqual(
       harness.calls.map(({ config, cwd }) => [cwd, config.serverName, config.command, config.cwd]),
@@ -89,6 +99,50 @@ test('loads each Agent project from its Session cwd and allows same names', asyn
       rm(projectA, { recursive: true, force: true }),
       rm(projectB, { recursive: true, force: true }),
     ])
+  }
+})
+
+test('waits for MCP plugin startup before continuing agent/pre-step', async () => {
+  const project = await makeProject([
+    'servers:',
+    '  - serverName: idea',
+    '    transport: stdio',
+    '    command: idea-mcp',
+    '  - serverName: mysql',
+    '    transport: stdio',
+    '    command: mysql-mcp',
+  ].join('\n'))
+
+  let release
+  const startup = new Promise((resolve) => {
+    release = resolve
+  })
+
+  try {
+    let loads = 0
+    const harness = makeHarness({
+      load: () => {
+        loads += 1
+        return loads === 1 ? startup : Promise.resolve()
+      },
+    })
+    const agent = harness.createAgent(project)
+    let nextCalls = 0
+    const ready = harness.preStep(agent, async () => {
+      nextCalls += 1
+      return 'entered'
+    })
+
+    await Promise.resolve()
+    assert.equal(harness.calls.length, 1)
+    assert.equal(nextCalls, 0)
+
+    release()
+    assert.equal(await ready, 'entered')
+    assert.equal(nextCalls, 1)
+    assert.equal(harness.calls.length, 2)
+  } finally {
+    await rm(project, { recursive: true, force: true })
   }
 })
 
@@ -116,7 +170,8 @@ test('a project without mcp.yml remains untouched', async () => {
   const project = await mkdtemp(join(tmpdir(), 'dsh-project-mcp-'))
   try {
     const harness = makeHarness()
-    harness.createAgent(project)
+    const agent = harness.createAgent(project)
+    await harness.preStep(agent)
     assert.equal(harness.calls.length, 0)
     assert.equal(harness.warnings.length, 0)
   } finally {

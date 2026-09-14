@@ -10,6 +10,17 @@
 
 ## Unreleased
 
+## 0.1.5-rc.2.4 — 2026-09-14
+
+**对应 DSH 官方标签：** `dsh-v0.1.5-rc.2`
+
+**对应本仓库标签：** `dsh-plugins-v0.1.5-rc.2.4`、`v0.1.5-rc.2.4`
+
+### 项目级 MCP
+
+- 将项目 MCP 的异步启动 Promise 保存到对应 Agent，并在 `agent/pre-step` 中等待完成后再继续，避免首步早于 MCP 初始化。
+- 仅响应插件加载后的 `agent/created`；不扫描已有 Agent，也不在 Profile/HMR 重载时补挂载项目 MCP。
+
 ## 0.1.5-rc.2.3 — 2026-09-14
 
 **对应 DSH 官方标签：** `dsh-v0.1.5-rc.2`
