@@ -1,24 +1,24 @@
 {
-  "name": "dsh-system-notification-plugin",
+  "name": "dsh-project-mcp-plugin",
   "version": "0.1.5-rc.2.3",
   "private": true,
   "license": "Apache-2.0",
   "type": "module",
-  "description": "Native macOS and Windows notifications for DSH task and approval events",
+  "description": "Project-scoped MCP servers for DeepSeek Harness Agents",
   "main": "./src/host.mjs",
   "exports": {
     ".": "./src/host.mjs",
+    "./config": "./src/config.mjs",
     "./cordis.patch.yml": "./cordis.patch.yml",
     "./package.json": "./package.json"
   },
   "files": [
     "src",
-    "assets",
     "cordis.patch.yml",
     "README.md"
   ],
   "scripts": {
-    "check": "node --check src/host.mjs && node --check src/observer.mjs && node --check src/messages.mjs && node --check src/notifier/index.mjs && node --check src/notifier/macos.mjs && node --check src/notifier/windows.mjs",
+    "check": "node --check src/host.mjs && node --check src/config.mjs",
     "test": "node --test"
   },
   "dsh": {
@@ -28,10 +28,13 @@
   },
   "peerDependencies": {
     "@deepseek-ai/cordis": "4.0.2",
-    "@deepseek-ai/dsh-session": "0.1.5-rc.2"
+    "@deepseek-ai/dsh-mcp-client": "0.1.5-rc.2"
   },
   "devDependencies": {
     "@deepseek-ai/cordis": "4.0.2",
-    "@deepseek-ai/dsh-session": "0.1.5-rc.2"
+    "@deepseek-ai/dsh-mcp-client": "0.1.5-rc.2"
+  },
+  "dependencies": {
+    "yaml": "2.9.0"
   }
 }

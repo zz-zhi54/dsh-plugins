@@ -1,10 +1,10 @@
 <!-- deepseek-harness-meta
 {
   "name": "dsh-plugins",
-  "version": "0.1.5-rc.2.2",
+  "version": "0.1.5-rc.2.3",
   "tags": ["deepseek", "deepseek-harness", "dsh", "plugins"],
   "description": "非官方 DeepSeek Harness 插件集合，可从 GitHub 按需安装",
-  "icon": "https://raw.githubusercontent.com/zz-zhi54/dsh-plugins/v0.1.5-rc.2.2/packages/system-notification/assets/dsh.ico",
+  "icon": "https://raw.githubusercontent.com/zz-zhi54/dsh-plugins/v0.1.5-rc.2.3/packages/system-notification/assets/dsh.ico",
   "compatible_versions": ["v0.1.5-rc.2"],
   "screenshots": "packages",
   "install_method": "dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#path:packages/session-cost'"
@@ -27,6 +27,7 @@
 | [`packages/codex-login`](packages/codex-login/) | 按需临时插件 | `dsh-codex-login-plugin` | 提供 ChatGPT / Codex OAuth 登录入口；首次登录完成后即可卸载 | [`README`](packages/codex-login/README.md) |
 | [`packages/codex-usage`](packages/codex-usage/) | 按需插件 | `dsh-codex-usage-plugin` | 在输入框下方显示 Codex 的 5 小时 / 每周额度与重置倒计时，复用 DSH 自己的 Codex 凭据 | [`README`](packages/codex-usage/README.md) |
 | [`packages/session-cost`](packages/session-cost/) | 按需插件 | `dsh-session-cost-plugin` | 在 Token 统计行下方显示当前会话的 provider/model 费用与 USD 统计 | [`README`](packages/session-cost/README.md) |
+| [`packages/project-mcp`](packages/project-mcp/) | 按需插件 | `dsh-project-mcp-plugin` | 从每个项目的 `.dsh/mcp.yml` 为 Agent 加载隔离的 MCP | [`README`](packages/project-mcp/README.md) |
 
 ### 项目关系
 
@@ -58,14 +59,15 @@
 
 ### 安装
 
-当前 workspace 中有以下 4 个可独立安装的插件（版本示例取自各自的 `package.json`）：
+当前 workspace 中有以下 5 个可独立安装的插件（版本示例取自各自的 `package.json`）：
 
 | 插件目录 | package name | 版本示例 | 用途 |
 | --- | --- | --- | --- |
-| `packages/system-notification` | `dsh-system-notification-plugin` | `0.1.5-rc.2.2` | macOS / Windows 系统通知 |
-| `packages/codex-login` | `dsh-codex-login-plugin` | `0.1.5-rc.2.2` | 首次 ChatGPT / Codex 登录 |
-| `packages/codex-usage` | `dsh-codex-usage-plugin` | `0.1.5-rc.2.2` | Codex 额度显示 |
-| `packages/session-cost` | `dsh-session-cost-plugin` | `0.1.5-rc.2.2` | Session 费用显示 |
+| `packages/system-notification` | `dsh-system-notification-plugin` | `0.1.5-rc.2.3` | macOS / Windows 系统通知 |
+| `packages/codex-login` | `dsh-codex-login-plugin` | `0.1.5-rc.2.3` | 首次 ChatGPT / Codex 登录 |
+| `packages/codex-usage` | `dsh-codex-usage-plugin` | `0.1.5-rc.2.3` | Codex 额度显示 |
+| `packages/session-cost` | `dsh-session-cost-plugin` | `0.1.5-rc.2.3` | Session 费用显示 |
+| `packages/project-mcp` | `dsh-project-mcp-plugin` | `0.1.5-rc.2.3` | 项目级 MCP 隔离 |
 
 从当前默认分支安装单个插件：
 
@@ -81,6 +83,9 @@ dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#path:packages/codex-us
 
 # Session 费用
 dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#path:packages/session-cost'
+
+# 项目级 MCP
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#path:packages/project-mcp'
 ```
 
 也可以一次安装全部插件：
@@ -90,25 +95,29 @@ dsh plugin --profile web add \
   'github:zz-zhi54/dsh-plugins#path:packages/system-notification' \
   'github:zz-zhi54/dsh-plugins#path:packages/codex-login' \
   'github:zz-zhi54/dsh-plugins#path:packages/codex-usage' \
-  'github:zz-zhi54/dsh-plugins#path:packages/session-cost'
+  'github:zz-zhi54/dsh-plugins#path:packages/session-cost' \
+  'github:zz-zhi54/dsh-plugins#path:packages/project-mcp'
 ```
 
 已安装插件需要更新时，重新执行对应的 `add` 命令即可；使用固定 release 时，将命令中的版本标签替换为新版本。
 
-固定 release 时，在路径前加入版本标签。以版本 `v0.1.5-rc.2.2` 为例：
+固定 release 时，在路径前加入版本标签。以版本 `v0.1.5-rc.2.3` 为例：
 
 ```sh
 # 系统通知
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.5-rc.2.2&path:packages/system-notification'
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.5-rc.2.3&path:packages/system-notification'
 
 # Codex 登录
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.5-rc.2.2&path:packages/codex-login'
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.5-rc.2.3&path:packages/codex-login'
 
 # Codex 额度
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.5-rc.2.2&path:packages/codex-usage'
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.5-rc.2.3&path:packages/codex-usage'
 
 # Session 费用
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.5-rc.2.2&path:packages/session-cost'
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.5-rc.2.3&path:packages/session-cost'
+
+# 项目级 MCP
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.5-rc.2.3&path:packages/project-mcp'
 ```
 
 安装后检查 Profile：
@@ -133,6 +142,9 @@ dsh plugin --profile web remove dsh-codex-usage-plugin
 
 # Session 费用
 dsh plugin --profile web remove dsh-session-cost-plugin
+
+# 项目级 MCP
+dsh plugin --profile web remove dsh-project-mcp-plugin
 ```
 
 只卸载实际安装过的插件即可。
@@ -143,6 +155,7 @@ dsh plugin --profile web remove dsh-session-cost-plugin
 - [Codex 用量插件](packages/codex-usage/README.md)
 - [Session 费用插件](packages/session-cost/README.md)
 - [系统通知插件](packages/system-notification/README.md)
+- [项目级 MCP 插件](packages/project-mcp/README.md)
 
 ## 开发
 
