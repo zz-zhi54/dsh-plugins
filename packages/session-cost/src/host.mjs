@@ -1,10 +1,11 @@
-import { calculateSessionCost } from './cost.mjs'
+import { calculateSessionCostFromState } from './cost.mjs'
+import { sessionCostProjectionDefinition } from './projection.mjs'
 
-export const inject = ['sessions', 'webServer']
+export const inject = ['sessions', 'sessionProjections', 'webServer']
 
 export const ROUTE_PATH = '/api/session-cost'
 
-export function readSessionCost(sessions, args) {
+export function readSessionCost(sessions, args, sessionProjections) {
   const sessionId = args?.sessionId
   if (typeof sessionId !== 'string' || sessionId.length === 0) {
     return { ok: false, reason: 'invalid-session' }
@@ -15,14 +16,21 @@ export function readSessionCost(sessions, args) {
     return { ok: false, reason: 'session-not-found' }
   }
 
+  const state = sessionProjections?.stateOf(session, 'sessionCost')
+  if (state === undefined) {
+    return { ok: false, reason: 'projection-unavailable' }
+  }
+
   return {
     ok: true,
     sessionId,
-    ...calculateSessionCost(session.snapshotEvents())
+    ...calculateSessionCostFromState(state)
   }
 }
 
 export function apply(ctx) {
+  ctx.sessionProjections.register(sessionCostProjectionDefinition)
+
   const cache = new WeakMap()
 
   const load = sessionId => {
@@ -39,11 +47,16 @@ export function apply(ctx) {
     const cached = cache.get(session)
     if (cached !== undefined && cached.seq === seq) return cached.value
 
+    const state = ctx.sessionProjections.stateOf(session, 'sessionCost')
+    if (state === undefined) {
+      return { ok: false, reason: 'projection-unavailable' }
+    }
+
     const value = {
       ok: true,
       sessionId,
       asOfSeq: seq,
-      ...calculateSessionCost(session.snapshotEvents())
+      ...calculateSessionCostFromState(state)
     }
     cache.set(session, { seq, value })
     return value
