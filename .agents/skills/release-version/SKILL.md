@@ -49,16 +49,16 @@ gh auth status
 node .agents/skills/release-version/scripts/next-version.mjs
 ```
 
-脚本会从 `dsh-plugins-v*` 标签中找最新版本，并把末尾插件修订号加一。发布保留 `dsh-plugins-v<version>` 作为历史兼容标签，同时创建 `v<version>` 作为 GitHub `#v<version>&path:...` 安装标签。例如：
+脚本优先从 `v*` 标签中找最新版本，并把末尾插件修订号加一；只有历史仓库尚未建立 `v*` 标签时才读取 `dsh-plugins-v*` 作为兼容回退。新版本的规范标签只有 `v<version>`，用于 GitHub `#v<version>&path:...` 安装；不要再创建新的 `dsh-plugins-v<version>` 标签。历史 `dsh-plugins-v*` 标签保留为只读兼容标签。
 
-- `dsh-plugins-v0.1.5-rc.1.6` → `0.1.5-rc.1.7`，安装标签为 `v0.1.5-rc.1.7`
-- `dsh-plugins-v0.1.5-alpha.2.2` → `0.1.5-alpha.2.3`，安装标签为 `v0.1.5-alpha.2.3`
+- `v0.1.5-rc.1.6` → `0.1.5-rc.1.7`，目标标签为 `v0.1.5-rc.1.7`
+- `v0.1.5-alpha.2.2` → `0.1.5-alpha.2.3`，目标标签为 `v0.1.5-alpha.2.3`
 
 必须满足以下条件，否则停止并请求用户明确指定版本：
 
 - 存在可识别的最新发布标签；
 - 标签版本符合 `X.Y.Z-通道.通道号.插件修订号` 约定；
-- 计算出的 `dsh-plugins-v<version>` 与安装别名 `v<version>` 在本地和远端都不存在；
+- 计算出的规范标签 `v<version>` 在本地和远端都不存在；如果仓库仍有 `dsh-plugins-v*` 历史标签，先确认每个历史版本都有对应的 `v<version>` 别名；
 - 根 `package.json` 与实际 workspace 中的 package manifest 当前版本一致。当前 `dev` 约定是 `packages/*`；缺少 `version` 或版本不一致时不要静默修复，先报告路径和现值。
 
 输出版本计划，包含：旧标签、目标版本、目标标签、source branch、PR base、将要更新的 manifest 路径。目标版本和发布范围若已由用户明确给出，可直接进入本地变更；若仍有歧义，再在修改前请求明确指定。
@@ -73,7 +73,7 @@ node .agents/skills/release-version/scripts/sync-versions.mjs <version>
 
 脚本只更新 manifest 的 `version` 字段；不得重排依赖、改变脚本或改动锁文件以外的无关内容。随后检查以下文档并按实际变更更新：
 
-- 根目录 `CHANGELOG.md`：把 `Unreleased` 中已经完成的条目整理为 `## <version> — YYYY-MM-DD`，保留对应 DSH 官方标签、本仓库主标签 `dsh-plugins-v<version>` 和安装别名 `v<version>`；为后续工作留下空的 `## Unreleased` 区块。
+- 根目录 `CHANGELOG.md`：把 `Unreleased` 中已经完成的条目整理为 `## <version> — YYYY-MM-DD`，保留对应 DSH 官方标签和本仓库规范标签 `v<version>`；不要在新条目中写入新的 `dsh-plugins-v<version>` 标签；为后续工作留下空的 `## Unreleased` 区块。
 - 根目录 README 以及实际存在的 `packages/*/README.md`：逐一核对安装命令、项目关系、截图/资源、限制、兼容关系和 hard-coded 版本。根 README 当前不固定具体插件版本，不要为了发版给它添加版本号。
 - 只更新与本次变更实际相关的用户可见行为、兼容关系和安装说明；没有需要修改的 README 也要在发布摘要中说明核对结果和不修改的理由，不要把历史版本信息复制到 README。
 - DSH 兼容关系：从 package 的 peer/dev dependencies、既有 CHANGELOG 和变更内容核对官方 DSH 标签。若本次没有改变兼容版本，沿用上一版本并明确写出；若无法确定，停止并请求确认，不要猜测。
@@ -159,11 +159,11 @@ git diff -- CHANGELOG.md package.json packages/*/package.json
 3. 确认 HEAD 是刚才的 release commit 且远端分支已包含该提交，然后创建并推送带说明的标签：
 
    ```sh
-   git tag -a dsh-plugins-v<version> -m "dsh-plugins v<version>"
-   git tag -a v<version> -m "dsh-plugins install v<version>"
-   git push origin dsh-plugins-v<version>
+   git tag -a v<version> -m "dsh-plugins v<version>"
    git push origin v<version>
    ```
+
+   `dsh-plugins-v<version>` 只作为历史兼容标签读取；禁止为新版本创建、移动或强推该前缀标签。
 
    创建标签前再次确认本地和远端不存在同名标签。禁止移动已有标签；如果标签推送失败，保留本地标签并报告，不创建 PR，等待用户处理。
 
@@ -184,7 +184,7 @@ git diff -- CHANGELOG.md package.json packages/*/package.json
    ```sh
    git status --short --branch
 git show -s --format='%H %s' HEAD
-git ls-remote origin refs/heads/<source-branch> refs/tags/dsh-plugins-v<version> refs/tags/v<version>
+git ls-remote origin refs/heads/<source-branch> refs/tags/v<version>
 gh pr view <pr-number> --json number,url,state,baseRefName,headRefName
    ```
 
@@ -213,9 +213,9 @@ PR：<url 或未创建原因>
 - CHANGELOG 无法从 diff 证明 DSH 兼容性：请求确认，不捏造兼容关系。
 - `pnpm install`、`pnpm check` 或测试失败：停在本地，报告失败，不 commit/push/tag/PR。
 - `gh` 未安装、未认证或远端不是 GitHub：停在最终确认前；可以保留本地发布变更，但不要伪造 PR URL。
-- 已存在同名主标签或安装别名、release commit 不在 source branch、已有冲突 PR 或远端状态与预期不一致：停止并报告，不删除或移动标签，不强推。
+- 已存在同名 `v<version>` 标签、release commit 不在 source branch、已有冲突 PR 或远端状态与预期不一致：停止并报告，不删除或移动标签，不强推。
 
 ## 随附脚本
 
-- `scripts/next-version.mjs`：只读计算最新主标签、下一个插件修订号和对应的 `v<version>` 安装别名，同时核对 workspace manifest 版本。
+- `scripts/next-version.mjs`：只读计算最新规范 `v<version>` 标签、下一个插件修订号，同时核对历史 `dsh-plugins-v*` 标签的 `v` 别名和 workspace manifest 版本。
 - `scripts/sync-versions.mjs`：更新根以及 `packages/*` 中已发现 manifest 的 `version` 字段；不会执行 Git 操作。
