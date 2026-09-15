@@ -10,7 +10,7 @@
 
 - **位置**：注册独立的 `conversation.composer.dock` 条目 `session-cost`（`order: 10`），在 DSH 内置 `stats`（`order: 0`）之后显示 `费用 $0.0124`；不接管或替换内置统计单元。
 - **交互**：点击费用打开 Token 费用统计对话框；每个 `provider/model` 行显示 Token 总数和费用，点击后展开 input、output、cache read、cache write 与请求次数。
-- **数据来源**：每次读取都从当前 Session 的 durable events 重算，不新增持久化文件；Host 只按 Session `seq` 做进程内缓存。
+- **数据来源**：Host 通过 `sessionProjections` 增量折叠 durable events，不新增本插件持久化文件；读取结果仍按 Session `seq` 做进程内缓存。
 - **请求覆盖**：成功的 `assistant/message` 和没有 surface message 的 `assistant/attempt` 都计入。重试 attempt 从其 durable stream 的最后一条 provider usage 读取，不把流式中间 usage 重复相加。
 - **未知价格**：模型不在 pi-ai 内置目录时显示 `未知`，不会猜测价格；已知模型的费用仍会显示，并标记未知部分。
 - **与 Codex 用量插件并装**：三者都位于 `conversation.composer.dock`；DSH 内置 `stats` 保持 `order: 0`，本插件使用独立的 `session-cost`（`order: 10`），Codex 用量插件使用 `codex-usage`（`order: 20`），按当前 DSH Slot 契约可同时安装。
@@ -69,5 +69,6 @@ dsh --profile web --dump-config
 ## 实现约束
 
 - `src/cost.mjs` 只读取 durable event 的标量字段，调用 `getBuiltinModel()` / `calculateCost()`，不保存 Session 或模型对象。
+- `src/projection.mjs` 注册 host-only 的 `sessionCost` 投影，保存归一化 usage 与路由标量，避免新增生产代码调用已弃用的 Session 同步事件读取 API；保留逐请求 usage 以支持分层价格和价格目录变化后的重算。
 - `src/host.mjs` 注册 `GET /api/session-cost?sessionId=<id>`，响应只包含当前会话的投影数据，不返回原始事件；Host 以 Session `seq` 缓存同一会话的结果。
 - `src/client.js` 是 DSH Web 使用的 classic-script 模块，必须保留 `window.__ModuleLoader__.load({ id, factory })` 与 `require('react')` 的结构；样式全部内联，不向 `document` 注入全局 CSS。

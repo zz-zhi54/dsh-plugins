@@ -1,7 +1,12 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 
-import { calculateSessionCost, normalizeUsage } from '../src/cost.mjs'
+import {
+  calculateSessionCost,
+  calculateSessionCostFromState,
+  createCostState,
+  normalizeUsage
+} from '../src/cost.mjs'
 import { readSessionCost } from '../src/host.mjs'
 
 const model = {
@@ -74,19 +79,31 @@ test('prices assistant messages and failed attempts once per durable event', () 
   assert.equal(result.groups[1].pricing, 'unknown')
 })
 
-test('reads the current durable session snapshot without retaining it', () => {
-  const events = []
-  const session = {
-    snapshotEvents: () => events,
-    seq: 1
-  }
+test('reads the current projected session state without retaining the Session', () => {
+  const session = { seq: 1 }
+  const state = createCostState()
+  const sessionProjections = { stateOf: () => state }
   const sessions = { get: id => id === 'session-1' ? session : undefined }
 
-  assert.deepEqual(readSessionCost(sessions, { sessionId: 'missing' }), {
+  assert.deepEqual(readSessionCost(sessions, { sessionId: 'missing' }, sessionProjections), {
     ok: false,
     reason: 'session-not-found'
   })
-  const result = readSessionCost(sessions, { sessionId: 'session-1' })
+  const result = readSessionCost(sessions, { sessionId: 'session-1' }, sessionProjections)
   assert.equal(result.ok, true)
   assert.equal(result.requests, 0)
+  assert.deepEqual(calculateSessionCostFromState(state), {
+    currency: 'USD',
+    requests: 0,
+    tokens: {
+      inputTokens: 0,
+      outputTokens: 0,
+      cacheReadTokens: 0,
+      cacheWriteTokens: 0,
+      totalTokens: 0
+    },
+    cost: 0,
+    pricing: 'empty',
+    groups: []
+  })
 })

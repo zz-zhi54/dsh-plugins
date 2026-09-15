@@ -10,6 +10,19 @@
 
 ## Unreleased
 
+## 0.1.6-alpha.1.1 — 2026-09-15
+
+**对应 DSH 官方标签：** `dsh-v0.1.6-alpha.1`
+
+**对应本仓库标签：** `dsh-plugins-v0.1.6-alpha.1.1`、`v0.1.6-alpha.1.1`
+
+### 兼容性
+
+- 将五个插件版本、直接 Host peerDependencies、最低发布年龄放行条目和锁文件同步到 DSH `0.1.6-alpha.1`。
+- 对比官方发布差异：Authorization、WebServer、`session/event` 事件以及本仓库使用的 `conversation.composer.dock`、`settings.models.footer` 槽位契约未发生破坏性变化，`codex-login`、`codex-usage` 和 `system-notification` 无需修改运行时实现。
+- DSH 的 Session 任意历史同步读取 API 现标记为 deprecated；`session-cost` 改用 host-only `sessionProjections` 投影保存归一化 usage 与 provider/model 路由，移除新增生产代码对 `snapshotEvents()` 的依赖。
+- 官方 MCP Client 升级到 MCP SDK v2；`project-mcp` 使用的配置字段和 `agent.ctx.plugin()` 接入方式仍兼容，并自动获得协议协商、工具分页、断线重连及资源读取能力。旧服务器的非标准工具结果或超过默认 32 KiB instructions 限制时，可能被官方客户端拒绝；stdio 服务器还会经历一次临时 probe 启动和回收，存在启动副作用或不支持短时间双启动的服务器需要单独验证；literal server instructions 依赖新版 `system-prompt` 配套组合，混用旧版 system-prompt 时需单独验证；插件仍保持错误隔离。
+
 ## 0.1.5-rc.2.5 — 2026-09-14
 
 **对应 DSH 官方标签：** `dsh-v0.1.5-rc.2`

@@ -66,9 +66,7 @@ function emptyGroup(route) {
     key: routeKey(route),
     requests: 0,
     tokens: emptyTokens(),
-    cost: 0,
-    pricedRequests: 0,
-    unknownRequests: 0
+    usages: []
   }
 }
 
@@ -120,92 +118,121 @@ function usageFromAttempt(stream) {
   return normalizeUsage(latest)
 }
 
-function appendRequest(groups, totals, route, usage, resolveModel) {
+function appendRequest(state, route, usage) {
   const key = routeKey(route)
-  let group = groups.get(key)
-  if (group === undefined) {
-    group = emptyGroup(route)
-    groups.set(key, group)
+  const current = state.groups[key] ?? emptyGroup(route)
+  const tokens = { ...current.tokens }
+  addTokens(tokens, usage)
+  const group = {
+    ...current,
+    requests: current.requests + 1,
+    tokens,
+    usages: [...current.usages, usage]
   }
-
-  group.requests += 1
-  addTokens(group.tokens, usage)
-  addTokens(totals.tokens, usage)
-
-  const cost = modelCost(resolveModel, route, usage)
-  if (cost === null) {
-    group.unknownRequests += 1
-    return
+  return {
+    ...state,
+    groups: { ...state.groups, [key]: group }
   }
-
-  group.pricedRequests += 1
-  group.cost += cost
-  totals.cost += cost
 }
 
-function groupPricing(group) {
-  if (group.unknownRequests === 0) return 'known'
-  if (group.pricedRequests > 0) return 'partial'
-  return 'unknown'
+/** Create the plain-JSON state used by the session-cost host projection. */
+export function createCostState() {
+  return {
+    currentRoute: null,
+    groups: {}
+  }
 }
 
-export function calculateSessionCost(events, options = {}) {
+/** Fold one durable Session event without reading the Session log. */
+export function applyCostEvent(state, event) {
+  const type = event?.type
+  const data = event?.data
+
+  if (type === 'request/header') {
+    return { ...state, currentRoute: routeFromHeader(data?.header) }
+  }
+
+  if (type === 'assistant/message') {
+    const usage = normalizeUsage(data?.usage)
+    return usage === null ? state : appendRequest(state, routeFromSource(data?.message?.source), usage)
+  }
+
+  if (type === 'assistant/attempt') {
+    const usage = usageFromAttempt(data?.stream)
+    return usage === null ? state : appendRequest(state, state.currentRoute, usage)
+  }
+
+  return state
+}
+
+function groupPricing(group, resolveModel) {
+  const route = group.provider === null || group.model === null
+    ? null
+    : { provider: group.provider, model: group.model }
+  let cost = 0
+  let pricedRequests = 0
+  let unknownRequests = 0
+
+  for (const usage of group.usages) {
+    const requestCost = modelCost(resolveModel, route, usage)
+    if (requestCost === null) {
+      unknownRequests += 1
+    } else {
+      pricedRequests += 1
+      cost += requestCost
+    }
+  }
+
+  const pricing = unknownRequests === 0 ? 'known' : pricedRequests > 0 ? 'partial' : 'unknown'
+  return {
+    cost: pricing === 'unknown' ? null : cost,
+    pricing
+  }
+}
+
+/** Project a previously folded state into the existing HTTP response shape. */
+export function calculateSessionCostFromState(state, options = {}) {
   const resolveModel = options.resolveModel ?? getBuiltinModel
-  const groups = new Map()
-  const totals = { tokens: emptyTokens(), cost: 0 }
-  let currentRoute = null
-
-  for (const event of Array.isArray(events) ? events : []) {
-    const type = event?.type
-    const data = event?.data
-
-    if (type === 'request/header') {
-      currentRoute = routeFromHeader(data?.header)
-      continue
-    }
-
-    if (type === 'assistant/message') {
-      const usage = normalizeUsage(data?.usage)
-      if (usage !== null) appendRequest(groups, totals, routeFromSource(data?.message?.source), usage, resolveModel)
-      continue
-    }
-
-    if (type === 'assistant/attempt') {
-      const usage = usageFromAttempt(data?.stream)
-      if (usage !== null) appendRequest(groups, totals, currentRoute, usage, resolveModel)
-    }
-  }
-
-  const entries = [...groups.values()]
-    .map((group) => ({
+  const groups = Object.values(state?.groups ?? {}).map(group => {
+    const priced = groupPricing(group, resolveModel)
+    return {
       provider: group.provider,
       model: group.model,
       key: group.key,
       requests: group.requests,
       tokens: group.tokens,
-      cost: groupPricing(group) === 'unknown' ? null : group.cost,
-      pricing: groupPricing(group)
-    }))
-    .sort((a, b) => {
-      const costA = a.cost ?? -1
-      const costB = b.cost ?? -1
-      return costB - costA || b.tokens.totalTokens - a.tokens.totalTokens || a.key.localeCompare(b.key)
-    })
+      cost: priced.cost,
+      pricing: priced.pricing
+    }
+  }).sort((a, b) => {
+    const costA = a.cost ?? -1
+    const costB = b.cost ?? -1
+    return costB - costA || b.tokens.totalTokens - a.tokens.totalTokens || a.key.localeCompare(b.key)
+  })
 
-  const pricing = entries.length === 0
+  const pricing = groups.length === 0
     ? 'empty'
-    : entries.every((entry) => entry.pricing === 'known')
+    : groups.every(group => group.pricing === 'known')
       ? 'known'
-      : entries.some((entry) => entry.pricing !== 'unknown')
+      : groups.some(group => group.pricing !== 'unknown')
         ? 'partial'
         : 'unknown'
 
   return {
     currency: 'USD',
-    requests: entries.reduce((sum, entry) => sum + entry.requests, 0),
-    tokens: totals.tokens,
-    cost: pricing === 'unknown' ? null : totals.cost,
+    requests: groups.reduce((sum, group) => sum + group.requests, 0),
+    tokens: groups.reduce((total, group) => {
+      addTokens(total, group.tokens)
+      return total
+    }, emptyTokens()),
+    cost: pricing === 'unknown' ? null : groups.reduce((sum, group) => sum + (group.cost ?? 0), 0),
     pricing,
-    groups: entries
+    groups
   }
+}
+
+export function calculateSessionCost(events, options = {}) {
+  let state = createCostState()
+  for (const event of Array.isArray(events) ? events : []) state = applyCostEvent(state, event)
+  return calculateSessionCostFromState(state, options)
 }

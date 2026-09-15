@@ -10,6 +10,8 @@ A personally maintained collection of DeepSeek Harness (DSH) plugins, organized 
 
 ## Plugin overview
 
+The current compatibility target is DSH `v0.1.6-alpha.1`; no breaking DSH contract changes were found, and `session-cost` now uses the new projection seam instead of deprecated Session snapshot reads.
+
 | Package | Type | Package name | Purpose | Details |
 | --- | --- | --- | --- | --- |
 | [`packages/system-notification`](packages/system-notification/) | On-demand plugin | `dsh-system-notification-plugin` | Watches task and approval events and sends native macOS / Windows notifications | [`README`](packages/system-notification/README.md) |
@@ -43,11 +45,11 @@ The current workspace contains five independently installable plugins. The versi
 
 | Package directory | Package name | Example version | Purpose |
 | --- | --- | --- | --- |
-| `packages/system-notification` | `dsh-system-notification-plugin` | `0.1.5-rc.2.5` | Native macOS / Windows notifications |
-| `packages/codex-login` | `dsh-codex-login-plugin` | `0.1.5-rc.2.5` | Initial ChatGPT / Codex login |
-| `packages/codex-usage` | `dsh-codex-usage-plugin` | `0.1.5-rc.2.5` | Codex quota display |
-| `packages/session-cost` | `dsh-session-cost-plugin` | `0.1.5-rc.2.5` | Session cost display |
-| `packages/project-mcp` | `dsh-project-mcp-plugin` | `0.1.5-rc.2.5` | Project-scoped MCP isolation |
+| `packages/system-notification` | `dsh-system-notification-plugin` | `0.1.6-alpha.1.1` | Native macOS / Windows notifications |
+| `packages/codex-login` | `dsh-codex-login-plugin` | `0.1.6-alpha.1.1` | Initial ChatGPT / Codex login |
+| `packages/codex-usage` | `dsh-codex-usage-plugin` | `0.1.6-alpha.1.1` | Codex quota display |
+| `packages/session-cost` | `dsh-session-cost-plugin` | `0.1.6-alpha.1.1` | Session cost display |
+| `packages/project-mcp` | `dsh-project-mcp-plugin` | `0.1.6-alpha.1.1` | Project-scoped MCP isolation |
 
 Install an individual plugin from the current default branch:
 
@@ -81,23 +83,23 @@ dsh plugin --profile web add \
 
 To update an installed plugin, run its `add` command again. When using a fixed release, replace the version tag in the command with the desired release.
 
-For a fixed release, put the version tag before the path. For example, version `v0.1.5-rc.2.5`:
+For a fixed release, put the version tag before the path. For example, version `v0.1.6-alpha.1.1`:
 
 ```sh
 # System notifications
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.5-rc.2.5&path:packages/system-notification'
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.6-alpha.1.1&path:packages/system-notification'
 
 # Codex login
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.5-rc.2.5&path:packages/codex-login'
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.6-alpha.1.1&path:packages/codex-login'
 
 # Codex usage
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.5-rc.2.5&path:packages/codex-usage'
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.6-alpha.1.1&path:packages/codex-usage'
 
 # Session cost
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.5-rc.2.5&path:packages/session-cost'
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.6-alpha.1.1&path:packages/session-cost'
 
 # Project-scoped MCP
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.5-rc.2.5&path:packages/project-mcp'
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.6-alpha.1.1&path:packages/project-mcp'
 ```
 
 After installation, inspect the Profile:
