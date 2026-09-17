@@ -42,7 +42,6 @@
 * Avoid `subagent` by default. Use it only when you can clearly predict what it will do, why it is materially better
   than handling the task directly, and how its result will be verified; otherwise, do the work directly.
 * Do not re-read unchanged content unnecessarily.
-* Once the relevant code path is understood, implement and verify.
 
 ## Git Hosting Safety
 
