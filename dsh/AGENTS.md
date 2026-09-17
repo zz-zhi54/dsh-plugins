@@ -17,7 +17,8 @@
 * Comment only non-obvious logic, business rules, constraints, or important decisions.
 * Remove unnecessary code cleanly.
 * Verify affected behavior and important edge cases with targeted tests and the project's normal tooling.
-* After completing a task, briefly report the changes and verification results.
+* After completing a task, clearly explain what was changed and why, including the affected behavior and verification
+  results, so the outcome can be understood without reviewing the code or diff.
 
 ## Dependencies and External Systems
 
