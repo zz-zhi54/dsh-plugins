@@ -5,6 +5,8 @@
   meaningfully improves readability or maintainability.
 * Keep responsibilities focused, business rules centralized, and data flow explicit.
 * Understand the relevant code before changing it. Follow existing project conventions and verify important assumptions.
+* Treat the current project's source code as authoritative for its behavior unless there is concrete evidence otherwise.
+  Avoid redundant verification of clear source code.
 * Preserve existing behavior unless the task requires otherwise. Keep changes focused and avoid disturbing unrelated
   work.
 * Fix root causes. Do not wrap methods in try/catch by default. Catch exceptions only when the current layer can
@@ -16,8 +18,6 @@
 * Remove unnecessary code cleanly.
 * Verify affected behavior and important edge cases with targeted tests and the project's normal tooling.
 * After completing a task, briefly report the changes and verification results.
-* When IDEA MCP is available, prefer `search_symbol` for locating code symbols, use `read_file` to inspect source code
-  when needed, and use `rename_refactoring` for renaming program symbols instead of manual text replacements.
 
 ## Dependencies and External Systems
 
@@ -41,7 +41,11 @@
 * Use specialized tools or skills when they materially improve correctness or efficiency.
 * Avoid `subagent` by default. Use it only when you can clearly predict what it will do, why it is materially better
   than handling the task directly, and how its result will be verified; otherwise, do the work directly.
+* When IDEA MCP is available, use `read_file` directly when the relevant source file is already known. Use
+  `search_symbol` only when a source symbol must be located and its location is unknown, and use `rename_refactoring`
+  for renaming program symbols.
 * Do not re-read unchanged content unnecessarily.
+* Once the relevant code path is understood, implement and verify.
 
 ## Git Hosting Safety
 
