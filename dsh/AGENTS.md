@@ -39,7 +39,8 @@
 * Use the simplest reliable tool for the task.
 * Prefer focused searches and reads over broad scanning.
 * Use specialized tools or skills when they materially improve correctness or efficiency.
-* Avoid unnecessary subagents. Use them only when delegation clearly improves the task, and keep their number minimal.
+* Use `subagent` only when the expected benefit is clear and the delegated work can be reliably scoped and controlled;
+  otherwise, handle the task directly.
 * Do not re-read unchanged content unnecessarily.
 * Once the relevant code path is understood, implement and verify.
 
