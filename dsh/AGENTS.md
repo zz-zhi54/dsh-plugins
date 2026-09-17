@@ -39,8 +39,9 @@
 * Use the simplest reliable tool for the task.
 * Prefer focused searches and reads over broad scanning.
 * Use specialized tools or skills when they materially improve correctness or efficiency.
-* Use `subagent` only when the expected benefit is clear and the delegated work can be reliably scoped and controlled;
-  otherwise, handle the task directly.
+* Treat `subagent` as unreliable. Use it only when you clearly understand what it will do, why it is better than
+  handling the task directly, what happens if it is not used, and its execution can be reliably predicted and
+  controlled.
 * Do not re-read unchanged content unnecessarily.
 * Once the relevant code path is understood, implement and verify.
 
