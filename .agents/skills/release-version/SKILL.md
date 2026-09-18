@@ -177,7 +177,7 @@ git diff -- CHANGELOG.md package.json packages/*/package.json
      --body-file <临时 PR body 文件>
    ```
 
-   PR body 应包含版本、标签、变更摘要、验证命令、release commit SHA，并写明“请人工审核并合并；本技能不会自动合并”。若已有开放 PR，不创建重复 PR，直接报告现有 PR URL。
+   PR body 应包含版本、标签、变更摘要、验证命令和 release commit SHA。若已有开放 PR，不创建重复 PR，直接报告现有 PR URL。
 
 5. 最终验证并报告：
 
