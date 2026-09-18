@@ -30,7 +30,8 @@ window.__ModuleLoader__.load({
     const ROOT_STYLE = {
       boxSizing: 'border-box',
       maxWidth: 'var(--dsh-chat-content-width, 100%)',
-      width: '100%',
+      // 只占用额度文字的实际宽度，避免把 DSH 内置 stats 压缩成省略号。
+      width: 'auto',
       margin: '0 auto',
       padding: '4px calc(var(--dsh-composer-side-clearance, 0px) + 16px) 0',
       display: 'flex',
