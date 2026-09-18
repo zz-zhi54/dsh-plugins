@@ -45,11 +45,11 @@ The current workspace contains five independently installable plugins. The versi
 
 | Package directory | Package name | Example version | Purpose |
 | --- | --- | --- | --- |
-| `packages/system-notification` | `dsh-system-notification-plugin` | `0.1.6-alpha.2.2` | Native macOS / Windows notifications |
-| `packages/codex-login` | `dsh-codex-login-plugin` | `0.1.6-alpha.2.2` | Initial ChatGPT / Codex login |
-| `packages/codex-usage` | `dsh-codex-usage-plugin` | `0.1.6-alpha.2.2` | Codex quota display |
-| `packages/session-cost` | `dsh-session-cost-plugin` | `0.1.6-alpha.2.2` | Session cost display |
-| `packages/project-mcp` | `dsh-project-mcp-plugin` | `0.1.6-alpha.2.2` | Project-scoped MCP isolation |
+| `packages/system-notification` | `dsh-system-notification-plugin` | `0.1.6-alpha.2.3` | Native macOS / Windows notifications |
+| `packages/codex-login` | `dsh-codex-login-plugin` | `0.1.6-alpha.2.3` | Initial ChatGPT / Codex login |
+| `packages/codex-usage` | `dsh-codex-usage-plugin` | `0.1.6-alpha.2.3` | Codex quota display |
+| `packages/session-cost` | `dsh-session-cost-plugin` | `0.1.6-alpha.2.3` | Session cost display |
+| `packages/project-mcp` | `dsh-project-mcp-plugin` | `0.1.6-alpha.2.3` | Project-scoped MCP isolation |
 
 Install an individual plugin from the current default branch:
 
@@ -83,23 +83,23 @@ dsh plugin --profile web add \
 
 To update an installed plugin, run its `add` command again. When using a fixed release, replace the version tag in the command with the desired release.
 
-For a fixed release, put the version tag before the path. For example, version `v0.1.6-alpha.2.2`:
+For a fixed release, put the version tag before the path. For example, version `v0.1.6-alpha.2.3`:
 
 ```sh
 # System notifications
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.6-alpha.2.2&path:packages/system-notification'
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.6-alpha.2.3&path:packages/system-notification'
 
 # Codex login
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.6-alpha.2.2&path:packages/codex-login'
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.6-alpha.2.3&path:packages/codex-login'
 
 # Codex usage
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.6-alpha.2.2&path:packages/codex-usage'
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.6-alpha.2.3&path:packages/codex-usage'
 
 # Session cost
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.6-alpha.2.2&path:packages/session-cost'
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.6-alpha.2.3&path:packages/session-cost'
 
 # Project-scoped MCP
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.6-alpha.2.2&path:packages/project-mcp'
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.6-alpha.2.3&path:packages/project-mcp'
 ```
 
 After installation, inspect the Profile:

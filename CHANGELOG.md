@@ -10,6 +10,24 @@
 
 ## Unreleased
 
+## 0.1.6-alpha.2.3 — 2026-09-18
+
+**对应 DSH 官方标签：** `dsh-v0.1.6-alpha.2`
+
+**对应本仓库标签：** `v0.1.6-alpha.2.3`
+
+### 修复
+
+- 修复 composer dock 中 Session 费用和 Codex 额度条目因额外垂直 padding 导致的视觉下移，使其与 DSH 内置 `stats` 对齐。
+
+### 文档
+
+- 简化发布 PR 的操作说明。
+
+### 兼容性
+
+- 继续兼容 DSH `0.1.6-alpha.2`；保持现有 Slot 注册 ID、顺序和 Host 依赖不变。
+
 ## 0.1.6-alpha.2.2 — 2026-09-18
 
 **对应 DSH 官方标签：** `dsh-v0.1.6-alpha.2`
