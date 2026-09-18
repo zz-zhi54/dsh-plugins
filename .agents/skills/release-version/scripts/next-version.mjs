@@ -5,7 +5,6 @@ import { fileURLToPath } from 'node:url'
 
 const root = fileURLToPath(new URL('../../../../', import.meta.url))
 const canonicalTagPrefix = 'v'
-const legacyTagPrefix = 'dsh-plugins-v'
 const versionPattern = /^(\d+\.\d+\.\d+)-([0-9A-Za-z-]+)\.(\d+)\.(\d+)$/
 
 function runGit(args) {
@@ -31,28 +30,14 @@ function releaseTags(prefix) {
     .filter((tag) => versionPattern.test(tag.slice(prefix.length)))
 }
 
-const canonicalTags = releaseTags(canonicalTagPrefix)
-const legacyTags = releaseTags(legacyTagPrefix)
+const tags = releaseTags(canonicalTagPrefix)
 
-if (!canonicalTags.length && !legacyTags.length) {
+if (!tags.length) {
   console.error('No release tag matching v<DSH>.<revision> was found.')
   process.exit(1)
 }
 
-if (canonicalTags.length && legacyTags.length) {
-  const canonicalVersions = new Set(canonicalTags.map((tag) => tag.slice(canonicalTagPrefix.length)))
-  const missingAliases = legacyTags
-    .map((tag) => tag.slice(legacyTagPrefix.length))
-    .filter((version) => !canonicalVersions.has(version))
-  if (missingAliases.length) {
-    console.error(`Legacy release tags are missing v aliases: ${missingAliases.join(', ')}`)
-    process.exit(1)
-  }
-}
-
-const tags = canonicalTags.length ? canonicalTags : legacyTags
-const latestTagPrefix = canonicalTags.length ? canonicalTagPrefix : legacyTagPrefix
-const latest = { tag: tags[0], version: tags[0].slice(latestTagPrefix.length) }
+const latest = { tag: tags[0], version: tags[0].slice(canonicalTagPrefix.length) }
 const latestMatch = latest.version.match(versionPattern)
 if (!latestMatch) {
   console.error(`Latest release tag has an unsupported version format: ${latest.tag}`)
