@@ -1,0 +1,23 @@
+{
+  "skill_name": "dsh-upstream-compatibility",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "DSH 官方刚发布 v0.1.6-alpha.3，请检查 dsh-plugins 当前项目是否有兼容性更新。需要对比上游代码和当前插件使用的 Service/Event/Slot，确认是否只需要同步依赖，先不要发版。",
+      "expected_output": "读取当前项目版本和 workspace 状态，找到并验证 DSH alpha.3 的官方来源，给出逐插件兼容性结论；只有有证据的变化才修改源码或 manifest，运行 pnpm install/check/test，并明确不执行 Git 发布动作。",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "帮我审计当前 dsh-plugins 对 DSH 最新稳定版的兼容性，只做只读检查，不修改文件。重点检查 session-cost、codex-usage、project-mcp 的上游契约是否变化。",
+      "expected_output": "只读预检工作区和当前依赖，查询可验证的官方版本/上游差异，按插件列出 Service/Event/Slot/MCP 契约结论、证据和阻塞点，不产生文件或远程 Git 变更。",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "DSH alpha.3 修改了 conversation.composer.dock 的布局和 Slot props。请同步当前项目中受影响的前端插件，补回归测试和 README，并在本地验证；验证完成后再告诉我是否需要用发布技能发版。",
+      "expected_output": "先通过 Inspect 和上游差异确认 Slot 变化，再对 codex-usage/session-cost 做最小兼容修改，保持内置 stats 和独立 Slot 注册，补测试/文档，运行完整检查，并把发布留给 dsh-release-version。",
+      "files": []
+    }
+  ]
+}

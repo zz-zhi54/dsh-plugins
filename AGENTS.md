@@ -113,5 +113,5 @@
 - **改动涉及凭据的代码前先读该包文件头的安全边界，并同步补/改脱敏回归测试。** `packages/codex-usage` 是现成范例：边界写在 `src/codex-usage.mjs` 文件头，回归测试在 `test/codex-usage.test.mjs`（覆盖 token、身份字段、裸邮箱，以及"失败原因不含 email / user_id / account_id"）。
 - 系统通知调用操作系统原生命令；修改命令参数、AppleScript 或 PowerShell 拼接时要保留输入转义，并保证通知失败被隔离在旁路逻辑内。
 - 根工作区和所有 package 当前均为私有本地代码。没有明确发布需求时，不要添加 npm 发布流程，也不要把插件改成递归依赖。
-- 发布版本时，在 `dev` 分支同步根目录和插件版本号，更新相关 README、兼容关系和 `CHANGELOG.md`；然后运行 `pnpm install`、`pnpm check` 及受影响插件测试，提交 `chore(release): version <version>`，创建并推送规范的 `v<version>` 标签，再创建指向 `main` 的 PR 由用户人工合并。历史 `dsh-plugins-v<version>` 标签只读保留，不创建新标签、不改写历史。发布完成后确认源分支、`v<version>` 标签和工作区状态符合预期。禁止强制推送或自动合并。
+- 发布版本时，在 `dev` 分支同步根目录和插件版本号，更新相关 README、兼容关系和 `CHANGELOG.md`；然后运行 `pnpm install`、`pnpm check` 及受影响插件测试，提交 `chore(release): version <version>`，只创建并推送规范的 `v<version>` 标签，再创建指向 `main` 的 PR 由用户人工合并。不要创建或保留 `dsh-plugins-v<version>` 标签。发布完成后确认源分支、`v<version>` 标签和工作区状态符合预期。禁止强制推送或自动合并。
 - 提交前只保留与任务相关的变更，不覆盖已有用户修改。仓库当前没有固定 CI 或 PR 标题格式；提交说明应包含受影响 package、行为变化和验证命令。
