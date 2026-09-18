@@ -33,11 +33,11 @@ servers:
 
 支持 `stdio` 和 `streamable-http`。stdio MCP 未指定 `cwd` 时使用项目目录；相对 `cwd` 相对项目目录解析。配置中的 `serverName` 使用 DSH MCP Client 的命名规则；插件会在运行时为每个 Agent 添加短后缀，避免同一项目多个 Agent 的 MCP 实例冲突，模型看到的工具名也会包含该后缀。
 
-在 DSH `0.1.6-alpha.1` 及以上版本中，官方 MCP Client 已升级到 MCP SDK v2；本插件自动继承协议协商、工具分页、断线重连，以及在 Profile 挂载 MCP 资源服务时的资源与 URI 模板读取能力。
+在 DSH `0.1.6-alpha.2` 及以上版本中，官方 MCP Client 已升级到 MCP SDK v2；本插件自动继承协议协商、工具分页、断线重连，以及在 Profile 挂载 MCP 资源服务时的资源与 URI 模板读取能力。
 
 项目配置、MCP schema 和连接错误都只通过 `console.error` 记录，不会阻断 Agent 的创建、首步或后续正常流程。每个项目 MCP 在 Agent 创建后启动，并由 `agent/pre-step` 等待挂载完成，确保首步能看到已经连接的工具；失败时会记录错误并继续流程，单个配置项失败不会影响同一项目的其他 MCP。项目 MCP 使用 `failOnStartupError: true`，已经建立连接后的断线仍由官方客户端按其重连策略处理。
 
-DSH `0.1.6-alpha.1` 的 MCP Client 对工具结果启用严格 schema 校验，并默认限制服务器 instructions 为 32 KiB；返回旧版非标准结果或超限 instructions 的服务器可能启动/调用失败，插件会记录错误并继续 Agent 流程。stdio 连接还会先启动临时 probe、回收后再启动正式 serving process；有启动副作用或不支持短时间双启动的服务器需要单独验证。MCP v2 的 literal server instructions 依赖新版 `system-prompt` 配套组合；混用旧版 system-prompt 时需单独验证指令文本是否保持原样。
+DSH `0.1.6-alpha.2` 的 MCP Client 对工具结果启用严格 schema 校验，并默认限制服务器 instructions 为 32 KiB；返回旧版非标准结果或超限 instructions 的服务器可能启动/调用失败，插件会记录错误并继续 Agent 流程。stdio 连接还会先启动临时 probe、回收后再启动正式 serving process；有启动副作用或不支持短时间双启动的服务器需要单独验证。MCP v2 的 literal server instructions 依赖新版 `system-prompt` 配套组合；混用旧版 system-prompt 时需单独验证指令文本是否保持原样。
 
 ## 隔离与全局 MCP
 

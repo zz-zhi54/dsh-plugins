@@ -10,6 +10,22 @@
 
 ## Unreleased
 
+## 0.1.6-alpha.2.1 — 2026-09-18
+
+**对应 DSH 官方标签：** `dsh-v0.1.6-alpha.2`
+
+**对应本仓库标签：** `v0.1.6-alpha.2.1`
+
+### 修复
+
+- 修复 DSH alpha.2 的 composer dock 横向布局下，Session 费用和 Codex 额度条目占满整行导致内置统计项被压缩成省略号的问题；两个条目现在只占用自身内容宽度，保留内置 `stats` 的显示。
+- 更新 Session 费用和 Codex 额度插件 README 使用的界面截图，使其反映当前布局。
+
+### 兼容性
+
+- 将根目录与五个插件 manifest、直接 Host peer/devDependencies、以及最低发布年龄放行条目同步到 DSH `0.1.6-alpha.2`。
+- `conversation.composer.dock` 与 `settings.models.footer` 的现有 Slot 契约保持兼容；无需替换内置 `stats` 或改变插件注册 ID / 顺序。
+
 ## 0.1.6-alpha.1.1 — 2026-09-15
 
 **对应 DSH 官方标签：** `dsh-v0.1.6-alpha.1`

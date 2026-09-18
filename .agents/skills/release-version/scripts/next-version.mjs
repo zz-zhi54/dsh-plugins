@@ -4,7 +4,8 @@ import { join, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const root = fileURLToPath(new URL('../../../../', import.meta.url))
-const tagPrefix = 'dsh-plugins-v'
+const canonicalTagPrefix = 'v'
+const legacyTagPrefix = 'dsh-plugins-v'
 const versionPattern = /^(\d+\.\d+\.\d+)-([0-9A-Za-z-]+)\.(\d+)\.(\d+)$/
 
 function runGit(args) {
@@ -23,16 +24,35 @@ function manifestPaths() {
   return paths.filter(existsSync)
 }
 
-const tags = runGit(['tag', '--list', `${tagPrefix}*`, '--sort=-version:refname'])
-  .split('\n')
-  .filter(Boolean)
+function releaseTags(prefix) {
+  return runGit(['tag', '--list', `${prefix}*`, '--sort=-version:refname'])
+    .split('\n')
+    .filter(Boolean)
+    .filter((tag) => versionPattern.test(tag.slice(prefix.length)))
+}
 
-if (!tags.length) {
-  console.error(`No release tag matching ${tagPrefix}<DSH>.<revision> was found.`)
+const canonicalTags = releaseTags(canonicalTagPrefix)
+const legacyTags = releaseTags(legacyTagPrefix)
+
+if (!canonicalTags.length && !legacyTags.length) {
+  console.error('No release tag matching v<DSH>.<revision> was found.')
   process.exit(1)
 }
 
-const latest = { tag: tags[0], version: tags[0].slice(tagPrefix.length) }
+if (canonicalTags.length && legacyTags.length) {
+  const canonicalVersions = new Set(canonicalTags.map((tag) => tag.slice(canonicalTagPrefix.length)))
+  const missingAliases = legacyTags
+    .map((tag) => tag.slice(legacyTagPrefix.length))
+    .filter((version) => !canonicalVersions.has(version))
+  if (missingAliases.length) {
+    console.error(`Legacy release tags are missing v aliases: ${missingAliases.join(', ')}`)
+    process.exit(1)
+  }
+}
+
+const tags = canonicalTags.length ? canonicalTags : legacyTags
+const latestTagPrefix = canonicalTags.length ? canonicalTagPrefix : legacyTagPrefix
+const latest = { tag: tags[0], version: tags[0].slice(latestTagPrefix.length) }
 const latestMatch = latest.version.match(versionPattern)
 if (!latestMatch) {
   console.error(`Latest release tag has an unsupported version format: ${latest.tag}`)
@@ -57,7 +77,7 @@ console.log(JSON.stringify({
   latestVersion: latest.version,
   currentManifestVersion: versions[0],
   nextVersion,
-  nextTag: `${tagPrefix}${nextVersion}`,
-  nextInstallTag: `v${nextVersion}`,
+  nextTag: `${canonicalTagPrefix}${nextVersion}`,
+  nextInstallTag: `${canonicalTagPrefix}${nextVersion}`,
   manifests
 }, null, 2))

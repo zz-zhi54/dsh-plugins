@@ -11,7 +11,8 @@ window.__ModuleLoader__.load({
     const ROW_STYLE = {
       maxWidth: 'var(--dsh-chat-content-width, 100%)',
       boxSizing: 'border-box',
-      width: '100%',
+      // 只占用费用 pill 的实际宽度，避免把 DSH 内置 stats 压缩成省略号。
+      width: 'auto',
       padding: '4px calc(var(--dsh-composer-side-clearance, 0px) + 16px) 0',
       fontSize: 'var(--dsh-content-font-size-secondary, 13px)',
       lineHeight: 'calc(20px + var(--dsh-content-font-delta-secondary, 0px))',
