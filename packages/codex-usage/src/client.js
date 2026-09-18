@@ -32,8 +32,9 @@ window.__ModuleLoader__.load({
       maxWidth: 'var(--dsh-chat-content-width, 100%)',
       // 只占用额度文字的实际宽度，避免把 DSH 内置 stats 压缩成省略号。
       width: 'auto',
-      margin: '0 auto',
-      padding: '4px calc(var(--dsh-composer-side-clearance, 0px) + 16px) 0',
+      // 外层 dock 负责模块间距；这里不再叠加 auto margin 和水平 padding。
+      margin: 0,
+      padding: '4px 0 0',
       display: 'flex',
       justifyContent: 'center',
       gap: 12,
@@ -67,7 +68,11 @@ window.__ModuleLoader__.load({
       opacity: 0.65,
       cursor: 'pointer',
     }
-    const SEP_STYLE = { color: 'var(--dsw-alias-separator-primary, var(--dsw-alias-border-l1))' }
+    // separator-primary 不是当前主题公开 token；使用已声明的次要文字色，避免分隔点隐形。
+    const SEP_STYLE = {
+      color: 'var(--dsw-alias-label-secondary)',
+      opacity: 0.65,
+    }
 
     /** 高用量配色：只给"剩余"这一段上色，余量越少越醒目。 */
     function toneStyle(usedPercent) {
@@ -76,31 +81,45 @@ window.__ModuleLoader__.load({
       return null
     }
 
-    /** 窗口标签：primary 是 5h，secondary 是周。按窗口时长推断，避免写死。 */
+    /** 窗口标签使用统一的英文单位：5h、1w；未知的小窗口退回分钟。 */
+    const WINDOW_UNITS = [
+      { minutes: 10080, suffix: 'w' },
+      { minutes: 1440, suffix: 'd' },
+      { minutes: 60, suffix: 'h' },
+    ]
+
     function windowLabel(bucket) {
       const minutes = bucket.windowMinutes
-      if (typeof minutes !== 'number' || !isFinite(minutes) || minutes <= 0) return '额度'
-      if (minutes >= 10080) return '周'
-      if (minutes >= 1440) return Math.round(minutes / 1440) + ' 天'
-      return Math.round(minutes / 60) + 'h'
+      if (typeof minutes !== 'number' || !isFinite(minutes) || minutes <= 0) return 'quota'
+      const unit = WINDOW_UNITS.find(candidate => minutes >= candidate.minutes) ?? { minutes: 1, suffix: 'm' }
+      return Math.round(minutes / unit.minutes) + unit.suffix
     }
 
     const remainingOf = bucket => Math.max(0, 100 - bucket.usedPercent)
 
+    // 用数据表拆分剩余时间，只显示天、小时和分钟，避免逐单位堆叠 if。
+    const DURATION_UNITS = [
+      { seconds: 86400, suffix: 'd' },
+      { seconds: 3600, suffix: 'h' },
+      { seconds: 60, suffix: 'm' },
+    ]
+
     function durationText(ms) {
-      const minutes = Math.floor(ms / 60000)
-      const days = Math.floor(minutes / 1440)
-      const hours = Math.floor((minutes % 1440) / 60)
-      if (days > 0) return days + ' 天 ' + hours + ' 小时'
-      if (hours > 0) return hours + ' 小时 ' + (minutes % 60) + ' 分'
-      return (minutes % 60) + ' 分'
+      let remaining = Math.max(0, Math.floor(ms / 1000))
+      const parts = []
+      for (const unit of DURATION_UNITS) {
+        const amount = Math.floor(remaining / unit.seconds)
+        if (amount > 0) parts.push(amount + unit.suffix)
+        remaining %= unit.seconds
+      }
+      return parts.length > 0 ? parts.join(' ') : '<1m'
     }
 
-    /** 距离窗口重置还有多久；取不到或已到期时给一句话。 */
+    /** 距离窗口重置还有多久；取不到时隐藏，已到期时显示 <1m。 */
     function resetIn(resetsAt) {
       if (typeof resetsAt !== 'number' || !isFinite(resetsAt)) return null
       const left = resetsAt * 1000 - Date.now()
-      return left <= 0 ? '即将刷新' : durationText(left) + '后刷新'
+      return left <= 0 ? '<1m' : durationText(left)
     }
 
     /**
@@ -207,7 +226,7 @@ window.__ModuleLoader__.load({
         pill.push(React.createElement('span', { key: label + '-sep', style: SEP_STYLE }, '·'))
         pill.push(React.createElement('span', { key: label + '-label' }, label))
         pill.push(React.createElement('span', { key: label + '-left', style: toneStyle(bucket.usedPercent) },
-          '剩 ' + Math.round(remainingOf(bucket)) + '%'))
+          Math.round(remainingOf(bucket)) + '%'))
         if (reset !== null) pill.push(React.createElement('span', { key: label + '-reset' }, reset))
       }
 

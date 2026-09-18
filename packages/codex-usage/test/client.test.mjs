@@ -166,15 +166,24 @@ test('收起态只显示剩余与刷新倒计时，且没有悬浮面板', () =>
 
   assert.match(text, /^Codex/)
   assert.match(text, /5h/)
-  assert.match(text, /剩 93%/)
-  assert.match(text, /周/)
-  assert.match(text, /剩 66%/)
-  assert.match(text, /后刷新/)
+  assert.match(text, /93%/)
+  assert.match(text, /1w/)
+  assert.match(text, /66%/)
+  assert.match(text, /\d+h \d+m/)
+  assert.match(text, /\d+d \d+h/)
+  assert.equal(text.includes('剩'), false)
+  assert.equal(text.includes('后刷新'), false)
+  assert.equal(text.includes('小时'), false)
+  assert.equal(text.includes('天'), false)
+  assert.equal(text.includes('秒'), false)
   assert.equal(text.includes('用 7%'), false)
   assert.equal(text.includes('已用'), false)
   // 没有悬浮面板：根节点下只有那一个按钮
   assert.equal(tree.children.length, 1)
   assert.equal(tree.children[0].type, 'button')
+  // 分隔点必须使用公开主题 token，不能因不存在的 separator token 而隐形。
+  assert.equal(tree.children[0].children[0][1].props.style.color, 'var(--dsw-alias-label-secondary)')
+  assert.equal(tree.children[0].children[0][1].props.style.opacity, 0.65)
 })
 
 test('失败态是可点击的重试按钮，点击走强制刷新', async () => {
