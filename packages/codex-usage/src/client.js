@@ -32,9 +32,8 @@ window.__ModuleLoader__.load({
       maxWidth: 'var(--dsh-chat-content-width, 100%)',
       // 只占用额度文字的实际宽度，避免把 DSH 内置 stats 压缩成省略号。
       width: 'auto',
-      // 外层 dock 负责模块间距；这里不再叠加 auto margin 和水平 padding。
+      // 外层 dock 负责模块间距；这里不再叠加 auto margin 和垂直 padding。
       margin: 0,
-      padding: '4px 0 0',
       display: 'flex',
       justifyContent: 'center',
       gap: 12,
@@ -48,7 +47,7 @@ window.__ModuleLoader__.load({
       alignItems: 'center',
       gap: 6,
       maxWidth: '100%',
-      padding: '1px 8px',
+      padding: '0 8px',
       border: 'none',
       borderRadius: 24,
       font: 'inherit',
@@ -61,7 +60,7 @@ window.__ModuleLoader__.load({
     const NOTICE_STYLE = {
       background: 'transparent',
       border: 'none',
-      padding: '1px 8px',
+      padding: '0 8px',
       borderRadius: 24,
       font: 'inherit',
       color: 'var(--dsw-alias-label-secondary)',

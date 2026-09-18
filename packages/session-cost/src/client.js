@@ -13,8 +13,7 @@ window.__ModuleLoader__.load({
       boxSizing: 'border-box',
       // 只占用费用 pill 的实际宽度，避免把 DSH 内置 stats 压缩成省略号。
       width: 'auto',
-      // 外层 dock 负责模块间距；这里不再叠加 auto margin 和水平 padding。
-      padding: '4px 0 0',
+      // 外层 dock 负责模块间距；这里不再叠加 auto margin 和垂直 padding。
       fontSize: 'var(--dsh-content-font-size-secondary, 13px)',
       lineHeight: 'calc(20px + var(--dsh-content-font-delta-secondary, 0px))',
       justifyContent: 'center',
@@ -42,7 +41,7 @@ window.__ModuleLoader__.load({
       borderRadius: 24,
       alignItems: 'center',
       gap: 6,
-      padding: '1px 8px',
+      padding: '0 8px',
       display: 'inline-flex',
       cursor: 'pointer',
     }
