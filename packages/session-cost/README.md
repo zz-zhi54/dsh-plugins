@@ -9,7 +9,7 @@
 ## 功能
 
 - **位置**：注册独立的 `conversation.composer.dock` 条目 `session-cost`（`order: 10`），在 DSH 内置 `stats`（`order: 0`）之后显示 `费用 $0.0124`；不接管或替换内置统计单元。
-- **交互**：点击费用打开 Token 费用统计对话框；每个 `provider/model` 行显示 Token 总数和费用，点击后展开 input、output、cache read、cache write 与请求次数。
+- **交互**：点击费用打开 Token 费用统计对话框；点击其它区域按 DSH 官方统计窗口的行为自动关闭；每个 `provider/model` 行显示 Token 总数和费用，点击后展开 input、output、cache read、cache write 与请求次数。
 - **数据来源**：Host 通过 `sessionProjections` 增量折叠 durable events，不新增本插件持久化文件；读取结果仍按 Session `seq` 做进程内缓存。
 - **请求覆盖**：成功的 `assistant/message` 和没有 surface message 的 `assistant/attempt` 都计入。重试 attempt 从其 durable stream 的最后一条 provider usage 读取，不把流式中间 usage 重复相加。
 - **未知价格**：模型不在 pi-ai 内置目录时显示 `未知`，不会猜测价格；已知模型的费用仍会显示，并标记未知部分。

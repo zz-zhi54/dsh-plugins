@@ -246,6 +246,7 @@ window.__ModuleLoader__.load({
       const [open, setOpen] = React.useState(false)
       const [expanded, setExpanded] = React.useState(null)
       const [hover, setHover] = React.useState(false)
+      const rootRef = React.useRef(null)
       const hasTokens = hasProjectionTokens(usage)
 
       React.useEffect(() => {
@@ -265,11 +266,25 @@ window.__ModuleLoader__.load({
         }
       }, [props.sessionId, usage, hasTokens])
 
+      // Match the built-in stats dialog: a pointer outside the trigger and
+      // its details closes the open cost panel.
+      React.useEffect(() => {
+        if (!open) return undefined
+        const closeOutside = event => {
+          if (rootRef.current?.contains(event.target) === true) return
+          setOpen(false)
+        }
+        document.addEventListener('pointerdown', closeOutside)
+        return () => {
+          document.removeEventListener('pointerdown', closeOutside)
+        }
+      }, [open])
+
       const costValue = costState.phase === 'ready' ? costState.value : null
       if (costValue === null || costValue.requests <= 0) return null
 
       const pillStyle = Object.assign({}, PILL_STYLE, open || hover ? PILL_HOVER_STYLE : null)
-      return React.createElement('div', { style: ROW_STYLE },
+      return React.createElement('div', { ref: rootRef, style: ROW_STYLE },
         React.createElement('span', { style: ANCHOR_STYLE },
           React.createElement('button', {
             type: 'button',
