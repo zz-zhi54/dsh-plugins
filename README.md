@@ -1,10 +1,10 @@
 <!-- deepseek-harness-meta
 {
   "name": "dsh-plugins",
-  "version": "0.1.6-alpha.2.3",
+  "version": "0.1.6-alpha.2.4",
   "tags": ["deepseek", "deepseek-harness", "dsh", "plugins"],
   "description": "非官方 DeepSeek Harness 插件集合，可从 GitHub 按需安装",
-  "icon": "https://raw.githubusercontent.com/zz-zhi54/dsh-plugins/v0.1.6-alpha.2.3/packages/system-notification/assets/dsh.ico",
+  "icon": "https://raw.githubusercontent.com/zz-zhi54/dsh-plugins/v0.1.6-alpha.2.4/packages/system-notification/assets/dsh.ico",
   "compatible_versions": ["v0.1.6-alpha.2"],
   "screenshots": "packages",
   "install_method": "dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#path:packages/session-cost'"
@@ -67,11 +67,11 @@
 
 | 插件目录 | package name | 版本示例 | 用途 |
 | --- | --- | --- | --- |
-| `packages/system-notification` | `dsh-system-notification-plugin` | `0.1.6-alpha.2.3` | macOS / Windows 系统通知 |
-| `packages/codex-login` | `dsh-codex-login-plugin` | `0.1.6-alpha.2.3` | 首次 ChatGPT / Codex 登录 |
-| `packages/codex-usage` | `dsh-codex-usage-plugin` | `0.1.6-alpha.2.3` | Codex 额度显示 |
-| `packages/session-cost` | `dsh-session-cost-plugin` | `0.1.6-alpha.2.3` | Session 费用显示 |
-| `packages/project-mcp` | `dsh-project-mcp-plugin` | `0.1.6-alpha.2.3` | 项目级 MCP 隔离 |
+| `packages/system-notification` | `dsh-system-notification-plugin` | `0.1.6-alpha.2.4` | macOS / Windows 系统通知 |
+| `packages/codex-login` | `dsh-codex-login-plugin` | `0.1.6-alpha.2.4` | 首次 ChatGPT / Codex 登录 |
+| `packages/codex-usage` | `dsh-codex-usage-plugin` | `0.1.6-alpha.2.4` | Codex 额度显示 |
+| `packages/session-cost` | `dsh-session-cost-plugin` | `0.1.6-alpha.2.4` | Session 费用显示 |
+| `packages/project-mcp` | `dsh-project-mcp-plugin` | `0.1.6-alpha.2.4` | 项目级 MCP 隔离 |
 
 从当前默认分支安装单个插件：
 
@@ -105,23 +105,23 @@ dsh plugin --profile web add \
 
 已安装插件需要更新时，重新执行对应的 `add` 命令即可；使用固定 release 时，将命令中的版本标签替换为新版本。
 
-固定 release 时，在路径前加入版本标签。以版本 `v0.1.6-alpha.2.3` 为例：
+固定 release 时，在路径前加入版本标签。以版本 `v0.1.6-alpha.2.4` 为例：
 
 ```sh
 # 系统通知
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.6-alpha.2.3&path:packages/system-notification'
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.6-alpha.2.4&path:packages/system-notification'
 
 # Codex 登录
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.6-alpha.2.3&path:packages/codex-login'
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.6-alpha.2.4&path:packages/codex-login'
 
 # Codex 额度
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.6-alpha.2.3&path:packages/codex-usage'
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.6-alpha.2.4&path:packages/codex-usage'
 
 # Session 费用
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.6-alpha.2.3&path:packages/session-cost'
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.6-alpha.2.4&path:packages/session-cost'
 
 # 项目级 MCP
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.6-alpha.2.3&path:packages/project-mcp'
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.6-alpha.2.4&path:packages/project-mcp'
 ```
 
 安装后检查 Profile：
