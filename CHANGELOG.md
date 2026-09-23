@@ -10,6 +10,24 @@
 
 ## Unreleased
 
+## 0.1.7-alpha.1.1 — 2026-09-22
+
+**对应 DSH 官方标签：** `dsh-v0.1.7-alpha.1`
+
+**对应本仓库标签：** `v0.1.7-alpha.1.1`
+
+### 兼容性
+
+- 审计 DSH `dsh-v0.1.6-alpha.2` 到 `dsh-v0.1.7-alpha.1` 的官方发布说明与相关源码差异；本次上游主要是会话管理、设置、任务后台运行、文件预览和安装体验优化。
+- `session/event` 的监听签名与 `turn/end`、`approval/asked` 事件仍兼容；`session-cost` 使用的 `sessionProjections.register()` / `stateOf()` 以及现有 host-only 投影没有变化。
+- `conversation.composer.dock`、`settings.models.footer` 仍是独立 list Slot，`id` / `order` 注册契约保持不变；继续保留 DSH 内置 `stats`，不改动现有插件注册 ID 和顺序。
+- `authorization`、`credentials`、`webServer` 与项目 MCP 使用的 Agent 生命周期接入方式保持兼容；无需运行时适配。
+
+### 同步
+
+- 根目录与五个插件 manifest 版本同步为 `0.1.7-alpha.1.1`。
+- `codex-login`、`project-mcp`、`session-cost`、`system-notification` 的直接 DSH 依赖、最低发布年龄放行条目和锁文件同步到 `0.1.7-alpha.1`。
+
 ## 0.1.6-alpha.2.4 — 2026-09-21
 
 **对应 DSH 官方标签：** `dsh-v0.1.6-alpha.2`

@@ -19,6 +19,8 @@
 * Prefer a small number of high-value behavioral tests. Avoid redundant, trivial, or dependency-owned behavior tests.
 * After completing a task, clearly explain what was changed and why, including the affected behavior and verification
   results, so the outcome can be understood without reviewing the code or diff.
+* Tests are only for verification. Do not use tests to understand, design, or judge production logic unless the task
+  itself is about tests.
 
 ## Dependencies and External Systems
 

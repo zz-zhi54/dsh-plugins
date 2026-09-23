@@ -48,7 +48,6 @@ const credentialsStub = (record = {
     type: 'oauth',
     access: ACCESS_TOKEN,
     refresh: 'refresh-token-value',
-    expires: 1789_999_999_000,
     accountId: '82c43a50-8646-4b9d-bea2-786feaafa07f',
   },
 }) => ({ readRecord: async key => (key === CREDENTIAL_KEY ? record : undefined) })
@@ -138,7 +137,16 @@ test('projectUsagePayload 在两个窗口都缺失时返回 null', () => {
 })
 
 test('readCodexCredential 读取 grant 记录的关键字段', async () => {
-  const credential = await readCodexCredential(credentialsStub())
+  const credential = await readCodexCredential(credentialsStub({
+    kind: 'grant',
+    payload: {
+      type: 'oauth',
+      access: ACCESS_TOKEN,
+      refresh: 'refresh-token-value',
+      expires: 1789_999_999_000,
+      accountId: '82c43a50-8646-4b9d-bea2-786feaafa07f',
+    },
+  }))
   assert.equal(credential.access, ACCESS_TOKEN)
   assert.equal(credential.accountId, '82c43a50-8646-4b9d-bea2-786feaafa07f')
   assert.equal(credential.expiresAt, 1789_999_999_000)
