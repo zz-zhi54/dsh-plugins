@@ -10,6 +10,25 @@
 
 ## Unreleased
 
+## 0.1.7-alpha.2.1 — 2026-09-23
+
+**对应 DSH 官方标签：** `dsh-v0.1.7-alpha.2`
+
+**对应本仓库标签：** `v0.1.7-alpha.2.1`
+
+### 兼容性
+
+- 审计 DSH `dsh-v0.1.7-alpha.1` 到 `dsh-v0.1.7-alpha.2` 的官方发布说明与相关源码差异；本次上游主要是会话滚动与历史跳转、代码块与 Excel 预览、后台任务唤醒、安装体验及 MCP 工具结果预算优化。
+- `session/event` 的监听签名与 `turn/end`、`approval/asked` 事件仍兼容；`sessionProjections.register()` / `stateOf()`、`authorization`、`webServer` 以及现有 Host 生命周期接入方式未发生破坏性变化。
+- `conversation.composer.dock`、`settings.models.footer` 仍是独立 list Slot，`id` / `order` 注册契约保持不变；继续保留 DSH 内置 `stats`，不改动现有插件注册 ID 和顺序。
+- MCP Client 的上游内部工具结果投影发生调整，但 `Config`、Agent 作用域挂载和连接配置接口未变；`project-mcp` 不使用上游变更的工具结果内部 API，无需运行时适配。
+
+### 同步
+
+- 根目录与五个插件 manifest 版本同步为 `0.1.7-alpha.2.1`。
+- `codex-login`、`project-mcp`、`session-cost`、`system-notification` 的直接 DSH 依赖和最低发布年龄放行条目同步到 `0.1.7-alpha.2`；Cordis、Cosmokit、Schemastery 同步到官方 `4.0.4`、`1.8.5`、`3.18.4`。
+- 重新生成 pnpm 锁文件，并更新根 README 的兼容版本、安装示例和元数据。
+
 ## 0.1.7-alpha.1.1 — 2026-09-22
 
 **对应 DSH 官方标签：** `dsh-v0.1.7-alpha.1`
