@@ -10,6 +10,23 @@
 
 ## Unreleased
 
+## 0.1.7-rc.2.1 — 2026-09-28
+
+**对应 DSH 官方标签：** [`dsh-v0.1.7-rc.2`](https://github.com/deepseek-ai/deepseek-harness/releases/tag/dsh-v0.1.7-rc.2)
+
+**对应本仓库标签：** `v0.1.7-rc.2.1`
+
+### 兼容性
+
+- 对比 [`dsh-v0.1.7-alpha.2...dsh-v0.1.7-rc.2`](https://github.com/deepseek-ai/deepseek-harness/compare/dsh-v0.1.7-alpha.2...dsh-v0.1.7-rc.2)：上游新增定时提醒、Web 快捷键、动态工具更新及审批交互等功能；`request/header` 的 `startsSeries` 语义扩展，但本项目不读取该字段。
+- `session/event`、`turn/end`、`assistant/message` / `assistant/attempt` usage、`sessionProjections.register()` / `stateOf()`、`authorization`、`credentials`、`webServer` 的插件用法保持兼容；项目 MCP 使用的 `agent/created`、`agent/pre-step` 和 MCP Client 配置接口未变。
+- `conversation.composer.dock` 与 `settings.models.footer` 仍为独立 list Slot，注册 `id`、`order` 及本插件使用的 props 未变；保留内置 `stats` 与插件自身 ID/顺序。无需修改插件运行时代码。
+
+### 同步
+
+- 根目录与五个插件 manifest 版本同步为 `0.1.7-rc.2.1`；四个插件的直接 DSH peer/devDependencies 与最低发布年龄放行同步到 `0.1.7-rc.2`，并重新生成 pnpm 锁文件。
+- 中英文 README 标注 DSH 兼容目标与当前版本，固定版本安装示例及图标改为本次规范标签 `v0.1.7-rc.2.1`。
+
 ## 0.1.7-alpha.2.1 — 2026-09-23
 
 **对应 DSH 官方标签：** `dsh-v0.1.7-alpha.2`
