@@ -10,6 +10,10 @@
 
 ## Unreleased
 
+### 移除
+
+- 删除项目级 MCP 插件 `packages/project-mcp`；项目级 MCP 能力不再提供，后续如需项目能力，优先采用 Skills 和小脚本。
+
 ## 0.1.7-rc.2.1 — 2026-09-28
 
 **对应 DSH 官方标签：** [`dsh-v0.1.7-rc.2`](https://github.com/deepseek-ai/deepseek-harness/releases/tag/dsh-v0.1.7-rc.2)

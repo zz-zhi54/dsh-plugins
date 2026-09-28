@@ -18,7 +18,6 @@ The current compatibility target is DSH `v0.1.7-rc.2`. The audited Host services
 | [`packages/codex-login`](packages/codex-login/) | Temporary on-demand plugin | `dsh-codex-login-plugin` | Provides the ChatGPT / Codex OAuth login entry point; uninstall it after the first successful login | [`README`](packages/codex-login/README.md) |
 | [`packages/codex-usage`](packages/codex-usage/) | On-demand plugin | `dsh-codex-usage-plugin` | Shows Codex 5-hour and weekly quota usage with reset countdowns below the composer | [`README`](packages/codex-usage/README.md) |
 | [`packages/session-cost`](packages/session-cost/) | On-demand plugin | `dsh-session-cost-plugin` | Shows provider/model session costs and USD totals below the token statistics row | [`README`](packages/session-cost/README.md) |
-| [`packages/project-mcp`](packages/project-mcp/) | On-demand plugin | `dsh-project-mcp-plugin` | Loads isolated project-scoped MCP servers from each project's `.dsh/mcp.yml` | [`README`](packages/project-mcp/README.md) |
 
 ### How the plugins relate
 
@@ -41,7 +40,7 @@ Each plugin is installed independently from a `packages/*` subdirectory on GitHu
 
 ### Install
 
-The current workspace contains five independently installable plugins. The version examples below come from their respective `package.json` files:
+The current workspace contains four independently installable plugins. The version examples below come from their respective `package.json` files:
 
 | Package directory | Package name | Example version | Purpose |
 | --- | --- | --- | --- |
@@ -49,7 +48,6 @@ The current workspace contains five independently installable plugins. The versi
 | `packages/codex-login` | `dsh-codex-login-plugin` | `0.1.7-rc.2.1` | Initial ChatGPT / Codex login |
 | `packages/codex-usage` | `dsh-codex-usage-plugin` | `0.1.7-rc.2.1` | Codex quota display |
 | `packages/session-cost` | `dsh-session-cost-plugin` | `0.1.7-rc.2.1` | Session cost display |
-| `packages/project-mcp` | `dsh-project-mcp-plugin` | `0.1.7-rc.2.1` | Project-scoped MCP isolation |
 
 Install an individual plugin from the current default branch:
 
@@ -65,9 +63,6 @@ dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#path:packages/codex-us
 
 # Session cost
 dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#path:packages/session-cost'
-
-# Project-scoped MCP
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#path:packages/project-mcp'
 ```
 
 You can also install all plugins at once:
@@ -77,8 +72,7 @@ dsh plugin --profile web add \
   'github:zz-zhi54/dsh-plugins#path:packages/system-notification' \
   'github:zz-zhi54/dsh-plugins#path:packages/codex-login' \
   'github:zz-zhi54/dsh-plugins#path:packages/codex-usage' \
-  'github:zz-zhi54/dsh-plugins#path:packages/session-cost' \
-  'github:zz-zhi54/dsh-plugins#path:packages/project-mcp'
+  'github:zz-zhi54/dsh-plugins#path:packages/session-cost'
 ```
 
 To update an installed plugin, run its `add` command again. When using a fixed release, replace the version tag in the command with the desired release.
@@ -97,9 +91,6 @@ dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.7-rc.2.1&path:pac
 
 # Session cost
 dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.7-rc.2.1&path:packages/session-cost'
-
-# Project-scoped MCP
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.1.7-rc.2.1&path:packages/project-mcp'
 ```
 
 After installation, inspect the Profile:
@@ -124,9 +115,6 @@ dsh plugin --profile web remove dsh-codex-usage-plugin
 
 # Session cost
 dsh plugin --profile web remove dsh-session-cost-plugin
-
-# Project-scoped MCP
-dsh plugin --profile web remove dsh-project-mcp-plugin
 ```
 
 Only remove plugins that are actually installed.
@@ -137,7 +125,6 @@ For package-specific behavior, limitations, and verification steps, see:
 - [Codex usage plugin](packages/codex-usage/README.md)
 - [Session cost plugin](packages/session-cost/README.md)
 - [System notification plugin](packages/system-notification/README.md)
-- [Project-scoped MCP plugin](packages/project-mcp/README.md)
 
 ## Development
 
