@@ -10,6 +10,27 @@
 
 ## Unreleased
 
+## 0.2.0-rc.1.1 — 2026-09-29
+
+**对应 DSH 官方标签：** [`dsh-v0.2.0-rc.1`](https://github.com/deepseek-ai/deepseek-harness/releases/tag/dsh-v0.2.0-rc.1)
+
+**对应本仓库标签：** `v0.2.0-rc.1.1`
+
+### 移除
+
+- 删除项目级 MCP 插件 `packages/project-mcp`；项目级 MCP 能力不再提供，后续如需项目能力，优先采用 Skills 和小脚本。
+
+### 兼容性
+
+- 对比 [`dsh-v0.1.7-rc.2...dsh-v0.2.0-rc.1`](https://github.com/deepseek-ai/deepseek-harness/compare/dsh-v0.1.7-rc.2...dsh-v0.2.0-rc.1)：插件依赖的 Host Service、Event、Session projection、Authorization、Credentials、WebServer 契约保持兼容；`ui-conversation` 仅新增 product-analytics 的 type-only import。
+- `conversation.composer.dock` / `settings.models.footer` Slot 定义及 `window.__ModuleLoader__.load({ id, factory })` 注册契约未变，因此无需运行时适配。
+
+### 同步
+
+- 根目录与四个 workspace 插件 manifest 版本更新为 `0.2.0-rc.1.1`。
+- `codex-login`、`session-cost`、`system-notification` 的直接 DSH 依赖和最低发布年龄放行更新到 `0.2.0-rc.1`，并重新生成 pnpm 锁文件；`codex-usage` 没有直接 DSH 依赖。
+- 更新中英文 README 的兼容目标、当前版本安装示例和图标标签。
+
 ## 0.1.7-rc.2.1 — 2026-09-28
 
 **对应 DSH 官方标签：** [`dsh-v0.1.7-rc.2`](https://github.com/deepseek-ai/deepseek-harness/releases/tag/dsh-v0.1.7-rc.2)
