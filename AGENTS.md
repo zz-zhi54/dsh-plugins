@@ -115,3 +115,55 @@
 - 根工作区和所有 package 当前均为私有本地代码。没有明确发布需求时，不要添加 npm 发布流程，也不要把插件改成递归依赖。
 - 发布版本时，在 `dev` 分支同步根目录和插件版本号，更新相关 README、兼容关系和 `CHANGELOG.md`；然后运行 `pnpm install`、`pnpm check` 及受影响插件测试，提交 `chore(release): version <version>`，只创建并推送规范的 `v<version>` 标签，再创建指向 `main` 的 PR 由用户人工合并。不要创建或保留 `dsh-plugins-v<version>` 标签。发布完成后确认源分支、`v<version>` 标签和工作区状态符合预期。禁止强制推送或自动合并。
 - 提交前只保留与任务相关的变更，不覆盖已有用户修改。仓库当前没有固定 CI 或 PR 标题格式；提交说明应包含受影响 package、行为变化和验证命令。
+
+## DSH 版本兼容维护
+
+### 版本事实源
+
+- DSH 版本只以 `deepseek-ai/deepseek-harness` 的 GitHub Tags 为事实源；不要用 npm dist-tag、单个 npm 子包版本或第三方发行信息代替。
+- 当前 DSH 仍处于快速发布阶段，alpha、beta、rc、正式版等所有新 tag 都要检查。只有用户明确要求后，才可切换为只跟踪稳定版本；Agent 不得自行判断“已经稳定”并忽略预发布版本。
+- 每个 package 目录下的 `AGENTS.md` 记录该插件实际依赖的 DSH API、Host Service、事件、Web Slot 和行为契约。兼容检查必须先读根规则，再读可能受影响插件的局部规则。
+
+### 新 tag 的处理顺序
+
+1. 找到新 tag 的直接前序 tag，阅读 Release Notes，并比较两个 tag 的源码差异；Release Notes 缺失时仍要做 tag diff。
+2. 从上游变化中提取可能影响插件的 surface，例如：包/导出、Host Service、Cordis 事件、持久 Session event、projection、Authorization、Credentials、Web Server、Client ModuleLoader、Slot、插件生命周期和配置 schema。
+3. 用各插件 `AGENTS.md` 的依赖面缩小范围，再回到实际源码验证；文档是导航和契约摘要，不替代代码检查。
+4. 不要只依赖“升级后编译/测试是否报错”。事件语义、生命周期、Slot 行为或持久化格式变化即使仍能通过静态检查，也必须按契约审计。
+5. DSH 子包版本以该 Git tag 对应源码中的真实 workspace/package 配置为准；禁止把所有 `@deepseek-ai/*` 版本机械替换成同一个版本。
+6. 修改后运行 `pnpm install`、`pnpm check` 和所有受影响插件的测试；有条件时再做真实 DSH Profile 验证。
+
+### 自动修改边界
+
+允许自动完成的小范围兼容包括：
+
+- DSH 直接依赖或 peer dependency 调整；
+- import/export 路径、类型名、字段名或小范围函数签名适配；
+- Hook、事件 payload、Host Service 调用或 Slot 注册的直接兼容；
+- 配置字段、patch、lockfile 以及与上述兼容修改直接相关的测试和文档更新。
+
+必须保持：
+
+- 插件现有主体逻辑和用户可见行为；
+- 现有安全边界、事件语义和 Slot 排序/ID 契约；
+- 最小改动，不借兼容升级做重构、架构调整、新功能或无关清理。
+
+如果兼容需要重新设计插件模型、事件体系、生命周期、配置体系，或需要跨多个模块的大范围重构：
+
+- 创建/更新 Issue，写清 breaking change、受影响插件/API、证据和建议处理方向；
+- 停止自动实现，不创建重构 PR，交给用户处理。
+
+如果属于小范围兼容：
+
+- 先创建/更新对应 Issue；
+- 从最新 `dev` 创建 `compat/dsh-<version>` 分支；
+- 完成最小兼容修改与验证；
+- 创建指向 `dev` 的 Draft PR，并在 PR 中关联 Issue、列出上游 tag/diff、受影响插件和验证结果；
+- 绝不自动合并 PR，也不要在兼容任务中创建发布 tag 或 GitHub Release。
+
+### 契约文档维护
+
+- 修改某插件使用的 DSH API、Service、事件、Hook、Slot 或行为语义时，必须同步更新该插件的 `AGENTS.md`。
+- 只记录稳定的“依赖面和行为契约”，不要记录易过期的行号或实现细节。
+- package 版本号仍以 `package.json` 为准；局部 `AGENTS.md` 不复制具体 DSH 版本号，避免版本更新后文档失真。
+
