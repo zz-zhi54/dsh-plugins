@@ -54,10 +54,11 @@ compatibility: 需要 Git、Node.js、pnpm 和 GitHub 访问能力；不执行 n
 
 ## 发布流程
 
-1. 确认：
+1. 确认并刷新 tag：
    ```sh
    git status --short --branch
    git branch --show-current
+   git fetch --tags origin
    ```
    必须在 `dev`，且没有无关工作区修改。
 2. 运行：
