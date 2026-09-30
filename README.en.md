@@ -36,7 +36,7 @@ The current workspace targets DSH `v0.2.0-rc.2` and remains compatible with `v0.
 
 ## Installation, removal, and updates
 
-Each plugin is installed independently from a `packages/*` subdirectory on GitHub. You do not need to clone this repository, enter it, or preinstall other plugins.
+Each plugin is installed independently from a `packages/*` subdirectory on GitHub. You do not need to clone this repository, enter it, or preinstall other plugins. For desktop install, update, or removal, replace `--profile web` with `--profile desktop` in the commands.
 
 ### Install
 
