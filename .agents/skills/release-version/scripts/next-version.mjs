@@ -4,8 +4,6 @@ import { join, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const root = fileURLToPath(new URL('../../../../', import.meta.url))
-const canonicalTagPrefix = 'v'
-const versionPattern = /^(\d+\.\d+\.\d+)-([0-9A-Za-z-]+)\.(\d+)\.(\d+)$/
 
 function runGit(args) {
   return execFileSync('git', args, { cwd: root, encoding: 'utf8' }).trim()
@@ -13,9 +11,8 @@ function runGit(args) {
 
 function manifestPaths() {
   const paths = [join(root, 'package.json')]
-  for (const group of ['packages', 'packs', 'bundles']) {
-    const directory = join(root, group)
-    if (!existsSync(directory)) continue
+  const directory = join(root, 'packages')
+  if (existsSync(directory)) {
     for (const entry of readdirSync(directory, { withFileTypes: true })) {
       if (entry.isDirectory()) paths.push(join(directory, entry.name, 'package.json'))
     }
@@ -23,46 +20,50 @@ function manifestPaths() {
   return paths.filter(existsSync)
 }
 
-function releaseTags(prefix) {
-  return runGit(['tag', '--list', `${prefix}*`, '--sort=-version:refname'])
-    .split('\n')
-    .filter(Boolean)
-    .filter((tag) => versionPattern.test(tag.slice(prefix.length)))
+function currentVersion() {
+  const manifests = manifestPaths().map((path) => {
+    const data = JSON.parse(readFileSync(path, 'utf8'))
+    return { path: relative(root, path), version: data.version ?? null }
+  })
+  const versions = [...new Set(manifests.map((manifest) => manifest.version))]
+  if (versions.length !== 1 || versions[0] === null) {
+    console.error('Workspace manifest versions are missing or inconsistent:')
+    console.error(JSON.stringify(manifests, null, 2))
+    process.exit(1)
+  }
+  return { version: versions[0], manifests }
 }
 
-const tags = releaseTags(canonicalTagPrefix)
+function tagExists(tag) {
+  return runGit(['tag', '--list', tag]) === tag
+}
 
-if (!tags.length) {
-  console.error('No release tag matching v<DSH>.<revision> was found.')
+function bumpRevision(version) {
+  const prerelease = version.match(/^(\d+\.\d+\.\d+-.*)\.(\d+)$/)
+  if (prerelease) {
+    return `${prerelease[1]}.${Number(prerelease[2]) + 1}`
+  }
+
+  const stable = version.match(/^(\d+\.\d+\.\d+)-plugin\.(\d+)$/)
+  if (stable) {
+    return `${stable[1]}-plugin.${Number(stable[2]) + 1}`
+  }
+
+  console.error(`Unsupported plugin version format: ${version}`)
   process.exit(1)
 }
 
-const latest = { tag: tags[0], version: tags[0].slice(canonicalTagPrefix.length) }
-const latestMatch = latest.version.match(versionPattern)
-if (!latestMatch) {
-  console.error(`Latest release tag has an unsupported version format: ${latest.tag}`)
-  process.exit(1)
-}
-const revision = Number(latestMatch[4]) + 1
-const nextVersion = `${latestMatch[1]}-${latestMatch[2]}.${latestMatch[3]}.${revision}`
-const manifests = manifestPaths().map((path) => {
-  const data = JSON.parse(readFileSync(path, 'utf8'))
-  return { path: relative(root, path), version: data.version ?? null }
-})
-const versions = [...new Set(manifests.map((manifest) => manifest.version))]
-
-if (versions.length !== 1 || versions[0] === null) {
-  console.error('Workspace manifest versions are missing or inconsistent:')
-  console.error(JSON.stringify(manifests, null, 2))
-  process.exit(1)
-}
+const current = currentVersion()
+const currentTag = `v${current.version}`
+const exists = tagExists(currentTag)
+const publishVersion = exists ? bumpRevision(current.version) : current.version
 
 console.log(JSON.stringify({
-  latestTag: latest.tag,
-  latestVersion: latest.version,
-  currentManifestVersion: versions[0],
-  nextVersion,
-  nextTag: `${canonicalTagPrefix}${nextVersion}`,
-  nextInstallTag: `${canonicalTagPrefix}${nextVersion}`,
-  manifests
+  currentVersion: current.version,
+  currentTag,
+  currentTagExists: exists,
+  action: exists ? 'bump-plugin-revision' : 'publish-current-version',
+  publishVersion,
+  publishTag: `v${publishVersion}`,
+  manifests: current.manifests
 }, null, 2))
