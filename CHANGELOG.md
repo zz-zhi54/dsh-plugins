@@ -10,6 +10,24 @@
 
 ## Unreleased
 
+## 0.2.0-rc.2.1 — 2026-09-29
+
+**对应 DSH 官方标签：** [`dsh-v0.2.0-rc.2`](https://github.com/deepseek-ai/deepseek-harness/releases/tag/dsh-v0.2.0-rc.2)
+
+**对应本仓库标签：** `v0.2.0-rc.2.1`
+
+### 兼容性
+
+- 对比 [`dsh-v0.2.0-rc.1...dsh-v0.2.0-rc.2`](https://github.com/deepseek-ai/deepseek-harness/compare/dsh-v0.2.0-rc.1...dsh-v0.2.0-rc.2)，逐项比较插件使用的 Session、Session projection、Authorization、Credentials、WebServer、Client ModuleLoader 与 `conversation.composer.dock` / `settings.models.footer` Slot 契约，接口未变，无需运行时代码适配。
+- DSH `0.2.0-rc.2` 将模型目录更新到 `@earendil-works/pi-ai@0.87.1`；部分旧模型 ID 已移除。Session 费用插件同步该版本以保持价格目录与 DSH 对齐，Node 最低版本仍为 `>=22.19.0`。
+
+### 同步
+
+- 根目录与四个 workspace 插件 manifest 版本更新为 `0.2.0-rc.2.1`。
+- 核对 `codex-usage` 与 pi-ai `0.87.1` 的请求头和 Node User-Agent 约定仍一致，并同步上游源位置注释。
+- `codex-login`、`session-cost`、`system-notification` 的直接 DSH 依赖和最低发布年龄放行更新到 `0.2.0-rc.2`，并重新生成 pnpm 锁文件；`codex-usage` 没有直接 DSH 依赖。
+- 更新中英文 README 的兼容目标、当前版本安装示例和图标标签。
+
 ## 0.2.0-rc.1.1 — 2026-09-29
 
 **对应 DSH 官方标签：** [`dsh-v0.2.0-rc.1`](https://github.com/deepseek-ai/deepseek-harness/releases/tag/dsh-v0.2.0-rc.1)

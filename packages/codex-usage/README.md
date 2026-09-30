@@ -45,8 +45,8 @@
 | 项目 | 来源与位置 |
 | --- | --- |
 | 端点 | `@narumitw/pi-codex-usage` `src/query.ts:55` → `https://chatgpt.com/backend-api/wham/usage` |
-| 请求头 | `@earendil-works/pi-ai` `dist/api/openai-codex-responses.js:1262` → `buildBaseCodexHeaders()` |
-| User-Agent | `@earendil-works/pi-ai` `dist/utils/pi-user-agent.js:9` → `` `pi (${os.platform()} ${os.release()}; ${os.arch()})` `` |
+| 请求头 | `@earendil-works/pi-ai@0.87.1` `dist/api/openai-codex-responses.js:1265` → `buildBaseCodexHeaders()` |
+| User-Agent | `@earendil-works/pi-ai@0.87.1` `dist/utils/pi-user-agent.js:9` → `` `pi (${os.platform()} ${os.release()}; ${os.arch()})` `` |
 | 响应字段 | `@narumitw/pi-codex-usage` `src/normalize.ts` → `rate_limit.primary_window` / `secondary_window` / `plan_type` |
 | 脱敏写法 | `@narumitw/pi-codex-usage` `src/query.ts:162` → `redactErrorBody()` |
 | 凭据来源 | pi 用 pi-coding-agent 的 `readStoredCredential()`；DSH 的对应物是 `ctx.credentials.readRecord()` |

@@ -64,7 +64,7 @@ dsh --profile web --dump-config
 - 费用是基于当前 pi-ai 价格目录的估算；价格目录更新后，重新读取会按新价格计算历史 usage。
 - provider 没有报告 usage 的请求不会被计费；没有可验证价格的 `provider/model` 不会被赋予默认价格。
 - 本插件使用独立的 `session-cost` Slot（`order: 10`），不会替换 DSH 的 `stats`；它应与对应 DSH Web 版本一起使用。停止或卸载插件只会移除费用 Slot 注册和 Host 路由，不影响内置统计。
-- `@earendil-works/pi-ai@0.85.1` 要求 Node `>=22.19.0`；使用本插件时请使用满足该要求的 Node 版本。
+- `@earendil-works/pi-ai@0.87.1` 要求 Node `>=22.19.0`；使用本插件时请使用满足该要求的 Node 版本。
 
 ## 实现约束
 

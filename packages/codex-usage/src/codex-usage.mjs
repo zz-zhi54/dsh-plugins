@@ -20,7 +20,7 @@
 // | -------- | -------------------------------------------------------------------------- |
 // | 端点     | @narumitw/pi-codex-usage  src/query.ts:55                                   |
 // |          | `CODEX_USAGE_URL = "https://chatgpt.com/backend-api/wham/usage"`             |
-// | 请求头   | @earendil-works/pi-ai  dist/api/openai-codex-responses.js:1262              |
+// | 请求头   | @earendil-works/pi-ai@0.87.1  dist/api/openai-codex-responses.js:1265              |
 // |          | `buildBaseCodexHeaders()` → Authorization / chatgpt-account-id /            |
 // |          | originator / User-Agent                                                     |
 // | UA 生成  | @earendil-works/pi-ai  dist/utils/pi-user-agent.js:9                        |
@@ -58,7 +58,7 @@ const numberOrNull = value => (typeof value === 'number' && Number.isFinite(valu
 /**
  * 与 DSH pi-ai 完全一致的 User-Agent。
  *
- * 对齐 @earendil-works/pi-ai dist/utils/pi-user-agent.js:9；对方更新时同步此处，
+ * 对齐 @earendil-works/pi-ai@0.87.1 dist/utils/pi-user-agent.js:9；对方更新时同步此处，
  * 以保持本插件与 DSH 自身 Codex 流量的请求特征一致。
  */
 export function codexUserAgent() {
@@ -67,7 +67,7 @@ export function codexUserAgent() {
 
 /**
  * 构造 Codex 额度请求头，字段对齐 pi-ai 的 buildBaseCodexHeaders()
- * （dist/api/openai-codex-responses.js:1262）。
+ * （dist/api/openai-codex-responses.js:1265）。
  *
  * 这里只做 GET 用量，因此不带 pi-ai 那组 SSE 专有头（OpenAI-Beta、
  * accept: text/event-stream、content-type、session-id、x-client-request-id）——
