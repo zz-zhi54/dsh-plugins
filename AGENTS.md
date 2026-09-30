@@ -26,7 +26,7 @@
   pnpm --filter <package-name> add <dependency>
   ```
 
-- 工作区本身没有统一固定 Node 版本，也没有数据库、环境变量初始化步骤或统一构建产物；但 `session-cost` 使用的 `@earendil-works/pi-ai@0.85.1` 要求 Node `>=22.19.0`。根 `package.json` 当前只提供递归 `check` 脚本，没有根级 `build`、`test`、`lint` 或 `format` 脚本。
+- 工作区本身没有统一固定 Node 版本，也没有数据库、环境变量初始化步骤或统一构建产物；但 `session-cost` 使用的 `@earendil-works/pi-ai@0.87.1` 要求 Node `>=22.19.0`。根 `package.json` 当前只提供递归 `check` 脚本，没有根级 `build`、`test`、`lint` 或 `format` 脚本。
 
 ## 开发、检查与测试
 

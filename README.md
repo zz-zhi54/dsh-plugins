@@ -1,11 +1,11 @@
 <!-- deepseek-harness-meta
 {
   "name": "dsh-plugins",
-  "version": "0.2.0-rc.1.1",
+  "version": "0.2.0-rc.2.1",
   "tags": ["deepseek", "deepseek-harness", "dsh", "plugins"],
   "description": "非官方 DeepSeek Harness 插件集合，可从 GitHub 按需安装",
-  "icon": "https://raw.githubusercontent.com/zz-zhi54/dsh-plugins/v0.2.0-rc.1.1/packages/system-notification/assets/dsh.ico",
-  "compatible_versions": ["v0.1.7-rc.2", "v0.2.0-rc.1"],
+  "icon": "https://raw.githubusercontent.com/zz-zhi54/dsh-plugins/v0.2.0-rc.2.1/packages/system-notification/assets/dsh.ico",
+  "compatible_versions": ["v0.1.7-rc.2", "v0.2.0-rc.1", "v0.2.0-rc.2"],
   "screenshots": "packages",
   "install_method": "dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#path:packages/session-cost'"
 }
@@ -23,7 +23,7 @@
 
 ## 项目总览
 
-当前 workspace 兼容目标为 DSH `v0.2.0-rc.1`，并保留对 `v0.1.7-rc.2` 的兼容。经核对，插件使用的 Host Service、Event、Web 扩展槽位及 Client ModuleLoader 注册契约未变；`session-cost` 继续使用 Session 投影 seam。
+当前 workspace 兼容目标为 DSH `v0.2.0-rc.2`，并保留对 `v0.2.0-rc.1` 和 `v0.1.7-rc.2` 的兼容。经核对，插件使用的 Host Service、Event、Session 投影、Web 扩展槽位及 Client ModuleLoader 注册契约未变；`session-cost` 继续使用 Session 投影 seam。
 
 | 项目 | 类型 | 包名 | 用途 | 详细说明 |
 | --- | --- | --- | --- | --- |
@@ -66,10 +66,10 @@
 
 | 插件目录 | package name | 版本示例 | 用途 |
 | --- | --- | --- | --- |
-| `packages/system-notification` | `dsh-system-notification-plugin` | `0.2.0-rc.1.1` | macOS / Windows 系统通知 |
-| `packages/codex-login` | `dsh-codex-login-plugin` | `0.2.0-rc.1.1` | 首次 ChatGPT / Codex 登录 |
-| `packages/codex-usage` | `dsh-codex-usage-plugin` | `0.2.0-rc.1.1` | Codex 额度显示 |
-| `packages/session-cost` | `dsh-session-cost-plugin` | `0.2.0-rc.1.1` | Session 费用显示 |
+| `packages/system-notification` | `dsh-system-notification-plugin` | `0.2.0-rc.2.1` | macOS / Windows 系统通知 |
+| `packages/codex-login` | `dsh-codex-login-plugin` | `0.2.0-rc.2.1` | 首次 ChatGPT / Codex 登录 |
+| `packages/codex-usage` | `dsh-codex-usage-plugin` | `0.2.0-rc.2.1` | Codex 额度显示 |
+| `packages/session-cost` | `dsh-session-cost-plugin` | `0.2.0-rc.2.1` | Session 费用显示 |
 
 从当前默认分支安装单个插件：
 
@@ -99,20 +99,20 @@ dsh plugin --profile web add \
 
 已安装插件需要更新时，重新执行对应的 `add` 命令即可；使用固定 release 时，将命令中的版本标签替换为新版本。
 
-固定 release 时，在路径前加入版本标签。以下以当前已发布版本 `v0.2.0-rc.1.1` 为例：
+固定 release 时，在路径前加入版本标签。以下以当前已发布版本 `v0.2.0-rc.2.1` 为例：
 
 ```sh
 # 系统通知
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.2.0-rc.1.1&path:packages/system-notification'
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.2.0-rc.2.1&path:packages/system-notification'
 
 # Codex 登录
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.2.0-rc.1.1&path:packages/codex-login'
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.2.0-rc.2.1&path:packages/codex-login'
 
 # Codex 额度
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.2.0-rc.1.1&path:packages/codex-usage'
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.2.0-rc.2.1&path:packages/codex-usage'
 
 # Session 费用
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.2.0-rc.1.1&path:packages/session-cost'
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.2.0-rc.2.1&path:packages/session-cost'
 ```
 
 安装后检查 Profile：
