@@ -13,28 +13,24 @@
 // 5. 请求头对象只允许直接交给 fetch，不得序列化、复制到返回值或记录。
 // ==============================================================================
 //
-// ========================= 与 pi 对齐的依据（同步清单） =========================
-// pi / pi-ai 相关实现更新时，按这张表逐条核对本文件：
+// ============================ 上游同步规则 ============================
+// 本模块不维护一份独立、写死的 Codex 私有协议。
 //
-// | 项目     | 来源与位置                                                                 |
-// | -------- | -------------------------------------------------------------------------- |
-// | 端点     | @narumitw/pi-codex-usage  src/query.ts:55                                   |
-// |          | `CODEX_USAGE_URL = "https://chatgpt.com/backend-api/wham/usage"`             |
-// | 请求头   | @earendil-works/pi-ai@0.87.1  dist/api/openai-codex-responses.js:1265              |
-// |          | `buildBaseCodexHeaders()` → Authorization / chatgpt-account-id /            |
-// |          | originator / User-Agent                                                     |
-// | UA 生成  | @earendil-works/pi-ai  dist/utils/pi-user-agent.js:9                        |
-// |          | `` `pi (${os.platform()} ${os.release()}; ${os.arch()})` ``                 |
-// | 响应字段 | @narumitw/pi-codex-usage  src/normalize.ts                                  |
-// |          | `rate_limit.primary_window.{used_percent,limit_window_seconds,reset_at}`     |
-// |          | `rate_limit.secondary_window.*`、`plan_type`                                |
-// | 凭据来源 | pi 用 pi-coding-agent 的 `readStoredCredential()`；                         |
-// |          | DSH 的对应物是本模块使用的 `ctx.credentials.readRecord(CREDENTIAL_KEY)`。    |
-// | 脱敏写法 | @narumitw/pi-codex-usage  src/query.ts:162 `redactErrorBody()`              |
+// 1. HTTP 请求头：跟随当前 DSH 的 Codex provider 实现。
+//    每次 DSH 升级时检查当前版本的 buildBaseCodexHeaders() 或等价实现，
+//    保持本插件与 DSH 实际 Codex 请求的认证、account-id、originator、UA 等特征一致。
+//    不要把某个历史版本、文件路径、行号或字段列表当成永久契约。
 //
-// 说明：pi-ai 只负责发起模型请求，本身不含任何额度查询能力（全包无 `wham`，
-// 仅有的 rate_limit/quota 命中都是 429 与配额错误的文本分类）。额度查询是
-// 插件层自己打 wham/usage —— 本模块与该做法保持一致。
+// 2. 额度查询请求：跟随当前 pi 生态中实际查询 Codex 用量的插件实现。
+//    核对 endpoint、HTTP method、响应字段、额度窗口归一化和错误处理；不要自行发明协议。
+//
+// 3. 不机械复制模型流式请求专用头。
+//    GET 用量查询只带当前上游实际需要的头；SSE / Responses 专用头只有在额度查询
+//    上游也明确要求时才同步。
+//
+// 4. DSH 或 pi 上游发生变化时，以“读取当前实现并最小同步”为准。
+//    本文件记录的是同步关系，不是需要人工长期维护的历史快照。
+// ===================================================================
 
 import { arch, platform, release } from 'node:os'
 
@@ -56,22 +52,20 @@ const MAX_REASON_CHARS = 200
 const numberOrNull = value => (typeof value === 'number' && Number.isFinite(value) ? value : null)
 
 /**
- * 与 DSH pi-ai 完全一致的 User-Agent。
+ * 与当前 DSH Codex provider 使用的 User-Agent 保持一致。
  *
- * 对齐 @earendil-works/pi-ai@0.87.1 dist/utils/pi-user-agent.js:9；对方更新时同步此处，
- * 以保持本插件与 DSH 自身 Codex 流量的请求特征一致。
+ * DSH 升级时读取当前实现并同步；不要依赖历史 pi-ai 版本号、文件路径或行号。
  */
 export function codexUserAgent() {
   return `pi (${platform()} ${release()}; ${arch()})`
 }
 
 /**
- * 构造 Codex 额度请求头，字段对齐 pi-ai 的 buildBaseCodexHeaders()
- * （dist/api/openai-codex-responses.js:1265）。
+ * 构造 Codex 额度请求头。
  *
- * 这里只做 GET 用量，因此不带 pi-ai 那组 SSE 专有头（OpenAI-Beta、
- * accept: text/event-stream、content-type、session-id、x-client-request-id）——
- * 那些是 POST /codex/responses 流式请求才需要的。
+ * 字段应跟随当前 DSH Codex provider 的 buildBaseCodexHeaders() 或等价实现；
+ * 额度 endpoint / method / 响应契约则跟随当前 pi 用量插件实现。
+ * 这里只复制 GET 用量查询实际需要的头，不机械照搬模型 SSE / Responses 专用头。
  *
  * @param access - Codex OAuth access token；秘密，只允许交给 fetch。
  * @param accountId - 可选账号 id；缺失时不发送 chatgpt-account-id。
