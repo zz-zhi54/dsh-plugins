@@ -54,7 +54,7 @@ DSH 版本只认：
 5. 同时阅读 Release Notes（如有）并比较前序 tag → 当前 tag 的源码 diff。编译/测试没报错不代表兼容：还要检查 Service、Event、Session event、projection、Authorization、Credentials、Web Server、Client ModuleLoader、Slot、插件生命周期和配置语义。
 6. 读取可能受影响插件的局部 `AGENTS.md`，按其中的依赖面和行为契约回到实际源码确认。
 7. 只做为兼容新 DSH 所必需的最小修改，并同步必要测试、文档和局部 `AGENTS.md`。
-8. 第一次适配新的 DSH tag 时，将根和所有插件 manifest 的版本统一为 `<DSH tag 去掉 dsh-v>.1`。这只是准备插件版本，**此阶段不创建发布 tag**。
+8. 第一次适配新的 DSH tag 时统一准备插件版本：DSH 预发布版 `0.2.0-rc.2` → 插件 `0.2.0-rc.2.1`；DSH 稳定版 `0.2.0` → 插件 `0.2.0-plugin.1`。这只是准备插件版本，**此阶段不创建发布 tag**。
 9. 创建/更新一个该 DSH 版本的兼容 Issue。
 10. 小范围兼容：创建 Draft PR 指向 `dev`，然后停止，等待用户审核。
 11. 如果需要重新设计插件模型、事件体系、生命周期、配置体系，或出现明显的大范围重构，只保留 Issue，写清 breaking change、受影响位置和建议方向；不要自动实现，也不要创建重构 PR。
