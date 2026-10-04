@@ -10,7 +10,7 @@ A personally maintained collection of DeepSeek Harness (DSH) plugins, organized 
 
 ## Plugin overview
 
-The current workspace targets DSH `v0.2.0-rc.2` and remains compatible with `v0.2.0-rc.1` and `v0.1.7-rc.2`. The audited Host services, events, Session projections, Web extension slots, and Client ModuleLoader registration contract are unchanged; `session-cost` continues to use the session projection seam.
+The release and compatibility baseline is the DSH runtime actually bundled with DeepSeek Harness Desktop, currently `v0.2.0-rc.2`. Compatibility with `v0.2.0-rc.1` and `v0.1.7-rc.2` is retained. Future plugin releases follow Desktop runtime upgrades; upstream Git tags are used for early observation and compatibility auditing, not as an automatic release trigger.
 
 | Package | Type | Package name | Purpose | Details |
 | --- | --- | --- | --- | --- |
@@ -44,10 +44,10 @@ The current workspace contains four independently installable plugins. The versi
 
 | Package directory | Package name | Example version | Purpose |
 | --- | --- | --- | --- |
-| `packages/system-notification` | `dsh-system-notification-plugin` | `0.2.0-rc.2.1` | Native macOS / Windows notifications |
-| `packages/codex-login` | `dsh-codex-login-plugin` | `0.2.0-rc.2.1` | Initial ChatGPT / Codex login |
-| `packages/codex-usage` | `dsh-codex-usage-plugin` | `0.2.0-rc.2.1` | Codex quota display |
-| `packages/session-cost` | `dsh-session-cost-plugin` | `0.2.0-rc.2.1` | Session cost display |
+| `packages/system-notification` | `dsh-system-notification-plugin` | `0.2.0-rc.2.2` | Native macOS / Windows notifications |
+| `packages/codex-login` | `dsh-codex-login-plugin` | `0.2.0-rc.2.2` | Initial ChatGPT / Codex login |
+| `packages/codex-usage` | `dsh-codex-usage-plugin` | `0.2.0-rc.2.2` | Codex quota display |
+| `packages/session-cost` | `dsh-session-cost-plugin` | `0.2.0-rc.2.2` | Session cost display |
 
 Install an individual plugin from the current default branch:
 
@@ -77,20 +77,20 @@ dsh plugin --profile web add \
 
 To update an installed plugin, run its `add` command again. When using a fixed release, replace the version tag in the command with the desired release.
 
-For a fixed release, put the version tag before the path. This example uses the current release, `v0.2.0-rc.2.1`:
+For a fixed release, put the version tag before the path. This example uses the current release, `v0.2.0-rc.2.2`:
 
 ```sh
 # System notifications
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.2.0-rc.2.1&path:packages/system-notification'
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.2.0-rc.2.2&path:packages/system-notification'
 
 # Codex login
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.2.0-rc.2.1&path:packages/codex-login'
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.2.0-rc.2.2&path:packages/codex-login'
 
 # Codex usage
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.2.0-rc.2.1&path:packages/codex-usage'
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.2.0-rc.2.2&path:packages/codex-usage'
 
 # Session cost
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.2.0-rc.2.1&path:packages/session-cost'
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.2.0-rc.2.2&path:packages/session-cost'
 ```
 
 After installation, inspect the Profile:

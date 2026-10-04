@@ -10,6 +10,30 @@
 
 ## Unreleased
 
+## 0.2.0-rc.2.2 — 2026-10-05
+
+**对应 Desktop DSH runtime：** `0.2.0-rc.2`
+
+**对应本仓库标签：** `v0.2.0-rc.2.2`
+
+### 发布策略
+
+- 兼容与发布基线改为 DeepSeek Harness Desktop 当前实际内置的 DSH runtime；上游 Git tags / Release Notes / master 仅用于提前观察和源码审计，不再直接推动插件升级。
+- 移除长期 `dev` 工作流；以后从最新 `main` 创建一次性兼容或发布分支，PR 直接回 `main`，合并后删除临时分支。
+
+### 兼容性
+
+- 当前 Desktop runtime 仍为 DSH `0.2.0-rc.2`，因此撤销此前为尚未进入 Desktop 的 `0.2.1-alpha.1` 提前准备的 peerDependencies。
+- `codex-login` 恢复到 `@deepseek-ai/dsh-authorization@0.2.0-rc.2`。
+- `session-cost` 恢复到 `@deepseek-ai/dsh-session@0.2.0-rc.2` 与 `@deepseek-ai/dsh-session-projection@0.2.0-rc.2`。
+- `system-notification` 恢复到 `@deepseek-ai/dsh-session@0.2.0-rc.2` 与 `@deepseek-ai/cordis@4.0.4`。
+- `codex-usage` 没有直接 DSH peer dependency，统一插件版本同步为 `0.2.0-rc.2.2`。
+
+### 文档
+
+- 更新根 `AGENTS.md`、兼容 Skill、发布 Skill 以及中英文 README，统一描述 Desktop-first 的版本策略与 main-only 分支流程。
+
+
 ## 0.2.0-rc.2.1 — 2026-09-29
 
 **对应 DSH 官方标签：** [`dsh-v0.2.0-rc.2`](https://github.com/deepseek-ai/deepseek-harness/releases/tag/dsh-v0.2.0-rc.2)

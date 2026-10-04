@@ -1,41 +1,44 @@
 ---
 name: dsh-upstream-compatibility
-description: 检查并同步 dsh-plugins 对 DeepSeek Harness 新 Git tag 的兼容性。以 deepseek-ai/deepseek-harness 的 GitHub Tags 为唯一版本源；先升级真实使用的 DSH 依赖，再结合 Release Notes、tag diff、插件 AGENTS.md 和实际失败点判断影响。小范围兼容创建 Issue + Draft PR 到 dev；需要大范围重构时只创建 Issue 并停止。绝不自动合并或发布。
-compatibility: 需要 Git、Node.js、pnpm 和 GitHub 访问能力；运行时验证需要可用的 DSH 环境。
+description: 当 DeepSeek Harness Desktop 实际内置的 DSH runtime 升级后，同步 dsh-plugins 的兼容性。Desktop runtime 是发布基线；上游 Git tags / Release Notes / master 只用于提前观察和源码审计。每次从 main 创建一次性兼容分支并直接 PR 回 main，不维护 dev 分支。
+compatibility: 需要 Git、Node.js、pnpm 和 GitHub 访问能力；运行时验证需要对应版本的 DSH Desktop。
 ---
 
-# DSH 上游兼容
+# DSH Desktop 兼容
 
 ## 目标
 
-处理一个尚未兼容的新 DSH tag，并且只做保持现有插件行为所必需的修改。
+只在 **Desktop 实际 runtime 版本变化** 后更新兼容基线，并只做保持现有插件行为所必需的修改。
 
 ## 版本源
 
-唯一版本源：
+发布与兼容的基线：
 
-`https://github.com/deepseek-ai/deepseek-harness/tags`
+**DeepSeek Harness Desktop 当前实际内置的 DSH runtime 版本。**
 
-当前快速发布阶段检查所有 tag，包括 alpha、beta、rc 和稳定版。不要使用 npm dist-tag 判断 DSH 是否发布新版本。
+上游信息的角色：
+
+- Git tags / Releases：提前观察将来的变化；
+- master：必要时确认尚未发布的实现；
+- npm 包版本：只用于解析具体依赖，不决定本仓库发布基线。
+
+不能因为上游出现新 tag 就提前升级插件 peerDependencies。只有 Desktop runtime 已升级，才进入下面流程。
 
 ## 流程
 
-1. 确认目标 tag 尚未处理：
-   - 搜索现有兼容 Issue；
-   - 搜索 `compat/dsh-<version>`；
-   - 搜索已有 PR。
-2. 找到直接前序 DSH tag，并记录前序 → 当前 tag。
-3. 从最新 `dev` 创建 `compat/dsh-<version>`。
-4. 读取当前 tag 源码中的 workspace/package 配置，只升级本仓库实际使用的 DSH 包到它们各自的真实版本。
+1. 记录 Desktop runtime：旧版本 → 新版本。
+2. 搜索现有兼容 Issue、`compat/desktop-<version>` 分支和 PR，避免重复。
+3. 从最新 `main` 创建 `compat/desktop-<version>`。
+4. 找到该 Desktop runtime 对应的上游 tag/commit，读取 workspace/package 配置，只升级本仓库实际使用的 DSH/Cordis 包到各自真实版本。
    - 禁止把全部 `@deepseek-ai/*` 统一替换成同一个版本。
 5. 运行：
    ```sh
    pnpm install
    pnpm check
    pnpm -r --if-present run test
+   git diff --check
    ```
-   先看依赖升级后真实暴露的问题。
-6. 阅读 Release Notes（如有），并比较前序 tag → 当前 tag 的源码 diff。重点检查：
+6. 阅读对应 Release Notes 并比较相关源码 diff，重点检查：
    - package exports / import paths；
    - Host Service；
    - Cordis Event；
@@ -47,35 +50,23 @@ compatibility: 需要 Git、Node.js、pnpm 和 GitHub 访问能力；运行时�
    - Web Slot；
    - plugin lifecycle / HMR；
    - config schema。
-7. 读取受影响插件目录下的 `AGENTS.md`。局部文件记录的是该插件依赖的 DSH surface 和行为契约；必须按契约回到实际源码确认。
+7. 读取受影响插件目录的 `AGENTS.md`，按依赖面和行为契约回到实际源码确认。
 8. 分类：
-   - **无需运行时修改**：依赖/lockfile/版本准备和必要文档即可；
-   - **小范围兼容**：直接做最小修改并补必要测试；
+   - **无需运行时修改**：只同步依赖、lockfile、版本和必要文档；
+   - **小范围兼容**：做最小修改并补必要测试；
    - **大范围重构**：停止代码修改，只写 Issue。
-9. 第一次适配一个新的 DSH tag 时准备统一插件版本：
-   - 预发布 DSH：`dsh-v0.2.1-rc.1` → `0.2.1-rc.1.1`；
-   - 稳定 DSH：`dsh-v0.2.1` → `0.2.1-plugin.1`。
-   这样保持合法 semver；此处只是准备版本，不创建发布 tag。
-10. 创建/更新版本对应 Issue，记录：
-    - 上游 tag；
-    - 前序 tag；
-    - Release Notes / diff 证据；
-    - 受影响插件；
-    - 修改范围；
-    - 验证结果或阻塞。
-11. 若是小范围兼容，创建 Draft PR：
-    - head：`compat/dsh-<version>`
-    - base：`dev`
-    - 不合并。
-12. 若需要重新设计插件模型、事件体系、生命周期、配置体系或跨多个模块的大重构：
-    - Issue 写清 breaking change 和建议方向；
-    - 不创建代码 PR。
+9. 第一次适配新的 Desktop runtime 时准备统一插件版本：
+   - 预发布 DSH `0.2.1-rc.1` → 插件 `0.2.1-rc.1.1`；
+   - 稳定 DSH `0.2.1` → 插件 `0.2.1-plugin.1`。
+10. 更新 `CHANGELOG.md` 和确有必要的 README / 局部 `AGENTS.md`。
+11. 创建/更新兼容 Issue。
+12. 创建一次性分支 → `main` PR。合并后删除该分支；不创建或同步长期 `dev`。
 
 ## 修改边界
 
 允许：
 
-- DSH 直接依赖 / peer dependency；
+- 实际使用的 DSH/Cordis direct / peer dependency；
 - lockfile；
 - import/export、字段、类型、小范围函数签名；
 - Hook/Event payload/Service/Slot 的直接适配；
@@ -83,30 +74,26 @@ compatibility: 需要 Git、Node.js、pnpm 和 GitHub 访问能力；运行时�
 
 禁止：
 
+- Desktop 尚未升级时，仅因新 Git tag 就提前升级兼容基线；
 - 新功能；
 - 无关重构；
 - 顺手清理；
-- 为通过测试改变主体行为；
-- 自动合并；
-- 创建插件 release tag / GitHub Release。
+- 为通过测试改变主体行为。
 
 ## 特别规则：codex-usage
 
-处理 `packages/codex-usage` 时：
-
-- Codex HTTP 请求头以**当前 DSH Codex provider 实际实现**为准，检查当前的 `buildBaseCodexHeaders()` 或等价实现；
-- Codex 额度查询的 endpoint、method、响应结构和错误处理以**当前 pi 生态实际查询额度的插件实现**为准；
-- 不依赖历史版本号、固定源码行号或过去的 header 列表；
-- 不机械复制模型 SSE / Responses 专用头；
+- Codex HTTP 请求头以 **当前 Desktop runtime 对应的 DSH Codex provider 实际实现** 为准；
+- Codex 额度 endpoint、method、响应结构和错误处理以当前 pi 生态实际实现为参考；
+- 不依赖历史源码行号或机械复制 SSE / Responses 专用头；
 - 详细契约以 `packages/codex-usage/AGENTS.md` 为准。
 
-## 完成条件
+## 完成报告
 
-最终报告只需要回答：
+只需要回答：
 
-- 上游：哪个 tag → 哪个 tag；
+- Desktop runtime：哪个版本 → 哪个版本；
+- 上游对应：哪个 tag/commit；
 - 影响：哪些插件、哪些契约；
 - 修改：做了什么最小兼容；
 - 验证：哪些命令通过/失败；
-- GitHub：Issue / Draft PR；
-- 大范围变化时说明为什么停在 Issue。
+- GitHub：Issue / PR。
