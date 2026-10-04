@@ -42,7 +42,7 @@
 - 注册 ID：`codex-usage`
 - order：`20`
 
-DSH `0.2.1-alpha.1` 起内置统计拆为 `activity`（order `0`）和 `usage`（order `1`）；`session-cost` 保持 order `10`，本插件保持 order `20`。兼容升级不得无理由改变这组相对顺序。
+当前 Desktop DSH `0.2.0-rc.2` 使用内置 stats（order `0`）；`session-cost` 使用 order `10`，本插件保持 order `20`。上游后续 Slot 变化只有进入 Desktop runtime 后才调整本兼容基线。
 
 ## 上游同步来源
 
