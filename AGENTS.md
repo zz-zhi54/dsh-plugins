@@ -94,4 +94,4 @@ git diff --check
 - 根 `AGENTS.md` 只保留跨插件规则；插件细节下沉到局部 `AGENTS.md`。
 - 新增、删除或更换某插件依赖的 DSH API、Service、Event、Hook、Slot 或行为语义时，必须同步更新该插件的 `AGENTS.md`。
 - 局部 `AGENTS.md` 记录“依赖面和行为契约”，不要记录容易失效的源码行号和固定历史版本。
-- `.agents/skills/dsh-upstream-compatibility` 负责 DSH 新 tag 的兼容流程；`.agents/skills/release-version` 只负责用户明确触发的插件发布，二者不要互相代办。
+- `.agents/skills/dsh-upstream-compatibility` 负责 Desktop runtime 升级后的兼容流程；`.agents/skills/release-version` 负责当前 Desktop runtime 基线上的插件发布；二者都从 `main` 使用一次性分支，不依赖长期 `dev`。
