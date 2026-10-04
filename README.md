@@ -7,7 +7,7 @@
   "icon": "https://raw.githubusercontent.com/zz-zhi54/dsh-plugins/v0.2.0-rc.2.1/packages/system-notification/assets/dsh.ico",
   "compatible_versions": ["v0.1.7-rc.2", "v0.2.0-rc.1", "v0.2.0-rc.2"],
   "screenshots": "packages",
-  "install_method": "dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#path:packages/session-cost'"
+  "install_method": "dsh plugin --profile desktop add 'github:zz-zhi54/dsh-plugins#path:packages/session-cost'"
 }
 -->
 
@@ -58,7 +58,7 @@
 
 ## 安装、卸载与更新
 
-每个插件都从 GitHub 的 `packages/*` 子目录独立安装，不需要 clone、进入仓库或预装其它插件。
+每个插件都从 GitHub 的 `packages/*` 子目录独立安装，不需要 clone、进入仓库或预装其它插件。桌面端安装、更新或卸载时，将命令中的 `--profile web` 改为 `--profile desktop` 即可。
 
 ### 安装
 
