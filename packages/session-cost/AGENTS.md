@@ -58,7 +58,7 @@ DSH 修改 projection definition、schema 验证、stateOf/register 生命周期
 - 注册 ID：`session-cost`
 - order：`10`
 
-DSH `0.2.1-alpha.1` 起内置统计拆为 `activity`（order `0`）和 `usage`（order `1`）。本插件继续使用独立 `session-cost`（order `10`），不得占用、替换或复制内置统计；`codex-usage` 使用 order `20`。
+当前 Desktop DSH `0.2.0-rc.2` 使用内置 stats（order `0`）。本插件继续使用独立 `session-cost`（order `10`），不得占用、替换或复制内置统计；`codex-usage` 使用 order `20`。上游后续 Slot 变化只有进入 Desktop runtime 后才调整本兼容基线。
 
 ## 行为契约
 
