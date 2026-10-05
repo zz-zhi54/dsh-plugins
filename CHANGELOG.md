@@ -10,6 +10,10 @@
 
 ## Unreleased
 
+### 修复
+
+- `session-cost` 将运行时直接使用的 `@earendil-works/pi-ai` 从 devDependencies 移到 dependencies，确保只安装生产依赖时仍能加载 Host 插件并读取模型价格目录。
+
 ## 0.2.0-rc.2.2 — 2026-10-05
 
 **对应 Desktop DSH runtime：** `0.2.0-rc.2`
