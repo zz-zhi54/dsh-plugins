@@ -21,6 +21,11 @@
 
 另有新版本的 **破坏性变化**：上游移除 runtime invariant 插件及 `./invariant` 导出。当前 `pnpm-lock.yaml` 解析树仍含旧的 `@deepseek-ai/dsh-invariants@0.2.0-rc.2`，因此 **绝不能靠全局字符串替换来升级锁文件**。必须以当前新包真实 peer 依赖重新安装并生成 lockfile。
 
+上游还调整了第三方插件安装与元信息处理，两个检查项与本项目直接相关：
+
+- **第三方兼容版本声明**：新版优先读取 `engines.dsh`，未声明时回退旧规则。本项目的四个插件目前未声明 `engines.dsh`，应待 Desktop 切换后按实际兼容范围决定是否添加，而不是提前宣称支持。
+- **GitHub 子路径插件元信息**：上游不再独立读取子路径 `package.json`，展示文字和图标须从对应子路径导出取得。本仓库通过 `#path:packages/*` 安装，各个 package 虽已有 `./package.json` export，但仍需在真实新 Desktop 安装时验证名称、版本、图标及详情页展示是否正确。
+
 ## 本次 PR 的修改边界
 
 - 仅新增本次审计记录；**不改变**四个插件的代码、peer/devDependencies、`pnpm-lock.yaml`、README 发布版本或 tag。
