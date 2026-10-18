@@ -42,13 +42,13 @@
 - 注册 ID：`codex-usage`
 - order：`20`
 
-当前 Desktop DSH `0.2.0-rc.2` 使用内置 stats（order `0`）；`session-cost` 使用 order `10`，本插件保持 order `20`。上游后续 Slot 变化只有进入 Desktop runtime 后才调整本兼容基线。
+当前目标 DSH `0.2.1-rc.2` 使用内置 `activity`（order `0`）与 `usage`（order `1`）；`session-cost` 使用 order `10`，本插件保持 order `20`。
 
 ## 上游同步来源
 
 本插件的 Codex 额度请求不要把某个 DSH/pi 版本的实现细节当成永久固定协议。
 
-- **HTTP 请求头**：以当前 DSH 实际发送 Codex 请求时使用的请求头为准，优先检查 DSH 当前版本中对应 Codex provider 的 `buildBaseCodexHeaders()` 或等价实现。需要保持的目标是“与当前 DSH 的 Codex 请求特征一致”，而不是长期固定某个历史文件路径、行号或字段集合。
+- **HTTP 请求头**：以当前已发布目标 DSH tag 实际发送 Codex 请求时使用的请求头为准，优先检查 DSH 当前版本中对应 Codex provider 的 `buildBaseCodexHeaders()` 或等价实现。需要保持的目标是“与当前 DSH 的 Codex 请求特征一致”，而不是长期固定某个历史文件路径、行号或字段集合。
 - **额度查询请求**：以当前 pi 生态中实际查询 Codex 用量的插件实现为准，核对 usage endpoint、HTTP method、响应结构、窗口字段和错误处理。不要自行发明协议。
 - SSE/Responses 专用请求头只在上游当前实现明确要求时才跟随；额度查询是 GET 时，不应因为模型流式请求使用了某些头就机械照搬。
 - DSH 或 pi 上游升级时，重新读取它们的**当前实现**并同步本插件；不要依赖本文件记录的历史版本号、文件行号或过去的 header 列表。
