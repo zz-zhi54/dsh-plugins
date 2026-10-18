@@ -32,5 +32,8 @@
       ],
       "platform": "web"
     }
+  },
+  "engines": {
+    "dsh": "0.2.1-rc.2"
   }
 }
