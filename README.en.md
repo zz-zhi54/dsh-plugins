@@ -10,7 +10,7 @@ A personally maintained collection of DeepSeek Harness (DSH) plugins, organized 
 
 ## Plugin overview
 
-The release and compatibility baseline is the DSH runtime actually bundled with DeepSeek Harness Desktop, currently `v0.2.0-rc.2`. Compatibility with `v0.2.0-rc.1` and `v0.1.7-rc.2` is retained. Future plugin releases follow Desktop runtime upgrades; upstream Git tags are used for early observation and compatibility auditing, not as an automatic release trigger.
+The compatibility baseline is the latest officially released DeepSeek Harness RC or stable release, currently `v0.2.1-rc.2`. Plugins are synchronized from the corresponding upstream tag and package manifests without waiting for Desktop. Synchronizing source versions does not automatically create a new plugin release tag; historical plugin tags remain available for older DSH versions.
 
 | Package | Type | Package name | Purpose | Details |
 | --- | --- | --- | --- | --- |
@@ -44,10 +44,10 @@ The current workspace contains four independently installable plugins. The versi
 
 | Package directory | Package name | Example version | Purpose |
 | --- | --- | --- | --- |
-| `packages/system-notification` | `dsh-system-notification-plugin` | `0.2.0-rc.2.2` | Native macOS / Windows notifications |
-| `packages/codex-login` | `dsh-codex-login-plugin` | `0.2.0-rc.2.2` | Initial ChatGPT / Codex login |
-| `packages/codex-usage` | `dsh-codex-usage-plugin` | `0.2.0-rc.2.2` | Codex quota display |
-| `packages/session-cost` | `dsh-session-cost-plugin` | `0.2.0-rc.2.2` | Session cost display |
+| `packages/system-notification` | `dsh-system-notification-plugin` | `0.2.1-rc.2.1` | Native macOS / Windows notifications |
+| `packages/codex-login` | `dsh-codex-login-plugin` | `0.2.1-rc.2.1` | Initial ChatGPT / Codex login |
+| `packages/codex-usage` | `dsh-codex-usage-plugin` | `0.2.1-rc.2.1` | Codex quota display |
+| `packages/session-cost` | `dsh-session-cost-plugin` | `0.2.1-rc.2.1` | Session cost display |
 
 Install an individual plugin from the current default branch:
 
@@ -77,7 +77,7 @@ dsh plugin --profile web add \
 
 To update an installed plugin, run its `add` command again. When using a fixed release, replace the version tag in the command with the desired release.
 
-For a fixed release, put the version tag before the path. This example uses the current release, `v0.2.0-rc.2.2`:
+For a fixed release, put the version tag before the path. This example uses the previous published release, `v0.2.0-rc.2.2`:
 
 ```sh
 # System notifications
