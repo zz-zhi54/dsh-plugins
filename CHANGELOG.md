@@ -10,6 +10,10 @@
 
 ## Unreleased
 
+### 修复
+
+- `session-cost` 将运行时直接使用的 `@earendil-works/pi-ai` 从 devDependencies 移到 dependencies，确保只安装生产依赖时仍能加载 Host 插件并读取模型价格目录。
+
 ## 0.2.1-rc.2.1 — 2026-10-18
 
 **对应 DSH 官方发布：** [`dsh-v0.2.1-rc.2`](https://github.com/deepseek-ai/deepseek-harness/releases/tag/dsh-v0.2.1-rc.2)
@@ -28,10 +32,6 @@
 
 - 该版本为兼容 PR 的准备版本；**没有创建发布 tag 或 GitHub Release**。此前已发布的 `v0.2.0-rc.2.2` 仍可用于旧运行时。
 
-
-### 修复
-
-- `session-cost` 将运行时直接使用的 `@earendil-works/pi-ai` 从 devDependencies 移到 dependencies，确保只安装生产依赖时仍能加载 Host 插件并读取模型价格目录。
 
 ## 0.2.0-rc.2.2 — 2026-10-05
 
