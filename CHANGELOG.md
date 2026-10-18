@@ -10,10 +10,6 @@
 
 ## Unreleased
 
-### 修复
-
-- `session-cost` 将运行时直接使用的 `@earendil-works/pi-ai` 从 devDependencies 移到 dependencies，确保只安装生产依赖时仍能加载 Host 插件并读取模型价格目录。
-
 ## 0.2.1-rc.2.1 — 2026-10-18
 
 **对应 DSH 官方发布：** [`dsh-v0.2.1-rc.2`](https://github.com/deepseek-ai/deepseek-harness/releases/tag/dsh-v0.2.1-rc.2)
@@ -27,6 +23,10 @@
 - 通过 `pnpm install` 实际重新生成 `pnpm-lock.yaml`，移除新版依赖树中不再使用的 `dsh-invariants`；按真实包依赖而非机械字符串替换。
 - 新版内置统计项为 `activity`（order 0）与 `usage`（order 1）；现有 `session-cost`（order 10）和 `codex-usage`（order 20）继续使用独立 Slot，不替换内置项。
 - 更新插件文档与升级审计记录；运行时代码保持不变。兼容性还需在实际部署环境中冒烟验证。
+
+### 修复
+
+- `session-cost` 将运行时直接使用的 `@earendil-works/pi-ai` 从 devDependencies 移到 dependencies，确保只安装生产依赖时仍能加载 Host 插件并读取模型价格目录。
 
 ### 版本与发布
 
