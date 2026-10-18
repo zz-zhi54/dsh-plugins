@@ -1,6 +1,6 @@
 ---
 name: dsh-release-version
-description: 发布 dsh-plugins 的 Git 版本。仅在用户明确要求发版时使用。以当前 DeepSeek Harness Desktop 内置 DSH runtime 为兼容基线；从 main 创建一次性 release 分支，完成版本、CHANGELOG、验证和 tag 后直接 PR 回 main，不维护 dev 分支。
+description: 发布 dsh-plugins 的 Git 版本。仅在用户明确要求发版时使用。以当前已同步的官方 DeepSeek Harness RC 或稳定版为兼容基线；从 main 创建一次性 release 分支，完成版本、CHANGELOG、验证和 tag 后直接 PR 回 main，不维护 dev 分支。
 compatibility: 需要 Git、Node.js、pnpm 和 GitHub 访问能力；不执行 npm publish。
 ---
 
@@ -9,7 +9,7 @@ compatibility: 需要 Git、Node.js、pnpm 和 GitHub 访问能力；不执行 n
 ## 边界
 
 - 只有用户明确要求“发布/发版”时使用。
-- 兼容基线固定为当前 Desktop 实际内置的 DSH runtime。
+- 兼容基线固定为当前已正式发布且已完成同步的 DSH RC / 稳定版，不等待 Desktop。
 - 从最新 `main` 创建一次性 `release/<version>`；如果当前兼容分支已承载本次发布，可直接继续使用。
 - PR base 固定为 `main`。
 - 不执行 npm publish。
@@ -21,12 +21,12 @@ compatibility: 需要 Git、Node.js、pnpm 和 GitHub 访问能力；不执行 n
 
 插件版本格式：
 
-`<Desktop DSH runtime version>.<plugin revision>`
+`<upstream DSH release version>.<plugin revision>`
 
 例如：
 
-- Desktop DSH `0.2.0-rc.2`
-- 插件 `0.2.0-rc.2.1`
+- 官方 DSH RC `0.2.1-rc.2`
+- 插件 `0.2.1-rc.2.1`
 
 ### 当前版本还没有 tag
 
@@ -39,7 +39,7 @@ compatibility: 需要 Git、Node.js、pnpm 和 GitHub 访问能力；不执行 n
 
 如果 `v<manifest version>` 已存在：
 
-- 这是同一 Desktop runtime 基线上的再次发布；
+- 这是同一 DSH 上游版本基线上的再次发布；
 - 只递增最后一个插件 revision；
 - 同步根和所有 `packages/*/package.json`。
 
@@ -47,7 +47,7 @@ compatibility: 需要 Git、Node.js、pnpm 和 GitHub 访问能力；不执行 n
 
 `0.2.0-rc.2.1` → `0.2.0-rc.2.2`
 
-不要改变前面的 Desktop DSH runtime 版本部分。
+不要改变前面的 DSH 上游版本部分。
 
 ## 发布流程
 
@@ -64,10 +64,10 @@ compatibility: 需要 Git、Node.js、pnpm 和 GitHub 访问能力；不执行 n
    ```sh
    node .agents/skills/release-version/scripts/sync-versions.mjs <version>
    ```
-4. 确认插件版本前缀与当前 Desktop DSH runtime 完全对应。
+4. 确认插件版本前缀与当前已同步的官方 DSH RC/稳定版本一致。
 5. 更新 `CHANGELOG.md`：
    - 只写实际 diff 能证明的变化；
-   - 记录 Desktop runtime；
+   - 记录对应官方 DSH release/tag；
    - 可附对应上游 tag/commit 作为审计证据；
    - 记录规范插件 tag `v<version>`。
 6. README 只有安装版本或兼容关系变化时才更新。
@@ -103,7 +103,7 @@ GitHub Release 只有用户明确要求时才创建。
 
 简要报告：
 
-- Desktop DSH runtime；
+- 上游 DSH release/tag；
 - 版本：old → published；
 - 提交 SHA；
 - tag；
