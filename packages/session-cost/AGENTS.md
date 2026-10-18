@@ -77,5 +77,5 @@ DSH 修改 projection definition、schema 验证、stateOf/register 生命周期
 - Session `seq`；
 - Session registry；
 - Session Projection API / replay lifecycle；
-- `conversation.composer.dock` 与内置 stats Slot；
+- `conversation.composer.dock` 与内置 activity / usage Slot；
 - Client ModuleLoader / Plugin Manager 生命周期。
