@@ -33,65 +33,51 @@ git diff --check
 - 插件注册的 `/api/*` 路由不能假设自动继承 DSH 浏览器信任边界；返回内容必须按最小必要字段投影。
 - 涉及凭据、系统命令、Session 持久事件或 UI Slot 时，先读对应插件的 `AGENTS.md`，不要把根文件复制成第二份插件说明。
 
-## DSH Desktop 版本兼容
+## DSH 上游版本兼容
 
 ### 版本基线
 
-本仓库的兼容与发布基线是 **DeepSeek Harness Desktop 当前实际内置的 DSH runtime 版本**。
+以 **DeepSeek Harness 已正式发布的最新 RC 或稳定版** 为同步基线。无需等待 Desktop 的发布或更新。
 
-- Desktop runtime 是发布依据；插件的 peerDependencies 必须与该 runtime 对齐。
-- 上游 Git tags、Release Notes 和 master 只用于提前观察、审计未来变化，**不能因为出现新 tag 就立即推动插件升级**。
-- npm dist-tag、单个 `@deepseek-ai/*` 包版本和第三方信息都不能替代 Desktop runtime 判断。
-- 当前目标 runtime 变化时，先确认 Desktop 已实际升级，再开始本仓库的兼容与发布。
+- 以上游正式 GitHub Release 的 `dsh-v<version>` tag 与对应的源码、workspace manifests 为准。
+- npm dist-tag 是可安装性校验，master 上尚未发布的代码只能作为观察资料。
+- 按上游每个具体包的实际版本分别同步；**禁止将全部 `@deepseek-ai/*` 机械改为相同版本。**
+- 官方发布新版本后，检查现有 Issue/PR，及时执行兼容升级。
 
-### Desktop runtime 升级流程
+### 上游新版本兼容流程
 
-1. 确认 Desktop 当前实际运行的 DSH runtime 版本已经变化，并记录旧版本 → 新版本。
-2. 检查现有 Issue、临时兼容分支和 PR，避免重复处理。
-3. 从最新 `main` 创建一次性分支：`compat/desktop-<version>`。
-4. 读取该 Desktop runtime 对应的上游源码/workspace 配置，只同步本仓库实际使用的 DSH/Cordis 包。**禁止把全部 `@deepseek-ai/*` 机械替换成同一个版本。**
-5. 更新依赖和 lockfile后运行安装、检查和受影响插件测试，观察真实破坏点。
-6. 结合对应上游 tag/commit 的 Release Notes 与源码 diff，检查 Service、Event、durable Session event、projection、Authorization、Credentials、Web Server、Client ModuleLoader、Slot、插件生命周期和配置语义。
-7. 读取受影响插件的局部 `AGENTS.md`，按其中记录的依赖面和行为契约回到实际源码确认。
-8. 只做保持现有插件行为所必需的最小兼容修改，并同步必要测试、README、CHANGELOG 和局部 `AGENTS.md`。
-9. 第一次适配新的 Desktop runtime 时统一准备插件版本：预发布 DSH `0.2.0-rc.2` → 插件 `0.2.0-rc.2.1`；稳定 DSH `0.2.0` → 插件 `0.2.0-plugin.1`。
-10. 创建/更新对应兼容 Issue，并从该一次性分支创建 PR 直接指向 `main`。
-11. PR 合并后删除一次性分支；仓库不再维护长期 `dev` 分支。
-12. 如果需要重新设计插件模型、事件体系、生命周期或配置体系，停止代码修改，只保留 Issue 说明 breaking change 和建议方向。
-
-兼容任务禁止：
-
-- 因上游新 Git tag 尚未进入 Desktop 就提前升级发布基线；
-- 新功能；
-- 无关重构或清理；
-- 为了“通过检查”改变插件既有主体行为。
-
-## 插件发布
-
-发布同样以 **Desktop runtime** 为兼容基线，并采用一次性分支，不使用长期 `dev`：
-
-1. 从最新 `main` 创建 `release/<version>`（如果当前兼容分支已经承载本次发布，可直接继续使用该分支）。
-2. 确认根与所有 `packages/*/package.json` 使用同一插件版本，且版本前缀对应当前 Desktop runtime。
-3. 如果 `v<当前 manifest version>` 尚不存在，直接发布当前版本。
-4. 如果该 tag 已存在，说明是在同一 Desktop runtime 基线上再次发布，只递增最后一个插件修订号。
-5. 更新 `CHANGELOG.md`；README 只有安装方式、当前版本或兼容关系确实变化时才改。
-6. 运行：
+1. 记录旧版 → 新版的官方 tag/commit，检查是否已有兼容分支或 PR。
+2. 从最新 `main` 建立一次性 `compat/dsh-<version>` 分支；已有同目标 PR 则直接继续。
+3. 读取该版本上游依赖清单与 Release Notes，更新本仓库直接使用的 DSH、Cordis、pi-ai 依赖。
+4. **运行 `pnpm install` 真实重建锁文件**；禁止仅靠替换版本字符串修改 `pnpm-lock.yaml`。
+5. 检查 Service、Event、durable Session event、projection、Authorization、Credentials、Web Server、Client ModuleLoader、Slot、插件生命周期、`engines.dsh` 与插件包元信息等契约。
+6. 读取受影响插件的局部 `AGENTS.md`，只做保持既有功能所需的兼容修改与必要测试。
+7. 第一次兼容 DSH `0.2.1-rc.2` 时统一准备插件 `0.2.1-rc.2.1`；稳定版 DSH `0.2.1` 首次对应插件 `0.2.1-plugin.1`。
+8. 同步必要文档、CHANGELOG 与兼容 Issue，运行：
    ```sh
    pnpm install
    pnpm check
    pnpm -r --if-present run test
    git diff --check
    ```
-7. 提交 `chore(release): version <version>`。
-8. 在该发布提交上创建唯一规范 tag：`v<version>`。
-9. 创建临时分支 → `main` PR；合并后删除临时分支。
-10. 不需要建立或同步 `dev` 分支。
+9. 兼容分支 PR 直接指向 `main`；不自动合并，合并后可删除临时分支，不维护长期 `dev`。
+10. 若需重新设计插件事件体系或生命周期，停止实现并记录 breaking change 及建议，不在兼容 PR 中实施大重构。
 
-不要创建 `dsh-plugins-v<version>` 别名 tag。GitHub Release 只有用户明确要求时才创建。
+仅做兼容升级**不自动发布 Git tag 或 GitHub Release**。
+
+## 插件发布
+
+发布流程仍只在用户明确要求发版时执行，以当前已同步的官方 DSH RC/稳定版为版本前缀：
+
+1. 从最新 `main` 建 `release/<version>`（现有兼容分支可复用），目标 PR 为 `main`。
+2. 根与所有 `packages/*/package.json` 使用同一插件版本；当前版本 tag 不存在则直接发当前版本，已存在才递增插件修订号。
+3. 更新 `CHANGELOG.md`，必要时同步 README。
+4. 运行 `pnpm install`、`pnpm check`、`pnpm -r --if-present run test`、`git diff --check`。
+5. 提交 `chore(release): version <version>` 并创建唯一规范 tag `v<version>`；PR 直接指向 `main`，不自动合并或建立 `dev`。
+6. 不创建 `dsh-plugins-v<version>` 别名 tag；只有用户明确要求时才创建 GitHub Release。
 
 ## 维护规则
 
-- 根 `AGENTS.md` 只保留跨插件规则；插件细节下沉到局部 `AGENTS.md`。
-- 新增、删除或更换某插件依赖的 DSH API、Service、Event、Hook、Slot 或行为语义时，必须同步更新该插件的 `AGENTS.md`。
-- 局部 `AGENTS.md` 记录“依赖面和行为契约”，不要记录容易失效的源码行号和固定历史版本。
-- `.agents/skills/dsh-upstream-compatibility` 负责 Desktop runtime 升级后的兼容流程；`.agents/skills/release-version` 负责当前 Desktop runtime 基线上的插件发布；二者都从 `main` 使用一次性分支，不依赖长期 `dev`。
+- 根 `AGENTS.md` 只维护跨插件规则；插件细节归各自目录的 `AGENTS.md`。
+- 新增、删除或更换依赖的 DSH Service、Event、Hook、Slot 或行为语义时同步局部文档，不固定易失效的源码行号。
+- `.agents/skills/dsh-upstream-compatibility` 负责官方 RC/稳定版发布后的兼容升级，`.agents/skills/release-version` 负责明确要求的发版，两者都从 `main` 使用一次性分支。

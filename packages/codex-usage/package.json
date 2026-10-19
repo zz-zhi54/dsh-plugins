@@ -1,6 +1,6 @@
 {
   "name": "dsh-codex-usage-plugin",
-  "version": "0.2.0-rc.2.2",
+  "version": "0.2.1-rc.2.1",
   "private": true,
   "license": "Apache-2.0",
   "type": "module",
@@ -32,5 +32,8 @@
       ],
       "platform": "web"
     }
+  },
+  "engines": {
+    "dsh": "0.2.1-rc.2"
   }
 }

@@ -58,7 +58,7 @@ DSH 修改 projection definition、schema 验证、stateOf/register 生命周期
 - 注册 ID：`session-cost`
 - order：`10`
 
-当前 Desktop DSH `0.2.0-rc.2` 使用内置 stats（order `0`）。本插件继续使用独立 `session-cost`（order `10`），不得占用、替换或复制内置统计；`codex-usage` 使用 order `20`。上游后续 Slot 变化只有进入 Desktop runtime 后才调整本兼容基线。
+目标 DSH `0.2.1-rc.2` 的内置统计项为 `activity`（order `0`）与 `usage`（order `1`）。本插件继续使用独立 `session-cost`（order `10`），不得占用、替换或复制内置统计；`codex-usage` 使用 order `20`。
 
 ## 行为契约
 
@@ -66,7 +66,7 @@ DSH 修改 projection definition、schema 验证、stateOf/register 生命周期
 - 使用 Session `seq` 作为进程内缓存失效依据；不能把缓存变成独立事实源。
 - 未识别价格允许返回 partial/unknown，不能凭空估价。
 - Host API 只返回聚合后的费用/Token 结果，不暴露 Session 内部对象。
-- UI 必须作为独立 Slot 附加，不改变 DSH 内置 stats 的结构、样式和交互。
+- UI 必须作为独立 Slot 附加，不改变 DSH 内置 activity / usage 的结构、样式和交互。
 
 ## DSH 升级重点
 
@@ -77,5 +77,5 @@ DSH 修改 projection definition、schema 验证、stateOf/register 生命周期
 - Session `seq`；
 - Session registry；
 - Session Projection API / replay lifecycle；
-- `conversation.composer.dock` 与内置 stats Slot；
+- `conversation.composer.dock` 与内置 activity / usage Slot；
 - Client ModuleLoader / Plugin Manager 生命周期。

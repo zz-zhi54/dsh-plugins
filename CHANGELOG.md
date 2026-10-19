@@ -10,9 +10,28 @@
 
 ## Unreleased
 
+## 0.2.1-rc.2.1 — 2026-10-18
+
+**对应 DSH 官方发布：** [`dsh-v0.2.1-rc.2`](https://github.com/deepseek-ai/deepseek-harness/releases/tag/dsh-v0.2.1-rc.2)
+
+### 兼容性
+
+- 兼容基线从之前的 Desktop 内置版本改为 DSH 官方正式发布的最新 RC/稳定版；不再等待 Desktop 更新。兼容 Skill、发布 Skill、AGENTS.md 和中英文 README 同步调整。
+- 四个插件的统一版本准备为 `0.2.1-rc.2.1`，同时增加 `engines.dsh: 0.2.1-rc.2` 明确声明当前目标运行时。
+- 将直接使用的 `@deepseek-ai/dsh-authorization`、`@deepseek-ai/dsh-session`、`@deepseek-ai/dsh-session-projection` 同步到 `0.2.1-rc.2`；Cordis `4.0.4 → 4.0.5`。
+- Session 费用价格目录 `@earendil-works/pi-ai` 从 `0.87.1 → 1.1.0`，保持与本次官方 DSH 的模型目录一致。
+- 通过 `pnpm install` 实际重新生成 `pnpm-lock.yaml`，移除新版依赖树中不再使用的 `dsh-invariants`；按真实包依赖而非机械字符串替换。
+- 新版内置统计项为 `activity`（order 0）与 `usage`（order 1）；现有 `session-cost`（order 10）和 `codex-usage`（order 20）继续使用独立 Slot，不替换内置项。
+- 更新插件文档与升级审计记录；运行时代码保持不变。兼容性还需在实际部署环境中冒烟验证。
+
 ### 修复
 
 - `session-cost` 将运行时直接使用的 `@earendil-works/pi-ai` 从 devDependencies 移到 dependencies，确保只安装生产依赖时仍能加载 Host 插件并读取模型价格目录。
+
+### 版本与发布
+
+- 该版本为兼容 PR 的准备版本；**没有创建发布 tag 或 GitHub Release**。此前已发布的 `v0.2.0-rc.2.2` 仍可用于旧运行时。
+
 
 ## 0.2.0-rc.2.2 — 2026-10-05
 

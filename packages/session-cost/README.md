@@ -8,12 +8,12 @@
 
 ## 功能
 
-- **位置**：注册独立的 `conversation.composer.dock` 条目 `session-cost`（`order: 10`），在 DSH 内置 `stats`（`order: 0`）之后显示 `费用 $0.0124`；不接管或替换内置统计单元。
+- **位置**：注册独立的 `conversation.composer.dock` 条目 `session-cost`（`order: 10`），在 DSH 内置 `activity`（order 0）及 `usage`（order 1）之后显示 `费用 $0.0124`；不接管或替换内置统计单元。
 - **交互**：点击费用打开 Token 费用统计对话框；点击其它区域按 DSH 官方统计窗口的行为自动关闭；每个 `provider/model` 行显示 Token 总数和费用，点击后展开 input、output、cache read、cache write 与请求次数。
 - **数据来源**：Host 通过 `sessionProjections` 增量折叠 durable events，不新增本插件持久化文件；读取结果仍按 Session `seq` 做进程内缓存。
 - **请求覆盖**：成功的 `assistant/message` 和没有 surface message 的 `assistant/attempt` 都计入。重试 attempt 从其 durable stream 的最后一条 provider usage 读取，不把流式中间 usage 重复相加。
 - **未知价格**：模型不在 pi-ai 内置目录时显示 `未知`，不会猜测价格；已知模型的费用仍会显示，并标记未知部分。
-- **与 Codex 用量插件并装**：三者都位于 `conversation.composer.dock`；DSH 内置 `stats` 保持 `order: 0`，本插件使用独立的 `session-cost`（`order: 10`），Codex 用量插件使用 `codex-usage`（`order: 20`），按当前 DSH Slot 契约可同时安装。
+- **与 Codex 用量插件并装**：三者都位于 `conversation.composer.dock`；DSH 内置 `activity`（order 0）与 `usage`（order 1）保留，本插件使用独立的 `session-cost`（`order: 10`），Codex 用量插件使用 `codex-usage`（`order: 20`），按当前 DSH Slot 契约可同时安装。
 
 ## 截图与演示
 
@@ -63,8 +63,8 @@ dsh --profile web --dump-config
 
 - 费用是基于当前 pi-ai 价格目录的估算；价格目录更新后，重新读取会按新价格计算历史 usage。
 - provider 没有报告 usage 的请求不会被计费；没有可验证价格的 `provider/model` 不会被赋予默认价格。
-- 本插件使用独立的 `session-cost` Slot（`order: 10`），不会替换 DSH 的 `stats`；它应与对应 DSH Web 版本一起使用。停止或卸载插件只会移除费用 Slot 注册和 Host 路由，不影响内置统计。
-- `@earendil-works/pi-ai@0.87.1` 要求 Node `>=22.19.0`；使用本插件时请使用满足该要求的 Node 版本。
+- 本插件使用独立的 `session-cost` Slot（`order: 10`），不会替换 DSH 的 `activity` 或 `usage`；它应与对应 DSH Web 版本一起使用。停止或卸载插件只会移除费用 Slot 注册和 Host 路由，不影响内置统计。
+- `@earendil-works/pi-ai@1.1.0` 要求 Node `>=22.19.0`；使用本插件时请使用满足该要求的 Node 版本。
 
 ## 实现约束
 
