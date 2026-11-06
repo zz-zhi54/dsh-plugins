@@ -6,26 +6,27 @@
 
 为 DSH Host 提供轻量级 macOS / Windows 系统通知。插件只旁路监听事件，不接管或修改 Agent 或审批流程。
 
-当前版本为 `0.2.2-rc.1.1`，兼容 DSH `0.2.2-rc.1`（Node.js `>=24.9.0`）；Host API 基线为 Cordis `4.1.0` 和 `@deepseek-ai/dsh-session@0.2.2-rc.1`。
+已验证的运行时基线为 DSH `0.2.2-rc.1`（该版 DSH 要求 Node.js `>=24.9.0`），对应 Cordis `4.1.0`。验证基线仅记录开发和测试环境，不限制安装到其他 DSH 版本。
 
 ## 运行时依赖
 
-本插件通过 DSH Host 传入的 Cordis `Context` 注册事件监听，不在插件内复制 `Context.on` 实现。为明确运行时契约，`package.json` 声明以下 Host 侧 `peerDependencies`，由 DSH Profile 提供：
+本插件通过 DSH Host 传入的 Cordis `Context` 注册事件监听，只依赖 `ctx.on('session/event', listener)`、任务完成及审批事件、稳定的事件 `seq` 和 Host logger。
 
-- `@deepseek-ai/cordis`：提供 `Context.on` / `ctx.on` 事件 API。
-- `@deepseek-ai/dsh-session`：提供 `session/event` 事件契约。
+插件不直接导入 Cordis 或 DSH npm 包，没有生产 `dependencies`、Host `peerDependencies` 或 `engines.dsh` 限制。后续 DSH 版本保留这些 API 和事件语义时，无需仅为更新版本号修改插件。
 
-具体兼容约束集中维护在本项目的 [`package.json`](./package.json) 中；这些依赖不会被插件重复安装或打包，插件自身没有额外的运行时 npm `dependencies`。`Context.on` 的具体实现可参考 [DeepSeek Harness 源码仓库](https://github.com/deepseek-ai/deepseek-harness)。
+[`package.json`](./package.json) 中的固定 `devDependencies` 仅用于开发验证，不限制 Host 版本。实际事件契约发生变化时，再进行必要的兼容适配。
 
 ## 安装
 
-从 GitHub 安装当前发布版本：
+从 GitHub 的 `main` 安装：
 
 ```sh
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.2.2-rc.1.1&path:packages/system-notification'
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#main&path:packages/system-notification'
 ```
 
-其他版本使用对应的 `#v<version>&path:packages/system-notification`；桌面 Profile 将 `--profile web` 改为 `--profile desktop`。
+需要获取 `main` 的后续更新时，重新执行上述 `add` 命令或通过插件管理器更新；分支安装不会实时同步代码。
+
+需要固定到本次发布版本时，使用 `#v0.2.2-rc.1.2&path:packages/system-notification`。桌面 Profile 将 `--profile web` 改为 `--profile desktop`。
 
 ## 监听行为
 

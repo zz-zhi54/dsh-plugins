@@ -10,7 +10,7 @@ A personally maintained DeepSeek Harness (DSH) plugin repository organized as a 
 
 ## Plugin overview
 
-The compatibility baseline is the officially released DSH `v0.2.2-rc.1`, with plugin version `0.2.2-rc.1.1`. Compatibility follows official RC or stable tags and their actual package manifests without waiting for Desktop. Updating source versions does not automatically create a plugin release tag; historical plugin tags remain available for older DSH versions.
+The verified development baseline is the officially released DSH `v0.2.2-rc.1`. It records the environment used for validation, rather than restricting installation to that version. The notification plugin uses Host-provided APIs and declares no `engines.dsh` or Host peer dependency constraints. DSH version changes alone do not require a plugin update; changes to the event contracts require compatibility work. Historical tags retain their original metadata.
 
 | Plugin | Package name | Purpose | Details |
 | --- | --- | --- | --- |
@@ -37,13 +37,21 @@ You do not need to clone this repository or preinstall other plugins. For deskto
 
 ### Install and update
 
-Install the system notification plugin from the current release tag (requires DSH `0.2.2-rc.1`, whose runtime requires Node.js `>=24.9.0`):
+Install the system notification plugin from `main`:
 
 ```sh
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.2.2-rc.1.1&path:packages/system-notification'
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#main&path:packages/system-notification'
 ```
 
-Run the target version's `add` command to update an installed plugin. Historical versions use the corresponding `#v<version>&path:packages/system-notification`; older DSH runtimes should use a historical tag with matching compatibility constraints.
+To get later changes from `main`, run the same `add` command again or update the plugin through the plugin manager. Installing from a branch does not continuously synchronize its code into a running DSH process.
+
+To pin the released version `v0.2.2-rc.1.2`, use:
+
+```sh
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.2.2-rc.1.2&path:packages/system-notification'
+```
+
+This version removes the Host version restrictions. Historical tags retain their original constraints.
 
 After installation, inspect the Profile:
 
