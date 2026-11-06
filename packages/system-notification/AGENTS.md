@@ -13,6 +13,8 @@
 - `@deepseek-ai/dsh-session`
 - `@deepseek-ai/cordis`
 
+以上包仅作为固定版本的 `devDependencies` 提供开发验证环境；运行时代码不直接导入它们。不得仅为跟随 DSH 版本添加 `engines.dsh` 或 Host `peerDependencies` 限制。兼容性取决于下列 API 和事件契约，只有契约实际变化时才做适配。
+
 ### Cordis / Session event API
 
 - `ctx.on('session/event', listener)`

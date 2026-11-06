@@ -10,7 +10,7 @@ A personally maintained DeepSeek Harness (DSH) plugin repository organized as a 
 
 ## Plugin overview
 
-The compatibility baseline is the officially released DSH `v0.2.2-rc.1`, with plugin version `0.2.2-rc.1.1`. Compatibility follows official RC or stable tags and their actual package manifests without waiting for Desktop. Updating source versions does not automatically create a plugin release tag; historical plugin tags remain available for older DSH versions.
+The verified development baseline is the officially released DSH `v0.2.2-rc.1`. It records the environment used for validation, rather than restricting installation to that version. The notification plugin uses Host-provided APIs and declares no `engines.dsh` or Host peer dependency constraints. DSH version changes alone do not require a plugin update; changes to the event contracts require compatibility work. Historical tags retain their original metadata.
 
 | Plugin | Package name | Purpose | Details |
 | --- | --- | --- | --- |
@@ -37,7 +37,7 @@ You do not need to clone this repository or preinstall other plugins. For deskto
 
 ### Install and update
 
-Install the system notification plugin from the current release tag (requires DSH `0.2.2-rc.1`, whose runtime requires Node.js `>=24.9.0`):
+Install the published system notification plugin from the tag below. This historical release still requires DSH `0.2.2-rc.1` (Node.js `>=24.9.0`); removal of the Host version restrictions is recorded under Unreleased in the changelog:
 
 ```sh
 dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.2.2-rc.1.1&path:packages/system-notification'

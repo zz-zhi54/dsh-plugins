@@ -10,6 +10,12 @@
 
 ## Unreleased
 
+### 修复
+
+- 移除系统通知插件的 `engines.dsh` 和 Host `peerDependencies` 精确版本限制，避免 DSH 升级但事件契约不变时，仍被安装器拒绝加载。
+- Cordis 和 DSH Session 的固定版本仅保留在 `devDependencies` 中用于开发验证；通知运行时代码保持不变。
+- 文档中的 DSH 版本改为已验证基线，移除索引元信息的精确兼容版本列表，并明确后续按实际 API/事件契约适配。
+
 ## 0.2.2-rc.1.1 — 2026-11-06
 
 **对应 DSH 官方发布：** [`dsh-v0.2.2-rc.1`](https://github.com/deepseek-ai/deepseek-harness/releases/tag/dsh-v0.2.2-rc.1)

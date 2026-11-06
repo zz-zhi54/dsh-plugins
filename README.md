@@ -5,7 +5,6 @@
   "tags": ["deepseek", "deepseek-harness", "dsh", "plugins"],
   "description": "非官方 DeepSeek Harness 系统通知插件，支持 macOS / Windows",
   "icon": "https://raw.githubusercontent.com/zz-zhi54/dsh-plugins/v0.2.2-rc.1.1/packages/system-notification/assets/dsh.ico",
-  "compatible_versions": ["v0.2.2-rc.1"],
   "install_method": "dsh plugin --profile desktop add 'github:zz-zhi54/dsh-plugins#v0.2.2-rc.1.1&path:packages/system-notification'"
 }
 -->
@@ -22,7 +21,7 @@
 
 ## 项目总览
 
-当前兼容基线为 **DeepSeek Harness 官方已发布的 DSH `v0.2.2-rc.1`**，插件版本为 `0.2.2-rc.1.1`。官方 RC 或稳定版一经发布，即按对应上游 tag 和实际依赖清单同步插件，不等待 Desktop。版本同步不等于自动创建发布 tag；旧版本用户仍可使用对应历史插件 tag。
+当前已验证的开发基线为 **DeepSeek Harness 官方已发布的 DSH `v0.2.2-rc.1`**。这只是开发验证环境记录，不是安装版本限制。通知插件通过 Host 提供的 API 工作，不声明 `engines.dsh` 或 Host peer 版本约束；DSH 仅更新版本号时无需修改插件，实际事件契约变化时再做兼容适配。历史 tag 保留各自原有的版本声明。
 
 | 插件 | 包名 | 用途 | 详细说明 |
 | --- | --- | --- | --- |
@@ -49,7 +48,7 @@
 
 ### 安装和更新
 
-从当前发布 tag 安装系统通知插件（需要 DSH `0.2.2-rc.1`，运行时要求 Node.js `>=24.9.0`）：
+从以下 tag 安装已发布的系统通知插件。这个历史发布仍要求 DSH `0.2.2-rc.1`（Node.js `>=24.9.0`）；移除 Host 版本限制的源码修正记录在 CHANGELOG 的 Unreleased 中：
 
 ```sh
 dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.2.2-rc.1.1&path:packages/system-notification'
