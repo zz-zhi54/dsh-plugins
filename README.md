@@ -1,13 +1,12 @@
 <!-- deepseek-harness-meta
 {
   "name": "dsh-plugins",
-  "version": "0.2.1-rc.2.1",
+  "version": "0.2.2-rc.1.1",
   "tags": ["deepseek", "deepseek-harness", "dsh", "plugins"],
-  "description": "非官方 DeepSeek Harness 插件集合，可从 GitHub 按需安装",
-  "icon": "https://raw.githubusercontent.com/zz-zhi54/dsh-plugins/v0.2.0-rc.2.2/packages/system-notification/assets/dsh.ico",
-  "compatible_versions": ["v0.2.1-rc.2"],
-  "screenshots": "packages",
-  "install_method": "dsh plugin --profile desktop add 'github:zz-zhi54/dsh-plugins#path:packages/session-cost'"
+  "description": "非官方 DeepSeek Harness 系统通知插件，支持 macOS / Windows",
+  "icon": "https://raw.githubusercontent.com/zz-zhi54/dsh-plugins/v0.2.2-rc.1.1/packages/system-notification/assets/dsh.ico",
+  "compatible_versions": ["v0.2.2-rc.1"],
+  "install_method": "dsh plugin --profile desktop add 'github:zz-zhi54/dsh-plugins#v0.2.2-rc.1.1&path:packages/system-notification'"
 }
 -->
 
@@ -15,105 +14,48 @@
 
 [English](README.en.md)
 
-个人维护的 DeepSeek Harness（DSH）插件集合，以 pnpm workspace monorepo 组织。可独立安装的插件位于 `packages/*`。
+个人维护的 DeepSeek Harness（DSH）插件仓库，以 pnpm workspace 组织。目前只维护系统通知插件。
 
 > 这是个人维护的非官方社区项目，不隶属于 DeepSeek AI 或 DeepSeek Harness 官方团队。
 >
-> 本 README 是用户入口，负责项目选择、安装方式和仓库结构；各项目 README 负责记录自身的具体行为和限制。安装章节会列出当前 workspace 中的插件及版本示例；实际版本、DSH 兼容关系及发布记录请以 [`CHANGELOG.md`](CHANGELOG.md) 和各项目的 `package.json` 为准。
+> 本 README 负责安装方式和仓库结构；插件 README 记录具体行为和限制。实际版本、DSH 兼容关系及发布记录请以 [`CHANGELOG.md`](CHANGELOG.md) 和插件的 [`package.json`](packages/system-notification/package.json) 为准。
 
 ## 项目总览
 
-当前 workspace 的兼容基线为 **DeepSeek Harness 官方已发布的 DSH `v0.2.1-rc.2`**。今后官方 RC 或稳定版一经发布，即按对应上游 tag 和实际依赖清单同步插件，不等待 Desktop。版本同步不等于自动创建发布 tag；旧版本的用户仍可使用对应历史插件 tag。
+当前兼容基线为 **DeepSeek Harness 官方已发布的 DSH `v0.2.2-rc.1`**，插件版本为 `0.2.2-rc.1.1`。官方 RC 或稳定版一经发布，即按对应上游 tag 和实际依赖清单同步插件，不等待 Desktop。版本同步不等于自动创建发布 tag；旧版本用户仍可使用对应历史插件 tag。
 
-| 项目 | 类型 | 包名 | 用途 | 详细说明 |
-| --- | --- | --- | --- | --- |
-| [`packages/system-notification`](packages/system-notification/) | 按需插件 | `dsh-system-notification-plugin` | 旁路监听任务状态和审批事件，发送 macOS / Windows 原生系统通知 | [`README`](packages/system-notification/README.md) |
-| [`packages/codex-login`](packages/codex-login/) | 按需临时插件 | `dsh-codex-login-plugin` | 提供 ChatGPT / Codex OAuth 登录入口；首次登录完成后即可卸载 | [`README`](packages/codex-login/README.md) |
-| [`packages/codex-usage`](packages/codex-usage/) | 按需插件 | `dsh-codex-usage-plugin` | 在输入框下方显示 Codex 的 5 小时 / 每周额度与重置倒计时，复用 DSH 自己的 Codex 凭据 | [`README`](packages/codex-usage/README.md) |
-| [`packages/session-cost`](packages/session-cost/) | 按需插件 | `dsh-session-cost-plugin` | 在 Token 统计行下方显示当前会话的 provider/model 费用与 USD 统计 | [`README`](packages/session-cost/README.md) |
+| 插件 | 包名 | 用途 | 详细说明 |
+| --- | --- | --- | --- |
+| [`packages/system-notification`](packages/system-notification/) | `dsh-system-notification-plugin` | 旁路监听任务状态和审批事件，发送 macOS / Windows 原生系统通知 | [`README`](packages/system-notification/README.md) |
 
-### 项目关系
-
-- 每个插件都可以独立安装、更新和卸载，不再维护组合 pack。
-- Codex 用量插件读取同一份 `llm-pi-ai/openai-codex` 凭据；它只读凭据、不写凭据，也不自己刷新 token。
-- Codex 登录插件仅用于首次登录；登录完成后即可卸载。
+我目前已使用 Magpie，它能够满足我原先使用 Codex 登录、Codex 额度和 Session 费用插件的需求，因此停止维护并移除这三个插件，只保留系统通知。历史实现保留在 Git 历史和旧版本 tag 中。
 
 ## 设计原则
 
 - **最小依赖、最少代码**：只引入完成目标所需的依赖，优先复用 DSH 已提供的服务和扩展点。
-- **轻量、稳定**：围绕实际使用场景提供小而明确的能力，不追求覆盖所有场景，优先控制维护成本。
-- **最小侵入**：插件以独立 Profile layer 接入，不修改 DSH 核心，不接管 Agent 循环、审批流程或其他主流程。
-- **开放协作**：欢迎社区通过 Issue 和 Pull Request 提交问题、建议、文档、测试或实现；贡献应尽量保持独立、低依赖和低侵入。
-- **稳定优先**：优先保持现有行为和公开契约；通知等旁路能力失败时，不应影响 DSH 主流程。
-- **上游优先、可撤销**：当 DSH 官方提供等价能力时，对应插件会停止维护、标记废弃并删除，而不是长期保留重复实现。
+- **轻量、稳定**：围绕实际使用场景提供小而明确的能力，优先控制维护成本。
+- **最小侵入**：插件以独立 Profile layer 接入，不修改 DSH 核心，不接管 Agent 循环或审批流程。
+- **开放协作**：欢迎通过 Issue 和 Pull Request 提交问题、建议、文档、测试或实现。
+- **稳定优先**：保持现有行为和公开契约；通知失败时，不应影响 DSH 主流程。
+- **上游优先、可撤销**：当 DSH 官方提供等价能力时，对应插件会停止维护并删除。
 
 ## 参与贡献
 
-如果你有希望加入的能力、使用中的问题或改进建议，欢迎提交 Issue；如果已经有可行实现，也欢迎直接提交 Pull Request。新增或修改内容请尽量遵循以下原则：
-
-- 保持功能边界清晰，不做与 DSH 主流程无关的大范围改动；
-- 优先使用 DSH 已有的公开服务和扩展点，避免引入不必要的依赖；
-- 同步补充必要的测试和文档，并说明验证方式；
-- 尊重上游方向；当 DSH 官方提供等价能力时，及时讨论迁移或删除方案。
+欢迎提交 Issue 或 Pull Request。贡献应保持功能边界清晰，优先使用 DSH 公开服务和扩展点，同步必要的测试和文档，并说明验证方式。
 
 ## 安装、卸载与更新
 
-每个插件都从 GitHub 的 `packages/*` 子目录独立安装，不需要 clone、进入仓库或预装其它插件。桌面端安装、更新或卸载时，将命令中的 `--profile web` 改为 `--profile desktop` 即可。
+无需 clone 仓库或预装其他插件。桌面端安装、更新或卸载时，将命令中的 `--profile web` 改为 `--profile desktop`。
 
-### 安装
+### 安装和更新
 
-当前 workspace 中有以下 4 个可独立安装的插件（版本示例取自各自的 `package.json`）：
-
-| 插件目录 | package name | 版本示例 | 用途 |
-| --- | --- | --- | --- |
-| `packages/system-notification` | `dsh-system-notification-plugin` | `0.2.1-rc.2.1` | macOS / Windows 系统通知 |
-| `packages/codex-login` | `dsh-codex-login-plugin` | `0.2.1-rc.2.1` | 首次 ChatGPT / Codex 登录 |
-| `packages/codex-usage` | `dsh-codex-usage-plugin` | `0.2.1-rc.2.1` | Codex 额度显示 |
-| `packages/session-cost` | `dsh-session-cost-plugin` | `0.2.1-rc.2.1` | Session 费用显示 |
-
-从当前默认分支安装单个插件：
+从当前发布 tag 安装系统通知插件（需要 DSH `0.2.2-rc.1`，运行时要求 Node.js `>=24.9.0`）：
 
 ```sh
-# 系统通知
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#path:packages/system-notification'
-
-# Codex 登录
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#path:packages/codex-login'
-
-# Codex 额度
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#path:packages/codex-usage'
-
-# Session 费用
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#path:packages/session-cost'
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.2.2-rc.1.1&path:packages/system-notification'
 ```
 
-也可以一次安装全部插件：
-
-```sh
-dsh plugin --profile web add \
-  'github:zz-zhi54/dsh-plugins#path:packages/system-notification' \
-  'github:zz-zhi54/dsh-plugins#path:packages/codex-login' \
-  'github:zz-zhi54/dsh-plugins#path:packages/codex-usage' \
-  'github:zz-zhi54/dsh-plugins#path:packages/session-cost'
-```
-
-已安装插件需要更新时，重新执行对应的 `add` 命令即可；使用固定 release 时，将命令中的版本标签替换为新版本。
-
-固定 release 时，在路径前加入版本标签。以下以先前已发布版本 `v0.2.0-rc.2.2` 为例：
-
-```sh
-# 系统通知
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.2.0-rc.2.2&path:packages/system-notification'
-
-# Codex 登录
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.2.0-rc.2.2&path:packages/codex-login'
-
-# Codex 额度
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.2.0-rc.2.2&path:packages/codex-usage'
-
-# Session 费用
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.2.0-rc.2.2&path:packages/session-cost'
-```
+更新已安装插件时，执行目标版本的 `add` 命令即可。历史版本使用对应的 `#v<version>&path:packages/system-notification`；旧版 DSH 应安装匹配其兼容约束的历史 tag。
 
 安装后检查 Profile：
 
@@ -123,30 +65,19 @@ dsh --profile web --dump-config
 
 ### 卸载
 
-按 package name 卸载对应插件：
+```sh
+dsh plugin --profile web remove dsh-system-notification-plugin
+```
+
+如果安装过已移除的旧插件，可按实际安装情况执行：
 
 ```sh
-# 系统通知
-dsh plugin --profile web remove dsh-system-notification-plugin
-
-# Codex 登录
 dsh plugin --profile web remove dsh-codex-login-plugin
-
-# Codex 额度
 dsh plugin --profile web remove dsh-codex-usage-plugin
-
-# Session 费用
 dsh plugin --profile web remove dsh-session-cost-plugin
 ```
 
-只卸载实际安装过的插件即可。
-
-需要某项能力时，也可以进入对应项目 README 查看更具体的行为、限制和验证步骤：
-
-- [Codex 登录插件](packages/codex-login/README.md)
-- [Codex 用量插件](packages/codex-usage/README.md)
-- [Session 费用插件](packages/session-cost/README.md)
-- [系统通知插件](packages/system-notification/README.md)
+系统通知的行为、平台限制和手动验证步骤见[插件 README](packages/system-notification/README.md)。
 
 ## 开发
 
@@ -155,31 +86,28 @@ dsh plugin --profile web remove dsh-session-cost-plugin
 ```sh
 pnpm install
 pnpm check
+pnpm -r --if-present run test
+git diff --check
 ```
 
-只检查单个项目：
+单独检查系统通知插件：
 
 ```sh
-pnpm --filter dsh-codex-login-plugin run check
-pnpm --filter dsh-codex-usage-plugin run check
-pnpm --filter dsh-codex-usage-plugin run test
-pnpm --filter dsh-session-cost-plugin run check
-pnpm --filter dsh-session-cost-plugin run test
 pnpm --filter dsh-system-notification-plugin run check
 pnpm --filter dsh-system-notification-plugin run test
 ```
 
-根工作区没有统一的 `build`、`test`、lint 或 format 脚本；依赖解析记录统一维护在根目录 `pnpm-lock.yaml`。本地 workspace 保持 pnpm 默认的 peer 自动安装行为。不要在子项目中使用 npm/yarn 单独安装依赖。
+依赖解析统一维护在根目录 [`pnpm-lock.yaml`](pnpm-lock.yaml)，保留 pnpm 默认的 peer 自动安装行为。不要在子项目中使用 npm/yarn 单独安装依赖。
 
 ## 仓库结构与文档分工
 
-- `packages/*/src`：各插件的运行时代码。
-- `packages/*/cordis.patch.yml`：对应插件要插入的 Profile 条目。
+- [`packages/system-notification`](packages/system-notification/)：通知插件的运行时代码、Profile patch、图标、测试和说明。
 - [`CHANGELOG.md`](CHANGELOG.md)：版本、兼容关系和发布记录。
-- `AGENTS.md`：面向编码 Agent 的项目约束，不是用户使用手册。
+- [`docs/compatibility`](docs/compatibility/)：各次上游兼容审计记录。
+- [`AGENTS.md`](AGENTS.md)：面向编码 Agent 的项目约束。
 - `dsh/`：部署到用户全局 `~/.dsh/` 的 DSH 源文件，不属于 pnpm workspace。
 
-插件通过自身 `package.json` 的 `dsh.bundle.patch` 指向 patch 文件；patch 只描述组件 ID 和 package 名称，业务实现留在对应项目中。每个插件都可独立安装，不需要组合层或递归依赖。
+插件通过自身 [`package.json`](packages/system-notification/package.json) 的 `dsh.bundle.patch` 指向 patch 文件；patch 只描述组件 ID 和 package 名称，业务实现留在插件内，不需要组合层或递归依赖。
 
 ## 许可证
 

@@ -17,7 +17,8 @@
 
 - `ctx.on('session/event', listener)`
 - listener 签名依赖 `(session, event)`
-- 监听器依赖插件生命周期自动清理，不自行接管总线生命周期。
+- DSH `0.2.2-rc.1` 在 Session log 提交后调用监听器；这不代表已经完成磁盘 flush。
+- 监听器依赖插件生命周期自动清理，不自行接管总线生命周期；Cordis `4.1.0` 仍由所属 fiber 持有并释放监听器。
 
 ### Durable event contract
 

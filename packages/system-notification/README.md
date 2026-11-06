@@ -6,6 +6,8 @@
 
 为 DSH Host 提供轻量级 macOS / Windows 系统通知。插件只旁路监听事件，不接管或修改 Agent 或审批流程。
 
+当前版本为 `0.2.2-rc.1.1`，兼容 DSH `0.2.2-rc.1`（Node.js `>=24.9.0`）；Host API 基线为 Cordis `4.1.0` 和 `@deepseek-ai/dsh-session@0.2.2-rc.1`。
+
 ## 运行时依赖
 
 本插件通过 DSH Host 传入的 Cordis `Context` 注册事件监听，不在插件内复制 `Context.on` 实现。为明确运行时契约，`package.json` 声明以下 Host 侧 `peerDependencies`，由 DSH Profile 提供：
@@ -17,13 +19,13 @@
 
 ## 安装
 
-直接从 GitHub 安装当前分支：
+从 GitHub 安装当前发布版本：
 
 ```sh
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#path:packages/system-notification'
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.2.2-rc.1.1&path:packages/system-notification'
 ```
 
-固定 release 时，将路径替换为 `#v<version>&path:packages/system-notification`。
+其他版本使用对应的 `#v<version>&path:packages/system-notification`；桌面 Profile 将 `--profile web` 改为 `--profile desktop`。
 
 ## 监听行为
 
@@ -31,6 +33,7 @@ dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#path:packages/system-n
 - 识别持久化事件 `approval/asked`，通知“等待你的确认”；审批事件按 Session 的 `seq` 去重。
 - 不监听旧的 `approval/request`，也不向审批链注册 answerer。
 - 通知失败只记录 warning，不影响 Agent 循环或已提交的 Session 事件。
+- `session/event` 表示事件已提交到 Session 日志，不保证通知时已经完成磁盘 flush。
 
 ## 平台实现
 

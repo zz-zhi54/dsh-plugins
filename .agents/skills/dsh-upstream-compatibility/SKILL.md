@@ -50,13 +50,6 @@ compatibility: 需要 Git、Node.js、pnpm 和 GitHub 访问能力；运行时�
 
 禁止：无关新功能、顺手重构、机械统一依赖版本、伪造锁文件、为通过测试改变原有主体行为。
 
-## codex-usage 特别规则
-
-- HTTP 头以 **当前目标 DSH tag 的 Codex provider 实际实现** 为准；
-- 用量 endpoint、method、响应结构和错误处理参考当前 pi 生态实际实现；
-- 不机械复制模型 SSE/Responses 专用头；不能泄漏凭据或原始额度响应；
-- 具体行为与安全契约遵循 `packages/codex-usage/AGENTS.md`。
-
 ## 完成报告
 
 只需要回答：目标 DSH 发布版本/tag、受影响插件与契约、最小修改、验证通过或失败、GitHub PR。

@@ -10,6 +10,30 @@
 
 ## Unreleased
 
+## 0.2.2-rc.1.1 — 2026-11-06
+
+**对应 DSH 官方发布：** [`dsh-v0.2.2-rc.1`](https://github.com/deepseek-ai/deepseek-harness/releases/tag/dsh-v0.2.2-rc.1)
+
+### 移除
+
+- 个人使用流程已转到 Magpie，它能够满足原先这三个插件对应的需求，因此停止维护 Codex 登录、Codex 额度和 Session 费用插件。
+- 删除这三个插件及其源码、测试、截图和 Profile patch；当前 workspace 仅保留 `system-notification`。
+- 中英文 README、插件索引安装入口和兼容 Skill 移除旧插件的维护与安装说明；README 保留已安装旧插件的卸载命令。
+- 清理旧插件专用的依赖、发布年龄放行和构建脚本配置，运行 `pnpm install` 重新生成锁文件。
+
+### 兼容性
+
+- 系统通知插件与根 workspace 版本更新为 `0.2.2-rc.1.1`，`engines.dsh` 和 Session peer/dev dependency 同步到 `0.2.2-rc.1`，Cordis 从 `4.0.5` 升到 `4.1.0`。
+- 根据官方 tag 核对 `session/event` 的提交后派发、`turn/end` 的 `completed` 原因、`approval/asked` 的审计事件及稳定 `seq`，保留原有通知逻辑。
+- Cordis `4.1.0` 的 `ctx.on` 仍随 fiber 生命周期释放监听器，无需修改 Host 注册方式。
+- DSH 新版要求 Node.js `>=24.9.0`；同步安装文档和兼容审计记录。
+
+### 版本与发布
+
+- 发布规范插件 tag [`v0.2.2-rc.1.1`](https://github.com/zz-zhi54/dsh-plugins/releases/tag/v0.2.2-rc.1.1)，对应 DSH `0.2.2-rc.1`。
+- 安装入口固定到本次发布 tag，避免默认分支的旧版本与新版运行时不匹配。
+- 关闭因插件删除而失效的依赖 PR #30、#33、#34、#35、#36、#37、#38；Zod 的间接版本继续与官方 DSH 依赖清单一致。
+
 ## 0.2.1-rc.2.1 — 2026-10-18
 
 **对应 DSH 官方发布：** [`dsh-v0.2.1-rc.2`](https://github.com/deepseek-ai/deepseek-harness/releases/tag/dsh-v0.2.1-rc.2)
