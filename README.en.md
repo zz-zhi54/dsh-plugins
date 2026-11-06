@@ -37,13 +37,21 @@ You do not need to clone this repository or preinstall other plugins. For deskto
 
 ### Install and update
 
-Install the published system notification plugin from the tag below. This historical release still requires DSH `0.2.2-rc.1` (Node.js `>=24.9.0`); removal of the Host version restrictions is recorded under Unreleased in the changelog:
+Install the system notification plugin from `main`:
 
 ```sh
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.2.2-rc.1.1&path:packages/system-notification'
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#main&path:packages/system-notification'
 ```
 
-Run the target version's `add` command to update an installed plugin. Historical versions use the corresponding `#v<version>&path:packages/system-notification`; older DSH runtimes should use a historical tag with matching compatibility constraints.
+To get later changes from `main`, run the same `add` command again or update the plugin through the plugin manager. Installing from a branch does not continuously synchronize its code into a running DSH process.
+
+To pin the released version `v0.2.2-rc.1.2`, use:
+
+```sh
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.2.2-rc.1.2&path:packages/system-notification'
+```
+
+This version removes the Host version restrictions. Historical tags retain their original constraints.
 
 After installation, inspect the Profile:
 

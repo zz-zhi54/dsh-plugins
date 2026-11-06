@@ -18,13 +18,15 @@
 
 ## 安装
 
-从 GitHub 安装已发布版本（以下 tag 仍保留原有 Host 版本限制，本次移除限制的源码修正尚未发布）：
+从 GitHub 的 `main` 安装：
 
 ```sh
-dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#v0.2.2-rc.1.1&path:packages/system-notification'
+dsh plugin --profile web add 'github:zz-zhi54/dsh-plugins#main&path:packages/system-notification'
 ```
 
-其他版本使用对应的 `#v<version>&path:packages/system-notification`；桌面 Profile 将 `--profile web` 改为 `--profile desktop`。
+需要获取 `main` 的后续更新时，重新执行上述 `add` 命令或通过插件管理器更新；分支安装不会实时同步代码。
+
+需要固定到本次发布版本时，使用 `#v0.2.2-rc.1.2&path:packages/system-notification`。桌面 Profile 将 `--profile web` 改为 `--profile desktop`。
 
 ## 监听行为
 
